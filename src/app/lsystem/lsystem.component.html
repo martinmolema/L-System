@@ -1,0 +1,23 @@
+<svg width="800" height="800" #drawing
+     (wheel)="handleWheelevent($event)"
+     (mousedown)="startDrag($event)"
+     (mouseup)="endDrag($event)"
+     (mousemove)="drag($event)"
+>
+  <g transform="translate(400,400) scale(1,-1)"
+  >
+    <g id="canvas" [attr.transform]="transformString">
+      @for (line of lines; track lines) {
+        <line
+          [attr.x1]="line.x1"
+          [attr.x2]="line.x2"
+          [attr.y1]="line.y1"
+          [attr.y2]="line.y2"
+          [attr.strokeWidth]="line.strokeWidth"
+          [attr.stroke]="line.stroke"
+
+        ></line>
+      }
+    </g>
+  </g>
+</svg>
