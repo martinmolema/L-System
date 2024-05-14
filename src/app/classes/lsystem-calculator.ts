@@ -11,21 +11,21 @@ export class LSystemCalculator {
   private originX = 0;
   private originY = 0;
 
-  lineLength = 50;
   private angle = 0;
-  private startingAngle = 90;
-  private nrOfIterationsRequested: number = 0;
-  rotationAngle: number = 0;
   private stack: Array<StackItem>;
   private lastPosition: Point | undefined = undefined;
-  lineLengthMultiplier = 1;
   private svgWidth = 0;
   private svgHeight = 0;
-  lines: Array<SVGLine>;
+  public lines: Array<SVGLine>;
 
-  completeFormula = '';
+  public completeFormula = '';
+  public rotationAngle: number = 0;
+  public lineLengthMultiplier = 1;
+  public lineLength = 50;
+  public startingAngle = 90;
 
-  processedRules: Map<string, string> = new Map<string, string>();
+  private processedRules: Map<string, string> = new Map<string, string>();
+  public nrOfIterationsRequested: number = 0;
 
   constructor(svgWidth: number, svgHeight: number) {
     this.svgHeight = svgHeight;
@@ -34,9 +34,18 @@ export class LSystemCalculator {
     this.lines = new Array<SVGLine>();
   }
 
-  setOrigin(x: number, y: number) {
-    this.originX = x;
-    this.originY = y;
+  get rulesAsString(): string {
+    return this.rules.join("\n");
+  }
+
+  clearRules():void{
+    this.rules = [];
+    this.processedRules.clear();
+  }
+
+  setOrigin(x: number | undefined, y: number | undefined) {
+    if (x !== undefined) {this.originX = x;}
+    if (y !== undefined) {this.originY = y;}
   }
 
   setOriginLeftCenter(marginX: number, marginY: number) {
@@ -71,7 +80,7 @@ export class LSystemCalculator {
   }
 
   get OriginX(): number {
-    return  this.originX;
+    return this.originX;
   }
 
   set OriginX(x: number) {
@@ -84,6 +93,10 @@ export class LSystemCalculator {
 
   set OriginY(y: number) {
     this.originY = y;
+  }
+
+  get Axiom(): string {
+    return this.axiom;
   }
 
 
@@ -115,6 +128,7 @@ export class LSystemCalculator {
   }
 
   startGeneration(nrOfIterations: number) {
+    this.nrOfIterationsRequested = nrOfIterations;
     this.lastPosition = new Point(this.originX, this.originY);
     this.angle = this.startingAngle;
     this.stack = new Array<StackItem>();
@@ -188,7 +202,7 @@ export class LSystemCalculator {
 
   drawLine(point1: Point | undefined, length: number): undefined | Point {
     if (point1 === undefined) {
-      return ;
+      return;
     }
     const newx = point1.x + Math.cos((this.angle / 180) * Math.PI) * length;
     const newy = point1.y + Math.sin((this.angle / 180) * Math.PI) * length;
@@ -202,7 +216,7 @@ export class LSystemCalculator {
 
     this.lines.push(line);
 
-    return new Point(newx, newy, 0 ,'');
+    return new Point(newx, newy, 0, '');
 
   }
 

@@ -1,5 +1,5 @@
 <main>
-  <article>
+  <article id="introduction">
     <header>
       <h1>L-System rewrite testing grounds.</h1>
     </header>
@@ -9,7 +9,41 @@
       </p>
     </section>
   </article>
-  <article>
-    <app-lsystem  [lsystem]="lsystem"></app-lsystem>
+  <article id="inputs">
+    <header>
+      <h1>Configuration</h1>
+    </header>
+    <form [formGroup]="formgroup">
+      <p>
+        <label for="inputNrOfIterations">Iterations</label>
+        <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number">
+      </p>
+      <p>
+        <label for="inputLineLength">Line length</label>
+        <input name="linelength" id="inputLineLength" formControlName="lineLength" type="number">
+      </p>
+      <p>
+        <label for="inputAxiom">Line length</label>
+        <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1">
+      </p>
+      <p>
+        <label for="inputRules">Rules</label>
+        <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4"></textarea>
+      <div class="errors">
+        <p FormError [control]="rules" name="Rules"></p>
+        @if (rules && rules.hasError('incorrectRule') && rules.errors !== null && rules.errors !== undefined) {
+          <p class="hasError">Incorrect rule: {{ rules.errors['incorrectRule'] }}</p>
+        }
+        @if (rules && rules.hasError('MissingParts') && rules.errors !== null && rules.errors !== undefined) {
+          <p class="hasError">Missing parts left or right of equal sign ('='): {{ rules.errors['MissingParts'] }}</p>
+        }
+
+      </div>
+    </form>
+  </article>
+  <article id="drawingarea">
+    <section>
+      <app-lsystem [lsystem]="lsystem"></app-lsystem>
+    </section>
   </article>
 </main>

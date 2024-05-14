@@ -1,12 +1,46 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
 import {LSystemComponent} from "./lsystem/lsystem.component";
 import {LSystemCalculator} from "./classes/lsystem-calculator";
+import {
+  AbstractControl,
+  FormBuilder, FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from "@angular/forms";
+import {FormErrorDirective} from "./directives/form-error.directive";
+
+function checkRules(rules: AbstractControl): ValidationErrors | null {
+  if (rules.value === null) {
+    return null
+  }
+
+  const lines = rules.value.split(/\r?\n/);
+  if (lines.length < 1) {
+    return {notEnoughRules: true};
+  }
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const parts = line.split('=');
+    if (parts.length === 2) {
+      if (parts[0].trim().length < 1 || parts[1].trim().length < 1) {
+        return {MissingParts: line};
+      }
+      return null;
+    } else {
+      return {incorrectRule: line};
+    }
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LSystemComponent],
+  imports: [RouterOutlet, LSystemComponent, ReactiveFormsModule, FormErrorDirective],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -15,9 +49,55 @@ export class AppComponent {
 
   lsystem: LSystemCalculator;
 
-  constructor() {
+  formgroup: FormGroup;
+
+  constructor(
+    private formBuilder: FormBuilder,
+  ) {
     this.lsystem = new LSystemCalculator(400, 400);
 
+    this.createFractal();
+
+    const rules = this.lsystem.rulesAsString;
+
+    this.formgroup = this.formBuilder.group({
+      nrOfIterations: [this.lsystem.nrOfIterationsRequested, [Validators.required, Validators.min(0), Validators.max(30)]],
+      lineLength: [this.lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
+      originX: [this.lsystem.OriginX, [Validators.required, Validators.min(-400), Validators.max(400)]],
+      originY: [this.lsystem.OriginY, [Validators.required, Validators.min(-400), Validators.max(400)]],
+      axiom: [this.lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
+      rules: [rules, {
+        validators: [Validators.required, checkRules],
+        updateOn: 'change'
+      }],
+    });
+
+    this.formgroup.valueChanges.subscribe(() => {
+      if (this.formgroup.valid) {
+
+        this.lsystem.setOrigin(this.originX?.value, this.originY?.value);
+        this.lsystem.lineLength = this.lineLength?.value;
+
+        this.lsystem.clearRules();
+        this.rules?.value.split('\n').forEach((rule: string) => {
+          this.lsystem.addRule(rule);
+        })
+
+        this.lsystem.setAxiom(this.axiom?.value);
+
+        this.lsystem.startGeneration(this.nrOfIterations?.value);
+      }
+    });
+  }
+
+  get nrOfIterations(): AbstractControl | null {return this.formgroup.get('nrOfIterations');  }
+  get lineLength(): AbstractControl | null {return this.formgroup.get('lineLength');  }
+  get originX(): AbstractControl | null {return this.formgroup.get('originX');  }
+  get originY(): AbstractControl | null {return this.formgroup.get('originY');  }
+  get rules(): AbstractControl | null {return this.formgroup.get('rules');  }
+  get axiom() : AbstractControl | null {return this.formgroup.get('axiom');  }
+
+  createFractal() {
     /*
         // bushy cactus tree
         lsystem.addVariable('F');
@@ -170,4 +250,5 @@ export class AppComponent {
     */
 
   }
+
 }

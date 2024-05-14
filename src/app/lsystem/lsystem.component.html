@@ -4,10 +4,9 @@
      (mouseup)="endDrag($event)"
      (mousemove)="drag($event)"
 >
-  <g transform="translate(400,400) scale(1,-1)"
-  >
+  <g transform="translate(400,400) scale(1,-1)">
     <g id="canvas" [attr.transform]="transformString">
-      @for (line of lines; track lines) {
+      @for (line of lsystem?.lines; track $index) {
         <line
           [attr.x1]="line.x1"
           [attr.x2]="line.x2"
