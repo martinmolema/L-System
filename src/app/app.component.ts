@@ -1,41 +1,77 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {LSystemComponent} from "./lsystem/lsystem.component";
-import {LSystemCalculator} from "./classes/lsystem-calculator";
+import {LSystemCalculator, SpecialChars} from "./classes/lsystem-calculator";
 import {
-  AbstractControl,
-  FormBuilder, FormControl,
+  AbstractControl, FormArray,
+  FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
-  ValidatorFn,
   Validators
 } from "@angular/forms";
 import {FormErrorDirective} from "./directives/form-error.directive";
+import {LSystemVariable} from "./classes/lsystem-variable";
 
-function checkRules(rules: AbstractControl): ValidationErrors | null {
-  if (rules.value === null) {
+
+
+function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
+  if (ruleControl.value === null) {
     return null
   }
-
-  const lines = rules.value.split(/\r?\n/);
-  if (lines.length < 1) {
-    return {notEnoughRules: true};
-  }
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const parts = line.split('=');
-    if (parts.length === 2) {
-      if (parts[0].trim().length < 1 || parts[1].trim().length < 1) {
-        return {MissingParts: line};
-      }
-      return null;
-    } else {
-      return {incorrectRule: line};
+  const line = ruleControl.value;
+  const parts = line.split('=');
+  if (parts.length === 2) {
+    if (parts[0].trim().length < 1 || parts[1].trim().length < 1) {
+      return {MissingParts: line};
     }
+    return null;
+  } else {
+    return {incorrectRule: line};
   }
   return null;
 }
+
+function checkVariablesAndRules(form: FormGroup): null | ValidationErrors {
+  const variables = (form.get('listOfVariables') as FormArray).controls.map((subform: AbstractControl) => (subform as FormGroup).get('variableName')?.value);
+  const rules = (form.get('listOfRules') as FormArray).controls.map((subform: AbstractControl) => (subform as FormGroup).get('rule')?.value);
+  console.log(rules, variables);
+
+  for (let r = 0; r < rules.length; r++) {
+    const rule = rules[r].trim();
+    const parts = rule.split('=');
+
+    if (parts.length !== 2) {
+      console.log(`NotEnoughPartsForFormula: ${rule}`);
+      return {NotEnoughPartsForFormula: rule};
+    }
+    const varname = parts[0].trim();
+    const formula = parts[1].trim();
+
+    if (varname.length !== 1) {
+      console.log(`WrongLengthVariableNameLeftOfEqualSign: ${varname}`);
+      return {WrongLengthVariableNameLeftOfEqualSign: varname};
+    }
+
+    if (!variables.includes(varname)) {
+      console.log(`WrongVariableLeftOfEqualSign: ${varname}`);
+      return {WrongVariableLeftOfEqualSign: varname}
+    }
+
+    for (let c = 0; c < formula.length; c++) {
+      let char = formula.charAt(c);
+      if (! (SpecialChars.includes(char)) && !variables.includes(char)) {
+        console.log(`Wrong char in formula: ${char}`);
+        return {WrongVariable: char};
+      }
+    }
+    console.log(`Formula OK : ${formula}`)
+  }
+  console.log(`All formulas ok`);
+  return null;
+}
+
+
 
 @Component({
   selector: 'app-root',
@@ -48,6 +84,7 @@ export class AppComponent {
   title = 'math-lsystem';
 
   lsystem: LSystemCalculator;
+  autoUpdateDrawing:boolean = true;
 
   formgroup: FormGroup;
 
@@ -58,44 +95,158 @@ export class AppComponent {
 
     this.createFractal();
 
-    const rules = this.lsystem.rulesAsString;
+    this.formgroup = new FormGroup({});
+    this.createForm();
 
+    this.createHandlers();
+  }
+
+  createForm(): void {
     this.formgroup = this.formBuilder.group({
+      autoUpdate:[this.autoUpdateDrawing],
       nrOfIterations: [this.lsystem.nrOfIterationsRequested, [Validators.required, Validators.min(0), Validators.max(30)]],
+      rotationAngle: [this.lsystem.rotationAngle,[Validators.required, Validators.min(-180), Validators.max(+180)]],
+      startAngle: [this.lsystem.startingAngle,[Validators.required, Validators.min(-180), Validators.max(+180)]],
       lineLength: [this.lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
       originX: [this.lsystem.OriginX, [Validators.required, Validators.min(-400), Validators.max(400)]],
       originY: [this.lsystem.OriginY, [Validators.required, Validators.min(-400), Validators.max(400)]],
       axiom: [this.lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
-      rules: [rules, {
-        validators: [Validators.required, checkRules],
-        updateOn: 'change'
-      }],
+      listOfVariables: this.formBuilder.array([]),
+      listOfRules: this.formBuilder.array([]),
+    },
+      {
+        validators:[checkVariablesAndRules]
+      });
+    this.updateVariables();
+    this.updateRules();
+  }
+
+  updateRules(): void {
+    this.lsystem.Rules.forEach(rule => {
+      this.addNewRule(rule);
     });
 
+  }
+
+  updateVariables(): void {
+    this.lsystem.Variables.forEach((variableName: LSystemVariable) => {
+      this.addNewVariable(variableName)
+    });
+  }
+
+  addNewVariable(variableName: LSystemVariable) {
+    const varArray = this.variables;
+    const item = this.formBuilder.group({
+      variableName: [variableName.varname],
+      isDrawing: [variableName.isDrawingVariable],
+    })
+    varArray?.push(item);
+  }
+
+  addNewVariableFromForm(name: string, isDrawing:boolean): void {
+    this.addNewVariable(new LSystemVariable(name, isDrawing));
+  }
+
+  addNewRule(newRule: string) {
+    const varArray = this.rules;
+    const item = this.formBuilder.group({
+      rule: [newRule,{
+        validators: [checkRules],
+        updateOn:'change'
+      }]
+    })
+    varArray?.push(item);
+  }
+
+  createHandlers(): void{
     this.formgroup.valueChanges.subscribe(() => {
       if (this.formgroup.valid) {
+        this.autoUpdateDrawing = this.autoUpdate ? this.autoUpdate.value : this.autoUpdateDrawing;
 
-        this.lsystem.setOrigin(this.originX?.value, this.originY?.value);
-        this.lsystem.lineLength = this.lineLength?.value;
-
-        this.lsystem.clearRules();
-        this.rules?.value.split('\n').forEach((rule: string) => {
-          this.lsystem.addRule(rule);
-        })
-
-        this.lsystem.setAxiom(this.axiom?.value);
-
-        this.lsystem.startGeneration(this.nrOfIterations?.value);
+        if (this.autoUpdateDrawing) {
+          this.changeParametersAndRedraw();
+        }
       }
     });
   }
 
+  submitValues(): void {
+    this.changeParametersAndRedraw();
+  }
+
+  changeParametersAndRedraw(): void {
+    this.changeLSystemParameters();
+    if (this.nrOfIterations) {
+      this.redraw(parseInt(this.nrOfIterations.value));
+    }
+  }
+
+
+  changeLSystemParameters() {
+
+    this.lsystem.setOrigin(this.originX?.value, this.originY?.value);
+    this.lsystem.lineLength = this.lineLength?.value;
+
+    this.lsystem.clearRules();
+    this.rules?.controls.forEach((control: AbstractControl) => {
+      const formGroup = (control as FormGroup);
+      const rule = formGroup.get('rule')?.value;
+      if (rule) {
+        this.lsystem.addRule(rule);
+      }
+
+    });
+
+    this.variables?.controls.forEach((variable: AbstractControl) => {
+      this.lsystem.addVariable(variable.value);
+    });
+    this.lsystem.setAxiom(this.axiom?.value);
+    this.lsystem.startingAngle = this.startAngle?.value;
+    this.lsystem.rotationAngle = this.rotationAngle?.value;
+  }
+
+  redraw(nrOfIterations:number): void {
+    this.lsystem.startGeneration(nrOfIterations);
+
+  }
+
+
+  get autoUpdate(): AbstractControl | null {return this.formgroup.get('autoUpdate');  }
   get nrOfIterations(): AbstractControl | null {return this.formgroup.get('nrOfIterations');  }
   get lineLength(): AbstractControl | null {return this.formgroup.get('lineLength');  }
   get originX(): AbstractControl | null {return this.formgroup.get('originX');  }
   get originY(): AbstractControl | null {return this.formgroup.get('originY');  }
-  get rules(): AbstractControl | null {return this.formgroup.get('rules');  }
   get axiom() : AbstractControl | null {return this.formgroup.get('axiom');  }
+  get rotationAngle() : AbstractControl | null {return this.formgroup.get('rotationAngle');  }
+  get startAngle() : AbstractControl | null {return this.formgroup.get('startAngle');  }
+
+  get variables(): FormArray | undefined {
+    const items =  this.formgroup.get('listOfVariables');
+    return (items as FormArray);
+  }
+
+  get rules(): FormArray | undefined {
+    const items = this.formgroup.get('listOfRules');
+    return (items as FormArray);
+  }
+
+  oneVariable(index: number): FormGroup {
+    const item = this.variables?.controls[index];
+    return (item as FormGroup);
+  }
+
+  oneRule(index: number): FormGroup {
+    const item = this.rules?.controls[index];
+    return (item as FormGroup);
+  }
+
+  deleteOneVariable(index:number):void {
+    this.variables?.removeAt(index);
+  }
+
+  deleteOneRule(index:number):void {
+    this.rules?.removeAt(index);
+  }
 
   createFractal() {
     /*
@@ -124,6 +275,7 @@ export class AppComponent {
 
     */
 
+/*
     // fractal tree
     this.lsystem.addVariable('F');
     this.lsystem.addVariable('X');
@@ -134,6 +286,7 @@ export class AppComponent {
     this.lsystem.OriginY = -100;
     this.lsystem.lineLengthMultiplier = 0.5;
     this.lsystem.startGeneration(8);
+*/
 
     /*
     // plant left oriented
@@ -194,19 +347,18 @@ export class AppComponent {
         lsystem.setOrigin(200, -300);
         lsystem.startGeneration(5);
     */
-    /*
         // Sierpinski Arrowhead
-        lsystem.addVariable('F');
-        lsystem.addVariable('X');
-        lsystem.addVariable('Y');
-        lsystem.addRule('X=YF+XF+Y');
-        lsystem.addRule('Y=XF-YF-X');
-        lsystem.setAxiom('YF');
-        lsystem.lineLength = 10 ;
-        lsystem.startingAngle = 0;
-        lsystem.rotationAngle = 60;
-        lsystem.setOriginBottomLeft(10,10)
-        lsystem.startGeneration(7);*/
+        this.lsystem.addVariable(new LSystemVariable('F', true));
+        this.lsystem.addVariable(new LSystemVariable('X', false));
+        this.lsystem.addVariable(new LSystemVariable('Y', false));
+        this.lsystem.addRule('X=YF+XF+Y');
+        this.lsystem.addRule('Y=XF-YF-X');
+        this.lsystem.setAxiom('YF');
+        this.lsystem.lineLength = 10 ;
+        this.lsystem.startingAngle = 0;
+        this.lsystem.rotationAngle = 60;
+        this.lsystem.setOriginBottomLeft(10,10)
+        this.lsystem.startGeneration(7);
 
     /*
         // Hilbert

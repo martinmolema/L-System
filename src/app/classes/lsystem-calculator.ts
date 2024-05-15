@@ -1,11 +1,14 @@
 import {StackItem} from "./stack-item";
 import {Point} from "./point";
 import {SVGLine} from "./svgline";
+import {LSystemVariable} from "./lsystem-variable";
+
+export const SpecialChars = ['+', '-', '[', ']', '>', '<' ];
 
 export class LSystemCalculator {
 
   private rules: string[] = new Array<string>();
-  private vars: string[] = new Array<string>();
+  private vars: Array<LSystemVariable> = new Array<LSystemVariable>();
   private axiom = '';
 
   private originX = 0;
@@ -48,7 +51,7 @@ export class LSystemCalculator {
     if (y !== undefined) {this.originY = y;}
   }
 
-  setOriginLeftCenter(marginX: number, marginY: number) {
+  setOriginLeftCenter(marginX: number) {
     this.originX = -this.svgWidth / 2 + marginX;
     this.originY = 0;
   }
@@ -99,13 +102,21 @@ export class LSystemCalculator {
     return this.axiom;
   }
 
+  get Variables(): Array<LSystemVariable> {
+    return this.vars;
+  }
+
+  get Rules(): Array<string> {
+    return this.rules;
+  }
+
 
   addRule(rule: string) {
     this.rules.push(rule);
     this.processRules();
   }
 
-  addVariable(variable: string) {
+  addVariable(variable: LSystemVariable) {
     this.vars.push(variable);
   }
 
@@ -169,34 +180,38 @@ export class LSystemCalculator {
    */
   processNonRuleCharFromFormula(char: string, length: number) {
 
-    switch (char) {
-      case "F":
-        this.lastPosition = this.drawLine(this.lastPosition, length);
-        break;
-      case "[":
-        if (this.lastPosition) {
-          this.stack.push(new StackItem(this.angle, this.lastPosition))
-        }
-        break;
-      case "]":
-        const item = this.stack.pop();
-        if (this.lastPosition && item) {
-          this.lastPosition.x = item.position.x;
-          this.lastPosition.y = item.position.y;
-          this.angle = item.angle;
-        }
-        break;
-      case ">":
-        length *= this.lineLengthMultiplier;
-        break;
-      case "+":
-        this.turn(this.rotationAngle);
-        break;
-      case "-":
-        this.turn(-this.rotationAngle);
-        break;
+    if (SpecialChars.includes(char)) {
+      switch (char) {
+        case "[":
+          if (this.lastPosition) {
+            this.stack.push(new StackItem(this.angle, this.lastPosition))
+          }
+          break;
+        case "]":
+          const item = this.stack.pop();
+          if (this.lastPosition && item) {
+            this.lastPosition.x = item.position.x;
+            this.lastPosition.y = item.position.y;
+            this.angle = item.angle;
+          }
+          break;
+        case ">":
+          length *= this.lineLengthMultiplier;
+          break;
+        case "+":
+          this.turn(this.rotationAngle);
+          break;
+        case "-":
+          this.turn(-this.rotationAngle);
+          break;
+      }
     }
-
+    else{
+      const drawingVariables = this.vars.filter(v => v.isDrawingVariable).map(v => v.varname);
+      if (drawingVariables.includes(char)) {
+        this.lastPosition = this.drawLine(this.lastPosition, length);
+      }
+    }
     return length;
   }
 

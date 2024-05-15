@@ -1,7 +1,7 @@
 import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {Point} from "../classes/point";
 import {LSystemCalculator} from "../classes/lsystem-calculator";
-import {SVGLine} from "../classes/svgline";
+
 
 @Component({
   selector: 'app-lsystem',
