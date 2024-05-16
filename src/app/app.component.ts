@@ -474,4 +474,5 @@ export class AppComponent {
 
   }
 
+  protected readonly Math = Math;
 }

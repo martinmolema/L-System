@@ -3,7 +3,7 @@ import {Point} from "./point";
 import {SVGLine} from "./svgline";
 import {LSystemVariable} from "./lsystem-variable";
 
-export const SpecialChars = ['+', '-', '[', ']', '>', '<' ];
+export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
 
 export class LSystemCalculator {
 
@@ -45,14 +45,18 @@ export class LSystemCalculator {
     return this.rules.join("\n");
   }
 
-  clearRules():void{
+  clearRules(): void {
     this.rules = [];
     this.processedRules.clear();
   }
 
   setOrigin(x: number | undefined, y: number | undefined) {
-    if (x !== undefined) {this.originX = x;}
-    if (y !== undefined) {this.originY = y;}
+    if (x !== undefined) {
+      this.originX = x;
+    }
+    if (y !== undefined) {
+      this.originY = y;
+    }
   }
 
   setOriginLeftCenter(marginX: number) {
@@ -66,31 +70,27 @@ export class LSystemCalculator {
   }
 
   setOriginBottomLeft(marginX: number, marginY: number) {
-    this.originX = -this.svgWidth / 2 + marginX;
-    this.originY = -this.svgHeight / 2 + marginY;
+    this.setOrigin(-this.svgWidth / 2 + marginX, -this.svgHeight / 2 + marginY);
   }
+
   setOriginBottomCenter(marginX: number, marginY: number) {
-    this.originX = 0;
-    this.originY = -this.svgHeight / 2 + marginY;
+    this.setOrigin(0, -this.svgHeight / 2 + marginY);
   }
 
   setOriginBottomRight(marginX: number, marginY: number) {
-    this.originX = this.svgWidth / 2 - marginX;
-    this.originY = -this.svgHeight / 2 + marginY;
+    this.setOrigin(this.svgWidth / 2 - marginX, -this.svgHeight / 2 + marginY);
   }
 
   setOriginTopLeft(marginX: number, marginY: number) {
-    this.originX = -this.svgWidth / 2 + marginX;
-    this.originY = this.svgHeight / 2 - marginY;
+    this.setOrigin(-this.svgWidth / 2 + marginX, this.svgHeight / 2 - marginY);
   }
 
 
   setOriginTopRight(marginX: number, marginY: number) {
-    this.originX = this.svgWidth / 2 - marginX;
-    this.originY = this.svgHeight / 2 - marginY;
+    this.setOrigin(this.svgWidth / 2 - marginX, this.svgHeight / 2 - marginY);
   }
 
-  translateOrigin(x: number, y:number): void {
+  translateOrigin(x: number, y: number): void {
     this.setOrigin(this.originX + x, this.originY + y);
   }
 
@@ -224,8 +224,7 @@ export class LSystemCalculator {
           this.turn(-this.rotationAngle);
           break;
       }
-    }
-    else{
+    } else {
       const drawingVariables = this.vars.filter(v => v.isDrawingVariable).map(v => v.varname);
       if (drawingVariables.includes(char)) {
         this.lastPosition = this.drawLine(this.lastPosition, length);

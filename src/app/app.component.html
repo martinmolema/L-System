@@ -24,36 +24,58 @@
         </p>
         <p>
           <label for="inputNrOfIterations">Iterations</label>
-          <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number">
+          <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number"
+                 min="0" max="50">
         </p>
         <p>
           <label for="inputLineLength">Line length</label>
-          <input name="linelength" id="inputLineLength" formControlName="lineLength" type="number">
+          <input name="linelength" id="inputLineLength" formControlName="lineLength" type="number"
+                 min="1" max="999">
         </p>
         <p>
           <label for="inputAxiom">Axiom</label>
-          <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1">
+          <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1" size="4">
         </p>
         <p>
           <label for="inputRotationAngle">Rotation Angle</label>
           <input name="rotationangle" id="inputRotationAngle" formControlName="rotationAngle" type="number" min="-180"
-                 max="180">
+                 max="180" class="angle">
+          <span class="suffix"> &deg;</span>
         </p>
         <p>
           <label for="inputStartAngle">Start Angle</label>
-          <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number" min="-180" max="180">
+          <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number"
+                 min="-180" max="180" class="angle">
+          <span class="suffix"> &deg;</span>
         </p>
         <p>
-          <label for="inputLengthMultiplier">Length multiplier </label>
-          <input name="lengthMultiplier" id="inputLengthMultiplier" formControlName="lengthMultiplier" type="number">
-          <span> (for &lt; and &gt;)</span>
+          <label for="inputLengthMultiplier">Length multiplier</label>
+          <input name="lengthMultiplier" id="inputLengthMultiplier"
+                 formControlName="lengthMultiplier" type="number"
+                 min="0.001" max="10" step="0.1">
+           <span>&nbsp; (for &lt; and &gt;)</span>
         </p>
         <p>
-          <label for="inputOriginX">Origin:</label>
+          <label for="inputOriginX">Origin</label>
           <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
+          <span class="prefix">x:</span>
           <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
-           = ({{originX?.value}},{{originY?.value}}) => translation({{translation?.xAsString}}, {{translation?.yAsString}})
+          <span class="prefix">y:</span>
+          <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
+          <span>&nbsp;</span>
           <button (click)="updateOriginFromTranslation()">Correct with translation</button>
+          </p>
+        <p>
+          <label>Translation</label>
+          ({{ translation?.xAsString }} , {{ translation?.yAsString }})
+          &nbsp;
+          =>
+          &nbsp;
+          (
+          {{ Math.floor( (translation ? translation.x : 0) + lsystem.OriginX) }}
+          ,
+          {{ Math.floor((translation ? translation.y : 0) + lsystem.OriginY) }}
+          )
 
         </p>
         <!--        <p>

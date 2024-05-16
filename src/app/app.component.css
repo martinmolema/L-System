@@ -29,6 +29,23 @@ main {
         }
       }
     }
+
+    .suffix {
+      margin-left: -2rem;
+    }
+
+    .prefix {
+      left: -4.5rem;
+      position: relative;
+    }
+
+    .angle {
+      margin-right: 1rem;
+    }
+
+    input[type=number] {
+      text-align: right;
+    }
   }
 
   article:last-of-type {
