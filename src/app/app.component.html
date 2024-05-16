@@ -5,8 +5,13 @@
     </header>
     <section>
       <p>
+        To learn more about what an L-System is see the <a href="https://en.wikipedia.org/wiki/L-system">Wikipedia</a>
+        page.
+      </p>
+      <p>
         Many thanks to <a href="https://paulbourke.net/fractals/lsys/">Paul Bourke</a> for all the fractal formulas.
       </p>
+
     </section>
     <section id="inputs">
       <header>
@@ -39,14 +44,15 @@
           <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number" min="-180" max="180">
         </p>
         <p>
-          <label for="inputLengthMultiplier">Start Angle</label>
+          <label for="inputLengthMultiplier">Length multiplier </label>
           <input name="lengthMultiplier" id="inputLengthMultiplier" formControlName="lengthMultiplier" type="number">
+          <span> (for &lt; and &gt;)</span>
         </p>
         <p>
           <label for="inputOriginX">Origin:</label>
           <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
           <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
-           = ({{originX?.value}},{{originY?.value}}) => translation({{translation?.x}}, {{translation?.y}})
+           = ({{originX?.value}},{{originY?.value}}) => translation({{translation?.xAsString}}, {{translation?.yAsString}})
           <button (click)="updateOriginFromTranslation()">Correct with translation</button>
 
         </p>

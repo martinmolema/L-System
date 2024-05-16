@@ -69,6 +69,10 @@ export class LSystemCalculator {
     this.originX = -this.svgWidth / 2 + marginX;
     this.originY = -this.svgHeight / 2 + marginY;
   }
+  setOriginBottomCenter(marginX: number, marginY: number) {
+    this.originX = 0;
+    this.originY = -this.svgHeight / 2 + marginY;
+  }
 
   setOriginBottomRight(marginX: number, marginY: number) {
     this.originX = this.svgWidth / 2 - marginX;
@@ -209,6 +213,9 @@ export class LSystemCalculator {
           break;
         case ">":
           length *= this.lineLengthMultiplier;
+          break;
+        case "<":
+          length /= this.lineLengthMultiplier;
           break;
         case "+":
           this.turn(this.rotationAngle);

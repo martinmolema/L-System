@@ -89,8 +89,8 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
       this.isDragging = false;
 
       if (this.translation) {
-        this.translation.x = this.temporaryTranslation.x;
-        this.translation.y = this.temporaryTranslation.y;
+        this.translation.x = Math.floor(this.temporaryTranslation.x * 10) / 10;
+        this.translation.y = Math.floor(this.temporaryTranslation.y * 10) / 10;
         this.TranslationChange.emit(this.translation);
       }
     }
@@ -99,8 +99,8 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   drag(event: MouseEvent): void {
     if (this.isDragging) {
 
-      const newX = (event.clientX - this.CTM.e) / this.CTM.a;
-      const newY = (event.clientY - this.CTM.f) / this.CTM.d;
+      const newX = Math.floor((event.clientX - this.CTM.e) / this.CTM.a);
+      const newY = Math.floor((event.clientY - this.CTM.f) / this.CTM.d);
 
       let diffX = newX - this.startPoint.x;
       let diffY = newY - this.startPoint.y;
@@ -118,12 +118,10 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
 
   setZoomTranslation(zoom: number, translation: Point | undefined, emitNewValue = true) {
     if (translation) {
-      const translateStr = `translate(${translation.x},${-translation.y})`;
+      const translateStr = `translate(${translation.xAsString},${-translation.yAsString})`;
       const zoomStr = `scale(${zoom},${zoom})`;
 
       this.transformString = `${translateStr} ${zoomStr}`;
-      console.log(this.transformString);
-
     }
 
     if (emitNewValue) {

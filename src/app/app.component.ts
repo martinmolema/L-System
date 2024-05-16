@@ -131,7 +131,6 @@ export class AppComponent {
       const newX = this.lsystem.OriginX;
       const newY = this.lsystem.OriginY;
 
-      console.log(newX, newY);
 
       this.originX?.setValue(newX);
       this.originY?.setValue(newY);
@@ -256,6 +255,7 @@ export class AppComponent {
     this.lsystem.setAxiom(this.axiom?.value);
     this.lsystem.startingAngle = this.startAngle?.value;
     this.lsystem.rotationAngle = this.rotationAngle?.value;
+    this.lsystem.lineLengthMultiplier = this.lengthMultiplier?.value;
 
   }
 
@@ -273,6 +273,7 @@ export class AppComponent {
   get axiom() : AbstractControl | null {return this.formgroup.get('axiom');  }
   get rotationAngle() : AbstractControl | null {return this.formgroup.get('rotationAngle');  }
   get startAngle() : AbstractControl | null {return this.formgroup.get('startAngle');  }
+  get lengthMultiplier() : AbstractControl | null {return this.formgroup.get('lengthMultiplier');  }
 
   get variables(): FormArray | undefined {
     const items =  this.formgroup.get('listOfVariables');
@@ -439,7 +440,7 @@ export class AppComponent {
         lsystem.startGeneration(5);
     */
 
-
+/*
         // Quadratic Gosper
         this.lsystem.addVariableSimple('F', true);
         this.lsystem.addVariableSimple('X');
@@ -450,7 +451,27 @@ export class AppComponent {
         this.lsystem.lineLength = 5;
         this.lsystem.rotationAngle = 90;
         this.lsystem.setOriginBottomLeft(10,10);
-        this.lsystem.startGeneration(4);
+        this.lsystem.startGeneration(4);*/
+
+        // L-system leaf
+        this.lsystem.addVariableSimple('F', true);
+        this.lsystem.addVariableSimple('x');
+        this.lsystem.addVariableSimple('y');
+        this.lsystem.addVariableSimple('a');
+        this.lsystem.addVariableSimple('b');
+        this.lsystem.addRule('F=>F<');
+        this.lsystem.addRule('a=F[+x]Fb');
+        this.lsystem.addRule('b=F[-y]Fa');
+        this.lsystem.addRule('x=a');
+        this.lsystem.addRule('y=b');
+        this.lsystem.setAxiom('a');
+        this.lsystem.setOriginBottomCenter(0,10)
+        this.lsystem.lineLength = 10;
+        this.lsystem.rotationAngle = 30;
+        this.lsystem.startingAngle = 90;
+        this.lsystem.lineLengthMultiplier = 0.5;
+        this.lsystem.startGeneration(10);
+
   }
 
 }
