@@ -37,6 +37,10 @@ export class LSystemCalculator {
     this.lines = new Array<SVGLine>();
   }
 
+  clearVariables(): void {
+    this.vars = new Array<LSystemVariable>();
+  }
+
   get rulesAsString(): string {
     return this.rules.join("\n");
   }
@@ -82,6 +86,10 @@ export class LSystemCalculator {
     this.originY = this.svgHeight / 2 - marginY;
   }
 
+  translateOrigin(x: number, y:number): void {
+    this.setOrigin(this.originX + x, this.originY + y);
+  }
+
   get OriginX(): number {
     return this.originX;
   }
@@ -116,8 +124,12 @@ export class LSystemCalculator {
     this.processRules();
   }
 
-  addVariable(variable: LSystemVariable) {
+  addVariableObject(variable: LSystemVariable) {
     this.vars.push(variable);
+  }
+
+  addVariableSimple(varname: string, isdrawingVariable: boolean = false) {
+    this.addVariableObject(new LSystemVariable(varname, isdrawingVariable));
   }
 
   setAxiom(axiom: string) {

@@ -38,6 +38,18 @@
           <label for="inputStartAngle">Start Angle</label>
           <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number" min="-180" max="180">
         </p>
+        <p>
+          <label for="inputLengthMultiplier">Start Angle</label>
+          <input name="lengthMultiplier" id="inputLengthMultiplier" formControlName="lengthMultiplier" type="number">
+        </p>
+        <p>
+          <label for="inputOriginX">Origin:</label>
+          <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
+          <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
+           = ({{originX?.value}},{{originY?.value}}) => translation({{translation?.x}}, {{translation?.y}})
+          <button (click)="updateOriginFromTranslation()">Correct with translation</button>
+
+        </p>
         <!--        <p>
                   <label for="inputRules">Rules</label>
                   <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4" [cols]="50"></textarea>
@@ -54,14 +66,17 @@
         <div class="rules">
           @if (rules) {
             <h3><span>Rules:</span>
+              <span>
               <button (click)="addNewRule('P=F')">+</button>
+              <button (click)="parseRulesForVariables()">Parse for vars</button>
+                </span>
             </h3>
             <ng-container formArrayName="listOfRules">
               @for (rule of rules.controls; track rules.controls; let j = $index) {
                 <div [formGroup]="oneRule(j)" class="item">
                   <div>
                     <label>Rule {{ j + 1 }}</label>
-                    <input formControlName="rule" minlength="1">
+                    <input formControlName="rule" minlength="1" size="40">
                   </div>
                   <button (click)="deleteOneRule(j)">delete</button>
                 </div>
@@ -80,9 +95,9 @@
               @for (item of variables.controls; track variables.controls; let j = $index) {
                 <div [formGroup]="oneVariable(j)" class="item">
                   <div>
-                      <label>Variable {{ j + 1 }}</label>
-                      <input formControlName="variableName" minlength="1" maxlength="1" type="text">
-                      <input formControlName="isDrawing" type="checkbox">
+                    <label>Variable {{ j + 1 }}</label>
+                    <input formControlName="variableName" minlength="1" maxlength="1" type="text">
+                    <input formControlName="isDrawing" type="checkbox">
                   </div>
                   <button (click)="deleteOneVariable(j)">delete</button>
                 </div>
@@ -90,14 +105,15 @@
             </ng-container>
           }
         </div>
-        <button (click)="submitValues()">Change</button>
+        <hr>
+        <button (click)="submitValues()">Redraw!</button>
       </form>
     </section>
   </article>
 
   <article id="drawingarea">
     <section>
-      <app-lsystem [lsystem]="lsystem"></app-lsystem>
+      <app-lsystem [lsystem]="lsystem" [(Translation)]="translation"></app-lsystem>
     </section>
     <section>
       {{ lsystem.completeFormula }}
