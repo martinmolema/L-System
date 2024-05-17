@@ -1,18 +1,20 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {LSystemComponent} from "./lsystem/lsystem.component";
-import {LSystemCalculator, SpecialChars} from "./classes/lsystem-calculator";
+import {LSystemCalculator, OriginPositions, SpecialChars} from "./classes/lsystem-calculator";
 import {
-  AbstractControl, FormArray,
+  AbstractControl,
+  FormArray,
   FormBuilder,
-  FormGroup,
+  FormGroup, FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   Validators
 } from "@angular/forms";
 import {FormErrorDirective} from "./directives/form-error.directive";
 import {LSystemVariable} from "./classes/lsystem-variable";
-import {Point} from "./classes/point";
+import {DrawingCanvas} from "./classes/drawing-canvas";
+import {Subscription} from "rxjs";
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -58,88 +60,102 @@ function checkVariablesAndRules(form: FormGroup): null | ValidationErrors {
 
     for (let c = 0; c < formula.length; c++) {
       let char = formula.charAt(c);
-      if (! (SpecialChars.includes(char)) && !variables.includes(char)) {
+      if (!(SpecialChars.includes(char)) && !variables.includes(char)) {
         //console.log(`Wrong char in formula: ${char}`);
         return {WrongVariable: char};
       }
     }
-   // console.log(`Formula OK : ${formula}`)
+    // console.log(`Formula OK : ${formula}`)
   }
   //console.log(`All formulas ok`);
   return null;
 }
 
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LSystemComponent, ReactiveFormsModule, FormErrorDirective],
+  imports: [RouterOutlet, LSystemComponent, ReactiveFormsModule, FormErrorDirective, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'math-lsystem';
+  title = 'Martin \'s L-System Playground';
 
+  protected readonly Math = Math;
   lsystem: LSystemCalculator;
-  autoUpdateDrawing:boolean = true;
+  allSystems: Array<LSystemCalculator>;
+  autoUpdateDrawing: boolean = true;
+  valueChangeSubscriber: Subscription | undefined = undefined;
 
-  translation: Point | undefined = undefined;
-
+  canvas: DrawingCanvas;
   formgroup: FormGroup;
+
+  idxSelectedSystem: number = -1;
 
   constructor(
     private formBuilder: FormBuilder,
   ) {
-    this.lsystem = new LSystemCalculator(800, 800);
 
-    this.setupLSystem();
-    this.translation = new Point(0,0);
+    this.lsystem = new LSystemCalculator('new', OriginPositions.CENTER);
+
+    this.allSystems = new Array<LSystemCalculator>();
+    this.canvas = new DrawingCanvas(0, 0, 800, 800);
+
+    this.setupLSystems();
 
     this.formgroup = new FormGroup({});
-    this.createForm();
+    this.createForm(this.lsystem, 1);
 
     this.createHandlers();
   }
 
-  createForm(): void {
-    this.formgroup = this.formBuilder.group({
-      autoUpdate:[this.autoUpdateDrawing],
-      nrOfIterations: [this.lsystem.nrOfIterationsRequested, [Validators.required, Validators.min(0), Validators.max(30)]],
-      rotationAngle: [this.lsystem.rotationAngle,[Validators.required, Validators.min(-180), Validators.max(+180)]],
-      startAngle: [this.lsystem.startingAngle,[Validators.required, Validators.min(-180), Validators.max(+180)]],
-      lineLength: [this.lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
-      originX: [this.lsystem.OriginX, [Validators.required, Validators.min(-400), Validators.max(400)]],
-      originY: [this.lsystem.OriginY, [Validators.required, Validators.min(-400), Validators.max(400)]],
-      lengthMultiplier: [this.lsystem.lineLengthMultiplier, [Validators.required]],
-      axiom: [this.lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
 
-      listOfVariables: this.formBuilder.array([]),
-      listOfRules: this.formBuilder.array([]),
-    },
+  createForm(lsystem: LSystemCalculator, nrOfIterationsRequested: number): void {
+    this.formgroup = this.formBuilder.group({
+        autoUpdate: [this.autoUpdateDrawing],
+        nrOfIterations: [nrOfIterationsRequested, [Validators.required, Validators.min(0), Validators.max(30)]],
+        rotationAngle: [lsystem.rotationAngle, [Validators.required, Validators.min(-180), Validators.max(+180)]],
+        startAngle: [lsystem.startingAngle, [Validators.required, Validators.min(-180), Validators.max(+180)]],
+        lineLength: [lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
+        originX: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
+        originY: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
+        lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required]],
+        axiom: [lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
+
+        listOfVariables: this.formBuilder.array([]),
+        listOfRules: this.formBuilder.array([]),
+      },
       {
-        validators:[checkVariablesAndRules]
+        validators: [checkVariablesAndRules]
       });
     this.updateVariables();
     this.updateRules();
   }
 
-  updateOriginFromTranslation():void {
-    if (this.translation) {
-      this.lsystem.translateOrigin(this.translation.x, -this.translation.y);
+  updateFormFromLSystem(lsystem: LSystemCalculator): void {
+    // create a new form
+    this.createForm(lsystem, 1);
 
-      const newX = this.lsystem.OriginX;
-      const newY = this.lsystem.OriginY;
+    this.createHandlers();
+  }
 
+  selectSystem(event: Event) {
+    this.lsystem = this.allSystems[this.idxSelectedSystem];
+    this.updateFormFromLSystem(this.lsystem);
+    this.redraw(1);
+  }
 
-      this.originX?.setValue(newX);
-      this.originY?.setValue(newY);
+  updateOriginFromTranslation(): void {
+    if (this.canvas.translation) {
+      this.canvas.correctOriginFromTranslation();
 
-      if (this.autoUpdateDrawing) {
-        this.translation = new Point(0,0);
+      const newx = this.canvas.OriginX;
+      const newy = this.canvas.OriginY;
 
-        this.changeParametersAndRedraw();
-      }
+      this.originX?.setValue(newx);
+      this.originY?.setValue(newy);
+
     }
   }
 
@@ -165,16 +181,16 @@ export class AppComponent {
     varArray?.push(item);
   }
 
-  addNewVariableFromForm(name: string, isDrawing:boolean): void {
+  addNewVariableFromForm(name: string, isDrawing: boolean): void {
     this.addNewVariable(new LSystemVariable(name, isDrawing));
   }
 
   addNewRule(newRule: string) {
     const varArray = this.rules;
     const item = this.formBuilder.group({
-      rule: [newRule,{
+      rule: [newRule, {
         validators: [checkRules],
-        updateOn:'change'
+        updateOn: 'change'
       }]
     })
     varArray?.push(item);
@@ -205,13 +221,16 @@ export class AppComponent {
 
   }
 
-  clearVariables():void {
+  clearVariables(): void {
     this.lsystem.clearVariables();
     this.variables?.clear();
   }
 
-  createHandlers(): void{
-    this.formgroup.valueChanges.subscribe(() => {
+  createHandlers(): void {
+    if (this.valueChangeSubscriber) {
+      this.valueChangeSubscriber.unsubscribe();
+    }
+    this.valueChangeSubscriber = this.formgroup.valueChanges.subscribe(() => {
       if (this.formgroup.valid) {
         this.autoUpdateDrawing = this.autoUpdate ? this.autoUpdate.value : this.autoUpdateDrawing;
 
@@ -236,7 +255,7 @@ export class AppComponent {
 
   changeLSystemParameters() {
 
-    this.lsystem.setOrigin(this.originX?.value, this.originY?.value);
+    this.canvas.setOrigin(this.originX?.value, this.originY?.value);
     this.lsystem.lineLength = this.lineLength?.value;
 
     this.lsystem.clearRules();
@@ -257,26 +276,54 @@ export class AppComponent {
     this.lsystem.rotationAngle = this.rotationAngle?.value;
     this.lsystem.lineLengthMultiplier = this.lengthMultiplier?.value;
 
+    this.canvas.setOrigin(this.originX?.value, this.originY?.value);
+
   }
 
-  redraw(nrOfIterations:number): void {
+  redraw(nrOfIterations: number): void {
 
     this.lsystem.startGeneration(nrOfIterations);
 
   }
 
-  get autoUpdate(): AbstractControl | null {return this.formgroup.get('autoUpdate');  }
-  get nrOfIterations(): AbstractControl | null {return this.formgroup.get('nrOfIterations');  }
-  get lineLength(): AbstractControl | null {return this.formgroup.get('lineLength');  }
-  get originX(): AbstractControl | null {return this.formgroup.get('originX');  }
-  get originY(): AbstractControl | null {return this.formgroup.get('originY');  }
-  get axiom() : AbstractControl | null {return this.formgroup.get('axiom');  }
-  get rotationAngle() : AbstractControl | null {return this.formgroup.get('rotationAngle');  }
-  get startAngle() : AbstractControl | null {return this.formgroup.get('startAngle');  }
-  get lengthMultiplier() : AbstractControl | null {return this.formgroup.get('lengthMultiplier');  }
+  get autoUpdate(): AbstractControl | null {
+    return this.formgroup.get('autoUpdate');
+  }
+
+  get nrOfIterations(): AbstractControl | null {
+    return this.formgroup.get('nrOfIterations');
+  }
+
+  get lineLength(): AbstractControl | null {
+    return this.formgroup.get('lineLength');
+  }
+
+  get originX(): AbstractControl | null {
+    return this.formgroup.get('originX');
+  }
+
+  get originY(): AbstractControl | null {
+    return this.formgroup.get('originY');
+  }
+
+  get axiom(): AbstractControl | null {
+    return this.formgroup.get('axiom');
+  }
+
+  get rotationAngle(): AbstractControl | null {
+    return this.formgroup.get('rotationAngle');
+  }
+
+  get startAngle(): AbstractControl | null {
+    return this.formgroup.get('startAngle');
+  }
+
+  get lengthMultiplier(): AbstractControl | null {
+    return this.formgroup.get('lengthMultiplier');
+  }
 
   get variables(): FormArray | undefined {
-    const items =  this.formgroup.get('listOfVariables');
+    const items = this.formgroup.get('listOfVariables');
     return (items as FormArray);
   }
 
@@ -295,184 +342,200 @@ export class AppComponent {
     return (item as FormGroup);
   }
 
-  deleteOneVariable(index:number):void {
+  deleteOneVariable(index: number): void {
     this.variables?.removeAt(index);
   }
 
-  deleteOneRule(index:number):void {
+  deleteOneRule(index: number): void {
     this.rules?.removeAt(index);
   }
 
-  setupLSystem() {
-    /*
-        // bushy cactus tree
-        lsystem.addVariableObject('F');
-        lsystem.addVariableObject('X');
-        lsystem.addVariableObject('Y');
-        lsystem.addRule('X=X[-FFF][+FFF]FX');
-        lsystem.addRule('Y=YFX[+Y][-Y]');
-        lsystem.setAxiom('Y');
-        lsystem.lineLength = 5;
-        lsystem.rotationAngle = 25.7;
-        lsystem.originY = -400;
-        lsystem.startGeneration(8);
-    */
+  setupLSystems() {
+    this.allSystems = new Array<LSystemCalculator>();
 
-    /*
+    let oneLsystem = new LSystemCalculator('bushy cactus tree', OriginPositions.CenterBottom);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addVariableSimple('Y');
+    oneLsystem.addRule('X=X[-FFF][+FFF]FX');
+    oneLsystem.addRule('Y=YFX[+Y][-Y]');
+    oneLsystem.setAxiom('Y');
+    oneLsystem.lineLength = 5;
+    oneLsystem.rotationAngle = 25.7;
+    this.allSystems.push(oneLsystem);
 
-        // squares
-        lsystem.addVariableObject('F');
-        lsystem.addRule('F=FF+F-F+F+FF');
-        lsystem.setAxiom('F+F+F+F');
-        lsystem.lineLength = 20;
-        lsystem.rotationAngle = 90;
-        lsystem.startGeneration(4);
+    oneLsystem = new LSystemCalculator('squares', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addRule('F=FF+F-F+F+FF');
+    oneLsystem.setAxiom('F+F+F+F');
+    oneLsystem.lineLength = 20;
+    oneLsystem.rotationAngle = 90;
+    this.allSystems.push(oneLsystem);
 
-    */
+    oneLsystem = new LSystemCalculator('Fractal tree', OriginPositions.CenterBottom);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addRule('X= >[-FX]+FX');
+    oneLsystem.setAxiom('FX');
+    oneLsystem.lineLength = 200;
+    oneLsystem.rotationAngle = 40;
+    oneLsystem.lineLengthMultiplier = 0.5;
+    this.allSystems.push(oneLsystem);
 
-/*
-    // fractal tree
-    this.lsystem.addVariableObject('F');
-    this.lsystem.addVariableObject('X');
-    this.lsystem.addRule('X= >[-FX]+FX');
-    this.lsystem.setAxiom('FX');
-    this.lsystem.lineLength = 200;
-    this.lsystem.rotationAngle = 40;
-    this.lsystem.OriginY = -100;
-    this.lsystem.lineLengthMultiplier = 0.5;
-    this.lsystem.startGeneration(8);
-*/
+    oneLsystem = new LSystemCalculator('plant left oriented', OriginPositions.BottomRight);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addRule('X=F-[[X]+X]+F[+FX]-X');
+    oneLsystem.addRule('F=FF');
+    oneLsystem.setAxiom('X');
+    oneLsystem.lineLength = 5;
+    oneLsystem.rotationAngle = 22.5;
+    oneLsystem.startGeneration(5);
+    this.allSystems.push(oneLsystem);
 
-    /*
-    // plant left oriented
-    lsystem.addVariableObject('F');
-    lsystem.addVariableObject('X');
-    lsystem.addRule('X=F-[[X]+X]+F[+FX]-X');
-    lsystem.addRule('F=FF');
-    lsystem.setAxiom('X');
-    lsystem.lineLength = 5;
-    lsystem.rotationAngle = 22.5;
-    lsystem.startGeneration(5);
+    oneLsystem = new LSystemCalculator('square sierpinski', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addRule('X=XF-F+F-XF+F+XF-F+F-X');
+    oneLsystem.setAxiom('F+XF+F+XF');
+    oneLsystem.lineLength = 10;
+    oneLsystem.rotationAngle = 90;
+    this.allSystems.push(oneLsystem);
 
-*/
-    /*
+    oneLsystem = new LSystemCalculator('??', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addRule('F=F+F-F-FF+F+F-F');
+    oneLsystem.setAxiom('F+F+F+F');
+    oneLsystem.lineLength = 5;
+    oneLsystem.rotationAngle = 90;
+    oneLsystem.startGeneration(5);
+    this.allSystems.push(oneLsystem);
 
-        // square sierpinski
-        lsystem.addVariableObject('F');
-        lsystem.addVariableObject('X');
-        lsystem.addRule('X=XF-F+F-XF+F+XF-F+F-X');
-        lsystem.setAxiom('F+XF+F+XF');
-        lsystem.lineLength = 10;
-        lsystem.rotationAngle = 90;
-        lsystem.originX = 250;
-        lsystem.startGeneration(5);
-    */
-    /*
-        // ?
-        lsystem.addVariableObject('F');
-        lsystem.addRule('F=F+F-F-FF+F+F-F');
-        lsystem.setAxiom('F+F+F+F');
-        lsystem.lineLength = 5;
-        lsystem.rotationAngle = 90;
-        lsystem.setOriginBottomRight(0,0)
-        lsystem.startGeneration(5);
-        */
+    oneLsystem = new LSystemCalculator('triangles', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addRule('F=F-F+F');
+    oneLsystem.setAxiom('F+F+F');
+    oneLsystem.lineLength = 20;
+    oneLsystem.rotationAngle = 120;
+    this.allSystems.push(oneLsystem);
 
-    /*
-        // triangles
-        lsystem.addVariableObject('F');
-        lsystem.addRule('F=F-F+F');
-        lsystem.setAxiom('F+F+F');
-        lsystem.lineLength = 20;
-        lsystem.rotationAngle = 120;
-        lsystem.setOrigin(-200, 100);
-        lsystem.startGeneration(5);
-    */
-    /*
+    oneLsystem = new LSystemCalculator('Peano Curve', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addVariableSimple('Y');
+    oneLsystem.addVariableSimple('F');
+    oneLsystem.addRule('X=XFYFX+F+YFXFY-F-XFYFX');
+    oneLsystem.addRule('Y=YFXFY-F-XFYFX+F+YFXFY');
+    oneLsystem.setAxiom('X');
+    oneLsystem.lineLength = 5;
+    oneLsystem.rotationAngle = 90;
+    this.allSystems.push(oneLsystem);
 
-        // Peano Curve
-        lsystem.addVariableObject('X');
-        lsystem.addVariableObject('Y');
-        lsystem.addVariableObject('F');
-        lsystem.addRule('X=XFYFX+F+YFXFY-F-XFYFX');
-        lsystem.addRule('Y=YFXFY-F-XFYFX+F+YFXFY');
-        lsystem.setAxiom('X');
-        lsystem.lineLength = 5 ;
-        lsystem.rotationAngle = 90;
-        lsystem.setOrigin(200, -300);
-        lsystem.startGeneration(5);
-    */
-    /*    // Sierpinski Arrowhead
-        this.lsystem.addVariableObject(new LSystemVariable('F', true));
-        this.lsystem.addVariableObject(new LSystemVariable('X', false));
-        this.lsystem.addVariableObject(new LSystemVariable('Y', false));
-        this.lsystem.addRule('X=YF+XF+Y');
-        this.lsystem.addRule('Y=XF-YF-X');
-        this.lsystem.setAxiom('YF');
-        this.lsystem.lineLength = 10 ;
-        this.lsystem.startingAngle = 0;
-        this.lsystem.rotationAngle = 60;
-        this.lsystem.setOriginBottomLeft(10,10)
-        this.lsystem.startGeneration(7);
-*/
-    /*
-        // Hilbert
-        lsystem.addVariableObject('F');
-        lsystem.addVariableObject('X');
-        lsystem.addVariableObject('Y');
-        lsystem.addRule('X=-YF+XFX+FY-');
-        lsystem.addRule('Y=+XF-YFY-FX+');
-        lsystem.setAxiom('X');
-        lsystem.lineLength = 10 ;
-        lsystem.rotationAngle = 90;
-        lsystem.setOriginBottomLeft(10,10);
-        lsystem.startGeneration(7);
-    */
-    /*
+    oneLsystem = new LSystemCalculator('Sierpinski Arrowhead', OriginPositions.CENTER);
+    oneLsystem.addVariableObject(new LSystemVariable('F', true));
+    oneLsystem.addVariableObject(new LSystemVariable('X', false));
+    oneLsystem.addVariableObject(new LSystemVariable('Y', false));
+    oneLsystem.addRule('X=YF+XF+Y');
+    oneLsystem.addRule('Y=XF-YF-X');
+    oneLsystem.setAxiom('YF');
+    oneLsystem.lineLength = 10;
+    oneLsystem.startingAngle = 0;
+    oneLsystem.rotationAngle = 60;
+    this.allSystems.push(oneLsystem);
 
-        // Quadratic Snowflake variant B
-        lsystem.addVariableObject('F');
-        lsystem.addRule('F=F+F-F-F+F');
-        lsystem.setAxiom('FF+FF+FF+FF');
-        lsystem.lineLength = 3 ;
-        lsystem.rotationAngle = 90;
-        lsystem.setOriginBottomRight(20,20);
-        lsystem.startGeneration(5);
-    */
+    oneLsystem = new LSystemCalculator('Hilbert curve', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addVariableSimple('Y');
+    oneLsystem.addRule('X=-YF+XFX+FY-');
+    oneLsystem.addRule('Y=+XF-YFY-FX+');
+    oneLsystem.setAxiom('X');
+    oneLsystem.lineLength = 10;
+    oneLsystem.rotationAngle = 90;
+    this.allSystems.push(oneLsystem);
 
-/*
-        // Quadratic Gosper
-        this.lsystem.addVariableSimple('F', true);
-        this.lsystem.addVariableSimple('X');
-        this.lsystem.addVariableSimple('Y');
-        this.lsystem.addRule('X=XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-');
-        this.lsystem.addRule('Y=+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY');
-        this.lsystem.setAxiom('-YF');
-        this.lsystem.lineLength = 5;
-        this.lsystem.rotationAngle = 90;
-        this.lsystem.setOriginBottomLeft(10,10);
-        this.lsystem.startGeneration(4);*/
+    oneLsystem = new LSystemCalculator('Quadratic Snowflake variant B', OriginPositions.CENTER);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addRule('F=F+F-F-F+F');
+    oneLsystem.setAxiom('FF+FF+FF+FF');
+    oneLsystem.lineLength = 3;
+    oneLsystem.rotationAngle = 90;
+    this.allSystems.push(oneLsystem);
 
-        // L-system leaf
-        this.lsystem.addVariableSimple('F', true);
-        this.lsystem.addVariableSimple('x');
-        this.lsystem.addVariableSimple('y');
-        this.lsystem.addVariableSimple('a');
-        this.lsystem.addVariableSimple('b');
-        this.lsystem.addRule('F=>F<');
-        this.lsystem.addRule('a=F[+x]Fb');
-        this.lsystem.addRule('b=F[-y]Fa');
-        this.lsystem.addRule('x=a');
-        this.lsystem.addRule('y=b');
-        this.lsystem.setAxiom('a');
-        this.lsystem.setOriginBottomCenter(0,10)
-        this.lsystem.lineLength = 10;
-        this.lsystem.rotationAngle = 30;
-        this.lsystem.startingAngle = 90;
-        this.lsystem.lineLengthMultiplier = 0.5;
-        this.lsystem.startGeneration(10);
+    oneLsystem = new LSystemCalculator('Quadratic Gosper', OriginPositions.BottomLeft);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('X');
+    oneLsystem.addVariableSimple('Y');
+    oneLsystem.addRule('X=XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-');
+    oneLsystem.addRule('Y=+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY');
+    oneLsystem.setAxiom('-YF');
+    oneLsystem.lineLength = 5;
+    oneLsystem.rotationAngle = 90;
+    this.allSystems.push(oneLsystem);
+
+    oneLsystem = new LSystemCalculator('L-system leaf', OriginPositions.CenterBottom);
+    oneLsystem.addVariableSimple('F', true);
+    oneLsystem.addVariableSimple('x');
+    oneLsystem.addVariableSimple('y');
+    oneLsystem.addVariableSimple('a');
+    oneLsystem.addVariableSimple('b');
+    oneLsystem.addRule('F=>F<');
+    oneLsystem.addRule('a=F[+x]Fb');
+    oneLsystem.addRule('b=F[-y]Fa');
+    oneLsystem.addRule('x=a');
+    oneLsystem.addRule('y=b');
+    oneLsystem.setAxiom('a');
+    oneLsystem.lineLength = 10;
+    oneLsystem.rotationAngle = 30;
+    oneLsystem.startingAngle = 90;
+    oneLsystem.lineLengthMultiplier = 0.5;
+    this.allSystems.push(oneLsystem);
+
+    const json_list = this.allSystems.map(lsystem => lsystem.createParameterObject());
+
+    const json = JSON.stringify(json_list);
+
+    return this.allSystems;
 
   }
 
-  protected readonly Math = Math;
+  setOrigin(shortname: string) {
+    this.canvas.resetTranslation();
+    console.log(`Set origin => ${shortname}`);
+
+    switch (shortname) {
+      case 'TL':
+        this.canvas.setOriginTopLeft(1, 1);
+        break;
+      case 'TC':
+        this.canvas.setOriginTopCenter(1);
+        break;
+      case 'TR':
+        this.canvas.setOriginTopRight(1, 1);
+        break;
+      case 'C':
+        this.canvas.setOrigin(0, 0);
+        break;
+      case 'LC':
+        this.canvas.setOriginLeftCenter(1);
+        break;
+      case 'RC':
+        this.canvas.setOriginRightCenter(1);
+        break;
+      case 'BL':
+        this.canvas.setOriginBottomLeft(1,1);
+        break;
+      case 'BC':
+        this.canvas.setOriginBottomCenter(0);
+        break;
+      case 'BR':
+        this.canvas.setOriginBottomRight(1,1);
+        break;
+    }
+    const newX = this.canvas.OriginX;
+    const newY = this.canvas.OriginY;
+    this.originX?.setValue(newX);
+    this.originY?.setValue(newY);
+  }
 }
+
+

@@ -5,20 +5,32 @@ import {LSystemVariable} from "./lsystem-variable";
 
 export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
 
+export enum OriginPositions  {
+  UseCoordinates,
+  CENTER,
+  TopLeft,
+  TopRight,
+  BottomLeft,
+  BottomRight,
+  CenterLeft,
+  CenterRight,
+  CenterTop,
+  CenterBottom
+}
+
 export class LSystemCalculator {
 
+  public systemName: string;
   private rules: string[] = new Array<string>();
-  private vars: Array<LSystemVariable> = new Array<LSystemVariable>();
+  private variables: Array<LSystemVariable> = new Array<LSystemVariable>();
   private axiom = '';
+  private originPosition: OriginPositions;
+  private originCoordinates : Point;
 
-  private originX = 0;
-  private originY = 0;
 
   private angle = 0;
   private stack: Array<StackItem>;
   private lastPosition: Point | undefined = undefined;
-  private svgWidth = 0;
-  private svgHeight = 0;
   public lines: Array<SVGLine>;
 
   public completeFormula = '';
@@ -30,19 +42,23 @@ export class LSystemCalculator {
   private processedRules: Map<string, string> = new Map<string, string>();
   public nrOfIterationsRequested: number = 0;
 
-  constructor(svgWidth: number, svgHeight: number) {
-    this.svgHeight = svgHeight;
-    this.svgWidth = svgWidth;
+  constructor(systemName: string, origin: OriginPositions | Point) {
+    this.systemName = systemName;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
+
+    if (origin instanceof Point) {
+      this.originCoordinates = origin.clone();
+      this.originPosition = OriginPositions.UseCoordinates;
+    }
+    else {
+      this.originCoordinates = new Point(0,0);
+      this.originPosition = origin;
+    }
   }
 
   clearVariables(): void {
-    this.vars = new Array<LSystemVariable>();
-  }
-
-  get rulesAsString(): string {
-    return this.rules.join("\n");
+    this.variables = new Array<LSystemVariable>();
   }
 
   clearRules(): void {
@@ -50,78 +66,17 @@ export class LSystemCalculator {
     this.processedRules.clear();
   }
 
-  setOrigin(x: number | undefined, y: number | undefined) {
-    if (x !== undefined) {
-      this.originX = x;
-    }
-    if (y !== undefined) {
-      this.originY = y;
-    }
-  }
-
-  setOriginLeftCenter(marginX: number) {
-    this.originX = -this.svgWidth / 2 + marginX;
-    this.originY = 0;
-  }
-
-  setOriginRightCenter(marginX: number) {
-    this.originX = this.svgWidth / 2 - marginX;
-    this.originY = 0;
-  }
-
-  setOriginBottomLeft(marginX: number, marginY: number) {
-    this.setOrigin(-this.svgWidth / 2 + marginX, -this.svgHeight / 2 + marginY);
-  }
-
-  setOriginBottomCenter(marginX: number, marginY: number) {
-    this.setOrigin(0, -this.svgHeight / 2 + marginY);
-  }
-
-  setOriginBottomRight(marginX: number, marginY: number) {
-    this.setOrigin(this.svgWidth / 2 - marginX, -this.svgHeight / 2 + marginY);
-  }
-
-  setOriginTopLeft(marginX: number, marginY: number) {
-    this.setOrigin(-this.svgWidth / 2 + marginX, this.svgHeight / 2 - marginY);
-  }
-
-
-  setOriginTopRight(marginX: number, marginY: number) {
-    this.setOrigin(this.svgWidth / 2 - marginX, this.svgHeight / 2 - marginY);
-  }
-
-  translateOrigin(x: number, y: number): void {
-    this.setOrigin(this.originX + x, this.originY + y);
-  }
-
-  get OriginX(): number {
-    return this.originX;
-  }
-
-  set OriginX(x: number) {
-    this.originX = x;
-  }
-
-  get OriginY(): number {
-    return this.originY;
-  }
-
-  set OriginY(y: number) {
-    this.originY = y;
-  }
-
   get Axiom(): string {
     return this.axiom;
   }
 
   get Variables(): Array<LSystemVariable> {
-    return this.vars;
+    return this.variables;
   }
 
   get Rules(): Array<string> {
     return this.rules;
   }
-
 
   addRule(rule: string) {
     this.rules.push(rule);
@@ -129,7 +84,7 @@ export class LSystemCalculator {
   }
 
   addVariableObject(variable: LSystemVariable) {
-    this.vars.push(variable);
+    this.variables.push(variable);
   }
 
   addVariableSimple(varname: string, isdrawingVariable: boolean = false) {
@@ -156,7 +111,7 @@ export class LSystemCalculator {
 
   startGeneration(nrOfIterations: number) {
     this.nrOfIterationsRequested = nrOfIterations;
-    this.lastPosition = new Point(this.originX, this.originY);
+    this.lastPosition = new Point(0,0);
     this.angle = this.startingAngle;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
@@ -225,7 +180,7 @@ export class LSystemCalculator {
           break;
       }
     } else {
-      const drawingVariables = this.vars.filter(v => v.isDrawingVariable).map(v => v.varname);
+      const drawingVariables = this.variables.filter(v => v.isDrawingVariable).map(v => v.varname);
       if (drawingVariables.includes(char)) {
         this.lastPosition = this.drawLine(this.lastPosition, length);
       }
@@ -255,6 +210,21 @@ export class LSystemCalculator {
 
   turn(rotation: number) {
     this.angle += rotation;
+  }
+
+  createParameterObject(): {} {
+    return {
+      systemName: this.systemName,
+      variables:this.variables,
+      axiom: this.axiom,
+      rules: this.rules,
+      rotationAngle: this.rotationAngle,
+      startingAngle: this.startingAngle,
+      lineLength: this.lineLength,
+      lineLengthMultiplier: this.lineLengthMultiplier,
+      originPosition: OriginPositions,
+      originCoordinates: Point
+    };
   }
 
 }

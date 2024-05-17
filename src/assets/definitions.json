@@ -1,0 +1,351 @@
+[
+  {
+    "systemName": "bushy cactus tree",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "Y",
+    "rules": [
+      "X=X[-FFF][+FFF]FX",
+      "Y=YFX[+Y][-Y]"
+    ],
+    "rotationAngle": 25.7,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": -400
+    }
+  },
+  {
+    "systemName": "squares",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axion": "F+F+F+F",
+    "rules": [
+      "F=FF+F-F+F+FF"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 20,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "systemName": "",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "FX",
+    "rules": [
+      "X= >[-FX]+FX"
+    ],
+    "rotationAngle": 40,
+    "startingAngle": 90,
+    "lineLength": 200,
+    "lineLengthMultiplier": 0.5,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": -100
+    }
+  },
+  {
+    "systemName": "",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "F+XF+F+XF",
+    "rules": [
+      "X=XF-F+F-XF+F+XF-F+F-X"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 10,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 250,
+      "y": 0
+    }
+  },
+  {
+    "systemName": "",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axion": "F+F+F+F",
+    "rules": [
+      "F=F+F-F-FF+F+F-F"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 400,
+      "y": -400
+    }
+  },
+  {
+    "systemName": "triangles",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axion": "F+F+F",
+    "rules": [
+      "F=F-F+F"
+    ],
+    "rotationAngle": 120,
+    "startingAngle": 90,
+    "lineLength": 20,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": -200,
+      "y": 100
+    }
+  },
+  {
+    "systemName": "Peano Curve",
+    "variables": [
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "F",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "X",
+    "rules": [
+      "X=XFYFX+F+YFXFY-F-XFYFX",
+      "Y=YFXFY-F-XFYFX+F+YFXFY"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 200,
+      "y": -300
+    }
+  },
+  {
+    "systemName": "Sierpinski Arrowhead",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "YF",
+    "rules": [
+      "X=YF+XF+Y",
+      "Y=XF-YF-X"
+    ],
+    "rotationAngle": 60,
+    "startingAngle": 0,
+    "lineLength": 10,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": -390,
+      "y": -390
+    }
+  },
+  {
+    "systemName": "Hilbert curve",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "X",
+    "rules": [
+      "X=-YF+XFX+FY-",
+      "Y=+XF-YFY-FX+"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 10,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": -390,
+      "y": -390
+    }
+  },
+  {
+    "systemName": "Quadratic Snowflake variant B",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axion": "FF+FF+FF+FF",
+    "rules": [
+      "F=F+F-F-F+F"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 3,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 380,
+      "y": -380
+    }
+  },
+  {
+    "systemName": "Quadratic Gosper",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "-YF",
+    "rules": [
+      "X=XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-",
+      "Y=+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": -390,
+      "y": -390
+    }
+  },
+  {
+    "systemName": "L-system leaf",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "x",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "y",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "a",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "b",
+        "isDrawingVariable": false
+      }
+    ],
+    "axion": "a",
+    "rules": [
+      "F=>F<",
+      "a=F[+x]Fb",
+      "b=F[-y]Fa",
+      "x=a",
+      "y=b"
+    ],
+    "rotationAngle": 30,
+    "startingAngle": 90,
+    "lineLength": 10,
+    "lineLengthMultiplier": 0.5,
+    "origin": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": -390
+    }
+  }
+]

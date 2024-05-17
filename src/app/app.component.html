@@ -17,7 +17,17 @@
       <header>
         <h1>Configuration</h1>
       </header>
+      <p>
+        <label for="listOfItems">Available items</label>
+        <select id="listOfItems" (change)="selectSystem($event)" [(ngModel)]="idxSelectedSystem">
+          <option value="-1">[Pick an item]</option>
+          @for (item of allSystems; track allSystems; let idx = $index) {
+            <option [ngValue]="idx">{{ item.systemName }}</option>
+          }
+        </select>
+      </p>
       <form [formGroup]="formgroup">
+
         <p>
           <label for="auto-update">Auto update drawing</label>
           <input checked type="checkbox" id="auto-update" formControlName="autoUpdate">
@@ -53,7 +63,7 @@
           <input name="lengthMultiplier" id="inputLengthMultiplier"
                  formControlName="lengthMultiplier" type="number"
                  min="0.001" max="10" step="0.1">
-           <span>&nbsp; (for &lt; and &gt;)</span>
+          <span>&nbsp; (for &lt; and &gt;)</span>
         </p>
         <p>
           <label for="inputOriginX">Origin</label>
@@ -64,17 +74,36 @@
           <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
           <span>&nbsp;</span>
           <button (click)="updateOriginFromTranslation()">Correct with translation</button>
-          </p>
+        </p>
+        <table class="origins">
+        <tbody>
+          <tr>
+            <td (click)="setOrigin('TL')">&#8598;</td>
+            <td (click)="setOrigin('TC')">&uarr;</td>
+            <td (click)="setOrigin('TR')">&#8599;</td>
+          </tr>
+          <tr>
+            <td (click)="setOrigin('LC')">&larr;</td>
+            <td (click)="setOrigin('C')">&#x25cf;</td>
+            <td (click)="setOrigin('RC')">&rarr;</td>
+          </tr>
+          <tr>
+          <td (click)="setOrigin('BL')">&#8601;</td>
+          <td (click)="setOrigin('BC')">&darr;</td>
+          <td (click)="setOrigin('BR')">&#8600;</td>
+          </tr>
+        </tbody>
+        </table>
         <p>
           <label>Translation</label>
-          ({{ translation?.xAsString }} , {{ translation?.yAsString }})
+          ({{ canvas.translation.xAsString }} , {{ canvas.translation.yAsString }})
           &nbsp;
           =>
           &nbsp;
           (
-          {{ Math.floor( (translation ? translation.x : 0) + lsystem.OriginX) }}
+          {{ Math.floor((canvas.translation ? canvas.translation.x : 0) + canvas.OriginX) }}
           ,
-          {{ Math.floor((translation ? translation.y : 0) + lsystem.OriginY) }}
+          {{ Math.floor((canvas.translation ? canvas.translation.y : 0) + canvas.OriginY) }}
           )
 
         </p>
@@ -141,7 +170,7 @@
 
   <article id="drawingarea">
     <section>
-      <app-lsystem [lsystem]="lsystem" [(Translation)]="translation"></app-lsystem>
+      <app-lsystem [lsystem]="lsystem" [canvas]="canvas"></app-lsystem>
     </section>
     <section>
       {{ lsystem.completeFormula }}

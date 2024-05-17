@@ -13,10 +13,10 @@
 -->
       @for (line of lsystem?.lines; track $index) {
         <line
-          [attr.x1]="line.x1"
-          [attr.x2]="line.x2"
-          [attr.y1]="line.y1"
-          [attr.y2]="line.y2"
+          [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
+          [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
+          [attr.y1]="line.y1 + canvas.OriginY - canvas.translation.y"
+          [attr.y2]="line.y2 + canvas.OriginY - canvas.translation.y"
           [attr.strokeWidth]="line.strokeWidth"
           [attr.stroke]="line.stroke"
 

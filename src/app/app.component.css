@@ -6,10 +6,21 @@ main {
 
   article:first-of-type {
     width: 50%;
-    height:fit-content;
+    height: fit-content;
+
+    table.origins {
+      td {
+        font-size: 10pt;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+      }
+
+    }
 
     div.rules, div.variables {
       width: 40rem;
+
       .item {
         margin-left: 3em;
         display: flex;
@@ -58,7 +69,7 @@ main {
 
     app-lsystem {
       height: 300px;
-      margin:0;
+      margin: 0;
     }
 
     section:last-of-type {
@@ -72,17 +83,18 @@ main {
   }
 
   form {
-     p {
+    p {
       display: flex;
       flex-direction: row;
       align-items: center;
+
       label {
         display: inline-block;
-        width:10em;
+        width: 10em;
       }
 
       label:after {
-        content: ": " ;
+        content: ": ";
       }
     }
 
@@ -95,8 +107,6 @@ main {
     }
   }
 }
-
-
 
 
 textarea {

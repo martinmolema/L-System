@@ -11,6 +11,15 @@ export class Point {
     this.letter = letter || '';
   }
 
+  setXY(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
+  clone(): Point {
+    return new Point(this.x, this.y);
+  }
+
   get xAsString(): string {
     return this.x.toFixed(1);
   }
