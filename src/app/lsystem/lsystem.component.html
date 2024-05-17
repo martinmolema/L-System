@@ -11,7 +11,7 @@
       <circle cx="0" cy="0" r="10" stroke="blue" fill="blue" fill-opacity="0.5"></circle>
       <circle [attr.cx]="lsystem?.OriginX" [attr.cy]="lsystem?.OriginY" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
 -->
-      @for (line of lsystem?.lines; track $index) {
+<!--      @for (line of lsystem?.lines; track $index) {
         <line
           [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
           [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
@@ -21,7 +21,15 @@
           [attr.stroke]="line.stroke"
 
         ></line>
-      }
+      }-->
+
+      <polyline [attr.points]="lsystem?.PolylineString"
+                [attr.stroke-dasharray]="lsystem?.TotalLineLength"
+                [attr.stroke-dashoffset]="lsystem?.TotalLineLength"
+                class="shape animated"
+      ></polyline>
+
     </g>
   </g>
 </svg>
+<p>{{lsystem?.TotalLineLength}}</p>

@@ -5,7 +5,7 @@ import {LSystemVariable} from "./lsystem-variable";
 
 export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
 
-export enum OriginPositions  {
+export enum OriginPositions {
   UseCoordinates,
   CENTER,
   TopLeft,
@@ -25,8 +25,10 @@ export class LSystemCalculator {
   private variables: Array<LSystemVariable> = new Array<LSystemVariable>();
   private axiom = '';
   private originPosition: OriginPositions;
-  private originCoordinates : Point;
-
+  private originCoordinates: Point;
+  private points: Array<Point>;
+  private polylineString: string = '';
+  private totalLineLength: number = 0;
 
   private angle = 0;
   private stack: Array<StackItem>;
@@ -46,15 +48,23 @@ export class LSystemCalculator {
     this.systemName = systemName;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
+    this.points = new Array<Point>();
 
     if (origin instanceof Point) {
       this.originCoordinates = origin.clone();
       this.originPosition = OriginPositions.UseCoordinates;
-    }
-    else {
-      this.originCoordinates = new Point(0,0);
+    } else {
+      this.originCoordinates = new Point(0, 0);
       this.originPosition = origin;
     }
+  }
+
+  get TotalLineLength(): number {
+    return this.totalLineLength;
+  }
+
+  get PolylineString(): string {
+    return this.polylineString;
   }
 
   clearVariables(): void {
@@ -111,16 +121,35 @@ export class LSystemCalculator {
 
   startGeneration(nrOfIterations: number) {
     this.nrOfIterationsRequested = nrOfIterations;
-    this.lastPosition = new Point(0,0);
+    this.lastPosition = new Point(0, 0);
     this.angle = this.startingAngle;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
+    this.points = new Array<Point>();
     this.completeFormula = '';
 
     this.nrOfIterationsRequested = nrOfIterations;
 
     this.generateOneIteration(nrOfIterations, this.axiom, this.lineLength);
 
+  }
+
+  createPolyline(): string {
+    this.polylineString = this.points.map(p => `${p.x},${p.y}`).join(' ');
+
+    let total = 0;
+    let lastPoint = new Point(0, 0);
+    this.points.forEach(point => {
+      if (lastPoint) {
+        const diffX = point.x - lastPoint.x;
+        const diffY = point.y - lastPoint.y;
+        total += Math.sqrt(diffX * diffX + diffY * diffY);
+      }
+      lastPoint = point;
+    })
+    this.totalLineLength = total;
+
+    return this.polylineString;
   }
 
   generateOneIteration(nrOfIterations: number, formula: string, lineLength: number) {
@@ -203,6 +232,7 @@ export class LSystemCalculator {
     line.classList.push(`iteration-${point1.iterationNr}`);
 
     this.lines.push(line);
+    this.points.push(point1);
 
     return new Point(newx, newy, 0, '');
 
@@ -215,7 +245,7 @@ export class LSystemCalculator {
   createParameterObject(): {} {
     return {
       systemName: this.systemName,
-      variables:this.variables,
+      variables: this.variables,
       axiom: this.axiom,
       rules: this.rules,
       rotationAngle: this.rotationAngle,

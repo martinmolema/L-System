@@ -4,4 +4,20 @@ svg {
     fill: none;
     vector-effect:non-scaling-stroke;
   }
+
+  polyline.shape.animated {
+    animation: dash 2s linear forwards;
+    stroke:black;
+    vector-effect: non-scaling-stroke;
+    fill: none;
+    stroke-width:1;
+  }
+
+}
+
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
 }

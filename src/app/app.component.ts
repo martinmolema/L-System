@@ -283,7 +283,7 @@ export class AppComponent {
   redraw(nrOfIterations: number): void {
 
     this.lsystem.startGeneration(nrOfIterations);
-
+    this.lsystem.createPolyline();
   }
 
   get autoUpdate(): AbstractControl | null {

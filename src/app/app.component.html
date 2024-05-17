@@ -17,8 +17,9 @@
       <header>
         <h1>Configuration</h1>
       </header>
+
       <p>
-        <label for="listOfItems">Available items</label>
+        <label for="listOfItems">Available items: &nbsp;</label>
         <select id="listOfItems" (change)="selectSystem($event)" [(ngModel)]="idxSelectedSystem">
           <option value="-1">[Pick an item]</option>
           @for (item of allSystems; track allSystems; let idx = $index) {
@@ -27,142 +28,153 @@
         </select>
       </p>
       <form [formGroup]="formgroup">
+        <div class="column">
+          <div class="left card">
 
-        <p>
-          <label for="auto-update">Auto update drawing</label>
-          <input checked type="checkbox" id="auto-update" formControlName="autoUpdate">
-        </p>
-        <p>
-          <label for="inputNrOfIterations">Iterations</label>
-          <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number"
-                 min="0" max="50">
-        </p>
-        <p>
-          <label for="inputLineLength">Line length</label>
-          <input name="linelength" id="inputLineLength" formControlName="lineLength" type="number"
-                 min="1" max="999">
-        </p>
-        <p>
-          <label for="inputAxiom">Axiom</label>
-          <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1" size="4">
-        </p>
-        <p>
-          <label for="inputRotationAngle">Rotation Angle</label>
-          <input name="rotationangle" id="inputRotationAngle" formControlName="rotationAngle" type="number" min="-180"
-                 max="180" class="angle">
-          <span class="suffix"> &deg;</span>
-        </p>
-        <p>
-          <label for="inputStartAngle">Start Angle</label>
-          <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number"
-                 min="-180" max="180" class="angle">
-          <span class="suffix"> &deg;</span>
-        </p>
-        <p>
-          <label for="inputLengthMultiplier">Length multiplier</label>
-          <input name="lengthMultiplier" id="inputLengthMultiplier"
-                 formControlName="lengthMultiplier" type="number"
-                 min="0.001" max="10" step="0.1">
-          <span>&nbsp; (for &lt; and &gt;)</span>
-        </p>
-        <p>
-          <label for="inputOriginX">Origin</label>
-          <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
-          <span class="prefix">x:</span>
-          <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
-          <span class="prefix">y:</span>
-          <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
-          <span>&nbsp;</span>
-          <button (click)="updateOriginFromTranslation()">Correct with translation</button>
-        </p>
-        <table class="origins">
-        <tbody>
-          <tr>
-            <td (click)="setOrigin('TL')">&#8598;</td>
-            <td (click)="setOrigin('TC')">&uarr;</td>
-            <td (click)="setOrigin('TR')">&#8599;</td>
-          </tr>
-          <tr>
-            <td (click)="setOrigin('LC')">&larr;</td>
-            <td (click)="setOrigin('C')">&#x25cf;</td>
-            <td (click)="setOrigin('RC')">&rarr;</td>
-          </tr>
-          <tr>
-          <td (click)="setOrigin('BL')">&#8601;</td>
-          <td (click)="setOrigin('BC')">&darr;</td>
-          <td (click)="setOrigin('BR')">&#8600;</td>
-          </tr>
-        </tbody>
-        </table>
-        <p>
-          <label>Translation</label>
-          ({{ canvas.translation.xAsString }} , {{ canvas.translation.yAsString }})
-          &nbsp;
-          =>
-          &nbsp;
-          (
-          {{ Math.floor((canvas.translation ? canvas.translation.x : 0) + canvas.OriginX) }}
-          ,
-          {{ Math.floor((canvas.translation ? canvas.translation.y : 0) + canvas.OriginY) }}
-          )
+            <p>
+              <label for="auto-update">Auto update drawing</label>
+              <input checked type="checkbox" id="auto-update" formControlName="autoUpdate">
+            </p>
+            <p>
+              <label for="inputNrOfIterations">Iterations</label>
+              <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number"
+                     min="0" max="50">
+            </p>
+            <p>
+              <label for="inputLineLength">Line length</label>
+              <input name="linelength" id="inputLineLength" formControlName="lineLength" type="number"
+                     min="1" max="999">
+            </p>
+            <p>
+              <label for="inputAxiom">Axiom</label>
+              <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1" size="4">
+            </p>
+            <p>
+              <label for="inputRotationAngle">Rotation Angle</label>
+              <input name="rotationangle" id="inputRotationAngle" formControlName="rotationAngle" type="number"
+                     min="-180"
+                     max="180" class="angle">
+              <span class="suffix"> &deg;</span>
+            </p>
+            <p>
+              <label for="inputStartAngle">Start Angle</label>
+              <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number"
+                     min="-180" max="180" class="angle">
+              <span class="suffix"> &deg;</span>
+            </p>
+            <p>
+              <label for="inputLengthMultiplier">Length multiplier</label>
+              <input name="lengthMultiplier" id="inputLengthMultiplier"
+                     formControlName="lengthMultiplier" type="number"
+                     min="0.001" max="10" step="0.1">
+              <span>&nbsp; (for &lt; and &gt;)</span>
+            </p>
+          </div>
+          <div class="right card">
+            <p>
+              <label for="inputOriginX">Origin</label>
+              <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
+              <span class="prefix">x:</span>
+              <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
+              <span class="prefix">y:</span>
+              <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
+              <span>&nbsp;</span>
 
-        </p>
-        <!--        <p>
-                  <label for="inputRules">Rules</label>
-                  <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4" [cols]="50"></textarea>
-                <div class="errors">
-                  <p FormError [control]="rules" name="Rules"></p>
-                  @if (rules && rules.hasError('incorrectRule') && rules.errors !== null) {
-                    <p class="hasError">Incorrect rule: {{ rules.errors['incorrectRule'] }}</p>
-                  }
-                  @if (rules && rules.hasError('MissingParts') && rules.errors !== null && rules.errors !== undefined) {
-                    <p class="hasError">Missing parts left or right of equal sign ('='): {{ rules.errors['MissingParts'] }}</p>
-                  }
+            </p>
+            <p>
+              <label>Translation</label>
+              ({{ canvas.translation.xAsString }} , {{ canvas.translation.yAsString }})
+              &nbsp;
+              =>
+              &nbsp;
+              (
+              {{ Math.floor((canvas.translation ? canvas.translation.x : 0) + canvas.OriginX) }}
+              ,
+              {{ Math.floor((canvas.translation ? canvas.translation.y : 0) + canvas.OriginY) }}
+              )
 
-                </div>-->
-        <div class="rules">
-          @if (rules) {
-            <h3><span>Rules:</span>
-              <span>
+            </p>
+            <button (click)="updateOriginFromTranslation()">Correct with translation</button>
+            <div class="origin-navigator">
+              <table class="origins">
+                <tbody>
+                <tr>
+                  <td (click)="setOrigin('TL')">&#8598;</td>
+                  <td (click)="setOrigin('TC')">&uarr;</td>
+                  <td (click)="setOrigin('TR')">&#8599;</td>
+                </tr>
+                <tr>
+                  <td (click)="setOrigin('LC')">&larr;</td>
+                  <td (click)="setOrigin('C')">&#x25cf;</td>
+                  <td (click)="setOrigin('RC')">&rarr;</td>
+                </tr>
+                <tr>
+                  <td (click)="setOrigin('BL')">&#8601;</td>
+                  <td (click)="setOrigin('BC')">&darr;</td>
+                  <td (click)="setOrigin('BR')">&#8600;</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <!--        <p>
+                      <label for="inputRules">Rules</label>
+                      <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4" [cols]="50"></textarea>
+                    <div class="errors">
+                      <p FormError [control]="rules" name="Rules"></p>
+                      @if (rules && rules.hasError('incorrectRule') && rules.errors !== null) {
+                        <p class="hasError">Incorrect rule: {{ rules.errors['incorrectRule'] }}</p>
+                      }
+                      @if (rules && rules.hasError('MissingParts') && rules.errors !== null && rules.errors !== undefined) {
+                        <p class="hasError">Missing parts left or right of equal sign ('='): {{ rules.errors['MissingParts'] }}</p>
+                      }
+
+                    </div>-->
+          </div>
+        </div>
+        <div>
+          <div class="rules card">
+            @if (rules) {
+              <h3><span>Rules:</span>
+                <span>
               <button (click)="addNewRule('P=F')">+</button>
               <button (click)="parseRulesForVariables()">Parse for vars</button>
                 </span>
-            </h3>
-            <ng-container formArrayName="listOfRules">
-              @for (rule of rules.controls; track rules.controls; let j = $index) {
-                <div [formGroup]="oneRule(j)" class="item">
-                  <div>
-                    <label>Rule {{ j + 1 }}</label>
-                    <input formControlName="rule" minlength="1" size="40">
+              </h3>
+              <ng-container formArrayName="listOfRules">
+                @for (rule of rules.controls; track rules.controls; let j = $index) {
+                  <div [formGroup]="oneRule(j)" class="item">
+                    <div>
+                      <label>Rule {{ j + 1 }}</label>
+                      <input formControlName="rule" minlength="1" size="40">
+                    </div>
+                    <button (click)="deleteOneRule(j)">delete</button>
                   </div>
-                  <button (click)="deleteOneRule(j)">delete</button>
-                </div>
-              }
-            </ng-container>
-          }
-        </div>
-        <div class="variables">
-          @if (variables) {
-            <h3><span>
+                }
+              </ng-container>
+            }
+          </div>
+          <div class="variables card">
+            @if (variables) {
+              <h3><span>
             Variables:
             </span>
-              <button (click)="addNewVariableFromForm('?', true)">+</button>
-            </h3>
-            <ng-container formArrayName="listOfVariables">
-              @for (item of variables.controls; track variables.controls; let j = $index) {
-                <div [formGroup]="oneVariable(j)" class="item">
-                  <div>
-                    <label>Variable {{ j + 1 }}</label>
-                    <input formControlName="variableName" minlength="1" maxlength="1" type="text">
-                    <input formControlName="isDrawing" type="checkbox">
+                <button (click)="addNewVariableFromForm('?', true)">+</button>
+              </h3>
+              <ng-container formArrayName="listOfVariables">
+                @for (item of variables.controls; track variables.controls; let j = $index) {
+                  <div [formGroup]="oneVariable(j)" class="item">
+                    <div>
+                      <label>Variable {{ j + 1 }}</label>
+                      <input formControlName="variableName" minlength="1" maxlength="1" type="text">
+                      <input formControlName="isDrawing" type="checkbox">
+                    </div>
+                    <button (click)="deleteOneVariable(j)">delete</button>
                   </div>
-                  <button (click)="deleteOneVariable(j)">delete</button>
-                </div>
-              }
-            </ng-container>
-          }
+                }
+              </ng-container>
+            }
+          </div>
         </div>
-        <hr>
         <button (click)="submitValues()">Redraw!</button>
       </form>
     </section>
