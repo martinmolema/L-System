@@ -2,6 +2,7 @@ import {StackItem} from "./stack-item";
 import {Point} from "./point";
 import {SVGLine} from "./svgline";
 import {LSystemVariable} from "./lsystem-variable";
+import {LSystemJSONParameters} from "./lsystem-jsonparameters";
 
 export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
 
@@ -66,6 +67,15 @@ export class LSystemCalculator {
   get PolylineString(): string {
     return this.polylineString;
   }
+
+  get OriginPosition(): OriginPositions {
+    return this.originPosition;
+  }
+
+  set OriginPosition(shortname: OriginPositions) {
+    this.originPosition = shortname;
+  }
+
 
   clearVariables(): void {
     this.variables = new Array<LSystemVariable>();
@@ -135,7 +145,7 @@ export class LSystemCalculator {
   }
 
   createPolyline(): string {
-    this.polylineString = this.points.map(p => `${p.x},${p.y}`).join(' ');
+    this.polylineString = this.points.map(p => `${p.xAsString},${p.yAsString}`).join(' ');
 
     let total = 0;
     let lastPoint = new Point(0, 0);
@@ -147,7 +157,7 @@ export class LSystemCalculator {
       }
       lastPoint = point;
     })
-    this.totalLineLength = total;
+    this.totalLineLength = Math.ceil(total);
 
     return this.polylineString;
   }
@@ -242,19 +252,32 @@ export class LSystemCalculator {
     this.angle += rotation;
   }
 
-  createParameterObject(): {} {
-    return {
-      systemName: this.systemName,
-      variables: this.variables,
-      axiom: this.axiom,
-      rules: this.rules,
-      rotationAngle: this.rotationAngle,
-      startingAngle: this.startingAngle,
-      lineLength: this.lineLength,
-      lineLengthMultiplier: this.lineLengthMultiplier,
-      originPosition: OriginPositions,
-      originCoordinates: Point
-    };
+  createParameterObject(): LSystemJSONParameters{
+    const params = new LSystemJSONParameters(this.systemName);
+    params.systemName = this.systemName;
+    params.variables = this.variables;
+    params.axiom = this.axiom;
+    params.rules = this.rules;
+    params.rotationAngle = this.rotationAngle;
+    params.startingAngle = this.startingAngle;
+    params.lineLength = this.lineLength;
+    params.lineLengthMultiplier = this.lineLengthMultiplier;
+    params.originPosition = this.originPosition;
+    params.originCoordinates = this.originCoordinates;
+    return params;
+  }
+
+  initFromParametersObject(params: LSystemJSONParameters): void {
+    this.systemName = params.systemName;
+    this.variables = params.variables;
+    this.axiom = params.axiom;
+    this.rules = params.rules;
+    this.rotationAngle = params.rotationAngle;
+    this.startingAngle = params.startingAngle;
+    this.lineLength = params.lineLength;
+    this.lineLengthMultiplier = params.lineLengthMultiplier;
+    this.originPosition = params.originPosition;
+    this.originCoordinates = params.originCoordinates;
   }
 
 }

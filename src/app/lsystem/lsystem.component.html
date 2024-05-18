@@ -7,29 +7,37 @@
   <g transform="translate(400,400) scale(1,-1)">
     <!--<circle cx="0" cy="0" r="10" stroke="red" fill="red" fill-opacity="0.5"></circle>-->
     <g id="canvas" [attr.transform]="transformString">
+      <!--
+            <circle cx="0" cy="0" r="10" stroke="blue" fill="blue" fill-opacity="0.5"></circle>
+            <circle [attr.cx]="lsystem?.OriginX" [attr.cy]="lsystem?.OriginY" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
+      -->
+            @for (line of lsystem?.lines; track $index) {
+              <line
+                [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
+                [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
+                [attr.y1]="line.y1 + canvas.OriginY - canvas.translation.y"
+                [attr.y2]="line.y2 + canvas.OriginY - canvas.translation.y"
+                [attr.strokeWidth]="line.strokeWidth"
+                [attr.stroke]="line.stroke"
+
+              ></line>
+            }
+
 <!--
-      <circle cx="0" cy="0" r="10" stroke="blue" fill="blue" fill-opacity="0.5"></circle>
-      <circle [attr.cx]="lsystem?.OriginX" [attr.cy]="lsystem?.OriginY" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
--->
-<!--      @for (line of lsystem?.lines; track $index) {
-        <line
-          [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
-          [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
-          [attr.y1]="line.y1 + canvas.OriginY - canvas.translation.y"
-          [attr.y2]="line.y2 + canvas.OriginY - canvas.translation.y"
-          [attr.strokeWidth]="line.strokeWidth"
-          [attr.stroke]="line.stroke"
-
-        ></line>
-      }-->
-
       <polyline [attr.points]="lsystem?.PolylineString"
                 [attr.stroke-dasharray]="lsystem?.TotalLineLength"
                 [attr.stroke-dashoffset]="lsystem?.TotalLineLength"
                 class="shape animated"
-      ></polyline>
-
+                [attr.transform]="'translate(' + canvas.translation.x + ',' + -canvas.translation.y + ')'">
+        <animate attributeName="stroke-dashoffset" #animation
+                 [attr.from]="lsystem?.TotalLineLength"
+                 [attr.to]="0"
+                 begin="0s"
+                 fill="freeze"
+                 restart="always"
+                 dur="5s"/>
+      </polyline>
+-->
     </g>
   </g>
 </svg>
-<p>{{lsystem?.TotalLineLength}}</p>

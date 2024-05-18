@@ -38,12 +38,12 @@ export class DrawingCanvas {
     }
   }
 
-  setOriginLeftCenter(marginX: number) {
+  setOriginCenterLeft(marginX: number) {
     this.originX = -this.svgWidth / 2 + marginX;
     this.originY = 0;
   }
 
-  setOriginRightCenter(marginX: number) {
+  setOriginCenterRight(marginX: number) {
     this.originX = this.svgWidth / 2 - marginX;
     this.originY = 0;
   }
@@ -52,7 +52,7 @@ export class DrawingCanvas {
     this.setOrigin(-this.svgWidth / 2 + marginX, -this.svgHeight / 2 + marginY);
   }
 
-  setOriginBottomCenter(marginY: number) {
+  setOriginCenterBottom(marginY: number) {
     this.setOrigin(0, -this.svgHeight / 2 + marginY);
   }
 
@@ -64,7 +64,7 @@ export class DrawingCanvas {
     this.setOrigin(-this.svgWidth / 2 + marginX, this.svgHeight / 2 - marginY);
   }
 
-  setOriginTopCenter(marginY: number) {
+  setOriginCenterTop(marginY: number) {
     this.setOrigin(0, this.svgHeight / 2 - marginY);
   }
 

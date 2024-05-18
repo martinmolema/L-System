@@ -25,9 +25,9 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   @Input() lsystem: LSystemCalculator | undefined = undefined;
   @Input() canvas: DrawingCanvas;
   @ViewChild("drawing") drawingElement: ElementRef | undefined;
+  // @ViewChild("animation") polylineAnimation: ElementRef | undefined;
 
   startPoint = new Point(0, 0);
-  // translation = new Point(0, 0);
   translationStartValue = new Point(0, 0);
   zoomFactor = 1;
   transformString: string;
@@ -40,19 +40,6 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.lsystem instanceof LSystemCalculator) {
-      if (changes['canvas']) {
-      }
-      /*
-            if (changes['Translation'] && this.Translation) {
-              const newTranslation = (changes['Translation'].currentValue as unknown) as Point;
-              this.setZoomTranslation(this.zoomFactor, newTranslation, false);
-              this.translation.x = newTranslation.x;
-              this.translation.y = newTranslation.y;
-            }
-      */
-    }
-
   }
 
   ngOnInit(): void {

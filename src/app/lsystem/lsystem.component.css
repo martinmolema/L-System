@@ -6,7 +6,7 @@ svg {
   }
 
   polyline.shape.animated {
-    animation: dash 2s linear forwards;
+    /*animation: dash 5s infinite forwards;*/
     stroke:black;
     vector-effect: non-scaling-stroke;
     fill: none;

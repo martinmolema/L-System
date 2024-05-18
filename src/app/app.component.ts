@@ -6,7 +6,8 @@ import {
   AbstractControl,
   FormArray,
   FormBuilder,
-  FormGroup, FormsModule,
+  FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   ValidationErrors,
   Validators
@@ -14,7 +15,9 @@ import {
 import {FormErrorDirective} from "./directives/form-error.directive";
 import {LSystemVariable} from "./classes/lsystem-variable";
 import {DrawingCanvas} from "./classes/drawing-canvas";
-import {Subscription} from "rxjs";
+import {Observable, Subscription} from "rxjs";
+import {HttpClient} from "@angular/common/http";
+import {LSystemJSONParameters} from "./classes/lsystem-jsonparameters";
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -91,23 +94,32 @@ export class AppComponent {
   canvas: DrawingCanvas;
   formgroup: FormGroup;
 
-  idxSelectedSystem: number = -1;
+  idxSelectedSystem: number = 3;
 
   constructor(
     private formBuilder: FormBuilder,
+    private http: HttpClient
   ) {
 
-    this.lsystem = new LSystemCalculator('new', OriginPositions.CENTER);
 
     this.allSystems = new Array<LSystemCalculator>();
     this.canvas = new DrawingCanvas(0, 0, 800, 800);
+    this.lsystem = new LSystemCalculator('x',  OriginPositions.CENTER);
 
-    this.setupLSystems();
+    this.formgroup = this.formBuilder.group({});
 
-    this.formgroup = new FormGroup({});
-    this.createForm(this.lsystem, 1);
+    this.createForm(this.lsystem, 0);
 
-    this.createHandlers();
+    this.setupLSystems().subscribe(data => {
+      this.allSystems = data;
+      this.lsystem = this.allSystems[this.idxSelectedSystem];
+      this.createForm(this.lsystem, 1);
+
+      this.createHandlers();
+
+      this.setupSystemAndRedraw();
+    });
+
   }
 
 
@@ -142,8 +154,14 @@ export class AppComponent {
 
   selectSystem(event: Event) {
     this.lsystem = this.allSystems[this.idxSelectedSystem];
+    this.setupSystemAndRedraw();
+  }
+
+  setupSystemAndRedraw(){
     this.updateFormFromLSystem(this.lsystem);
+    this.setOriginFromPosition(this.lsystem.OriginPosition);
     this.redraw(1);
+
   }
 
   updateOriginFromTranslation(): void {
@@ -245,6 +263,14 @@ export class AppComponent {
     this.changeParametersAndRedraw();
   }
 
+  showJSON():void {
+    const json = JSON.stringify(this.lsystem.createParameterObject());
+    const type = "text/plain";
+    const blob = new Blob([json], { type });
+    const data = [new ClipboardItem({[type]: blob})];
+    navigator.clipboard.write(data);
+  }
+
   changeParametersAndRedraw(): void {
     this.changeLSystemParameters();
     if (this.nrOfIterations) {
@@ -268,8 +294,12 @@ export class AppComponent {
 
     });
 
-    this.variables?.controls.forEach((variable: AbstractControl) => {
-      this.lsystem.addVariableObject(variable.value);
+    this.lsystem.clearVariables();
+    this.variables?.controls.map(c => c as FormGroup).forEach((variable: FormGroup) => {
+      const name =variable.get('variableName')?.value;
+      const isDrawing = variable.get('isDrawing')?.value;
+
+      this.lsystem.addVariableSimple(name, isDrawing);
     });
     this.lsystem.setAxiom(this.axiom?.value);
     this.lsystem.startingAngle = this.startAngle?.value;
@@ -283,7 +313,7 @@ export class AppComponent {
   redraw(nrOfIterations: number): void {
 
     this.lsystem.startGeneration(nrOfIterations);
-    this.lsystem.createPolyline();
+    // this.lsystem.createPolyline();
   }
 
   get autoUpdate(): AbstractControl | null {
@@ -349,8 +379,22 @@ export class AppComponent {
   deleteOneRule(index: number): void {
     this.rules?.removeAt(index);
   }
+  setupLSystems(): Observable<Array<LSystemCalculator>> {
+    return new Observable<Array<LSystemCalculator>>( subscriber => {
+      this.http.get<Array<LSystemJSONParameters>>('./assets/definitions.json').subscribe(data => {
+        console.log(data);
+        const items = new Array<LSystemCalculator>();
+        data.forEach((sys: LSystemJSONParameters) => {
+          const newSystem = new LSystemCalculator(sys.systemName, OriginPositions.CENTER);
+          newSystem.initFromParametersObject(sys);
+          items.push(newSystem);
+        });
+        subscriber.next(items);
+      });
+    });
+  }
 
-  setupLSystems() {
+  createJSON() {
     this.allSystems = new Array<LSystemCalculator>();
 
     let oneLsystem = new LSystemCalculator('bushy cactus tree', OriginPositions.CenterBottom);
@@ -493,41 +537,90 @@ export class AppComponent {
     const json_list = this.allSystems.map(lsystem => lsystem.createParameterObject());
 
     const json = JSON.stringify(json_list);
+    console.log(json);
 
     return this.allSystems;
 
   }
 
-  setOrigin(shortname: string) {
+  setOriginFromForm(shortname: string) {
     this.canvas.resetTranslation();
     console.log(`Set origin => ${shortname}`);
 
     switch (shortname) {
       case 'TL':
         this.canvas.setOriginTopLeft(1, 1);
+        this.lsystem.OriginPosition = OriginPositions.TopLeft;
         break;
       case 'TC':
-        this.canvas.setOriginTopCenter(1);
+        this.canvas.setOriginCenterTop(1);
+        this.lsystem.OriginPosition = OriginPositions.CenterTop;
         break;
       case 'TR':
         this.canvas.setOriginTopRight(1, 1);
+        this.lsystem.OriginPosition = OriginPositions.TopRight;
         break;
       case 'C':
         this.canvas.setOrigin(0, 0);
+        this.lsystem.OriginPosition = OriginPositions.CENTER;
         break;
       case 'LC':
-        this.canvas.setOriginLeftCenter(1);
+        this.canvas.setOriginCenterLeft(1);
+        this.lsystem.OriginPosition = OriginPositions.CenterLeft;
         break;
       case 'RC':
-        this.canvas.setOriginRightCenter(1);
+        this.canvas.setOriginCenterRight(1);
+        this.lsystem.OriginPosition = OriginPositions.CenterRight;
         break;
       case 'BL':
         this.canvas.setOriginBottomLeft(1,1);
+        this.lsystem.OriginPosition = OriginPositions.BottomLeft;
         break;
       case 'BC':
-        this.canvas.setOriginBottomCenter(0);
+        this.canvas.setOriginCenterBottom(0);
+        this.lsystem.OriginPosition = OriginPositions.CenterBottom;
         break;
       case 'BR':
+        this.canvas.setOriginBottomRight(1,1);
+        this.lsystem.OriginPosition = OriginPositions.BottomRight;
+        break;
+    }
+    const newX = this.canvas.OriginX;
+    const newY = this.canvas.OriginY;
+    this.originX?.setValue(newX);
+    this.originY?.setValue(newY);
+
+  }
+
+  setOriginFromPosition(shortname: OriginPositions) {
+    this.canvas.resetTranslation();
+
+    switch (shortname) {
+      case OriginPositions.TopLeft:
+        this.canvas.setOriginTopLeft(1, 1);
+        break;
+      case OriginPositions.CenterTop:
+        this.canvas.setOriginCenterTop(1);
+        break;
+      case OriginPositions.TopRight:
+        this.canvas.setOriginTopRight(1, 1);
+        break;
+      case OriginPositions.CENTER:
+        this.canvas.setOrigin(0, 0);
+        break;
+      case OriginPositions.CenterLeft:
+        this.canvas.setOriginCenterLeft(1);
+        break;
+      case OriginPositions.CenterRight:
+        this.canvas.setOriginCenterRight(1);
+        break;
+      case OriginPositions.BottomLeft:
+        this.canvas.setOriginBottomLeft(1,1);
+        break;
+      case OriginPositions.CenterBottom:
+        this.canvas.setOriginCenterBottom(0);
+        break;
+      case OriginPositions.BottomRight:
         this.canvas.setOriginBottomRight(1,1);
         break;
     }
@@ -536,6 +629,7 @@ export class AppComponent {
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
   }
+
 }
 
 

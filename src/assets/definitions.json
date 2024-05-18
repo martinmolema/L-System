@@ -15,7 +15,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "Y",
+    "axiom": "Y",
     "rules": [
       "X=X[-FFF][+FFF]FX",
       "Y=YFX[+Y][-Y]"
@@ -24,11 +24,12 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 9,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": -400
+      "y": 0
     }
   },
   {
@@ -39,7 +40,7 @@
         "isDrawingVariable": true
       }
     ],
-    "axion": "F+F+F+F",
+    "axiom": "F+F+F+F",
     "rules": [
       "F=FF+F-F+F+FF"
     ],
@@ -47,7 +48,8 @@
     "startingAngle": 90,
     "lineLength": 20,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
@@ -55,7 +57,7 @@
     }
   },
   {
-    "systemName": "",
+    "systemName": "Fractal tree",
     "variables": [
       {
         "varname": "F",
@@ -66,7 +68,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "FX",
+    "axiom": "FX",
     "rules": [
       "X= >[-FX]+FX"
     ],
@@ -74,15 +76,16 @@
     "startingAngle": 90,
     "lineLength": 200,
     "lineLengthMultiplier": 0.5,
-    "origin": {
+    "originPosition": 9,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": -100
+      "y": 0
     }
   },
   {
-    "systemName": "",
+    "systemName": "plant left oriented",
     "variables": [
       {
         "varname": "F",
@@ -93,7 +96,36 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "F+XF+F+XF",
+    "axiom": "X",
+    "rules": [
+      "X=F-[[X]+X]+F[+FX]-X",
+      "F=FF"
+    ],
+    "rotationAngle": 22.5,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "originPosition": 9,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "systemName": "square sierpinski",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      }
+    ],
+    "axiom": "F+XF+F+XF",
     "rules": [
       "X=XF-F+F-XF+F+XF-F+F-X"
     ],
@@ -101,22 +133,23 @@
     "startingAngle": 90,
     "lineLength": 10,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": 250,
+      "x": 0,
       "y": 0
     }
   },
   {
-    "systemName": "",
+    "systemName": "??",
     "variables": [
       {
         "varname": "F",
         "isDrawingVariable": true
       }
     ],
-    "axion": "F+F+F+F",
+    "axiom": "F+F+F+F",
     "rules": [
       "F=F+F-F-FF+F+F-F"
     ],
@@ -124,11 +157,12 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": 400,
-      "y": -400
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -139,7 +173,7 @@
         "isDrawingVariable": true
       }
     ],
-    "axion": "F+F+F",
+    "axiom": "F+F+F",
     "rules": [
       "F=F-F+F"
     ],
@@ -147,11 +181,12 @@
     "startingAngle": 90,
     "lineLength": 20,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": -200,
-      "y": 100
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -170,7 +205,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "X",
+    "axiom": "X",
     "rules": [
       "X=XFYFX+F+YFXFY-F-XFYFX",
       "Y=YFXFY-F-XFYFX+F+YFXFY"
@@ -179,11 +214,12 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": 200,
-      "y": -300
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -202,7 +238,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "YF",
+    "axiom": "YF",
     "rules": [
       "X=YF+XF+Y",
       "Y=XF-YF-X"
@@ -211,11 +247,12 @@
     "startingAngle": 0,
     "lineLength": 10,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": -390,
-      "y": -390
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -234,7 +271,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "X",
+    "axiom": "X",
     "rules": [
       "X=-YF+XFX+FY-",
       "Y=+XF-YFY-FX+"
@@ -243,11 +280,12 @@
     "startingAngle": 90,
     "lineLength": 10,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": -390,
-      "y": -390
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -258,7 +296,7 @@
         "isDrawingVariable": true
       }
     ],
-    "axion": "FF+FF+FF+FF",
+    "axiom": "FF+FF+FF+FF",
     "rules": [
       "F=F+F-F-F+F"
     ],
@@ -266,11 +304,12 @@
     "startingAngle": 90,
     "lineLength": 3,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 1,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": 380,
-      "y": -380
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -289,7 +328,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "-YF",
+    "axiom": "-YF",
     "rules": [
       "X=XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-",
       "Y=+FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY"
@@ -298,11 +337,12 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "origin": {
+    "originPosition": 4,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
-      "x": -390,
-      "y": -390
+      "x": 0,
+      "y": 0
     }
   },
   {
@@ -329,7 +369,7 @@
         "isDrawingVariable": false
       }
     ],
-    "axion": "a",
+    "axiom": "a",
     "rules": [
       "F=>F<",
       "a=F[+x]Fb",
@@ -341,11 +381,12 @@
     "startingAngle": 90,
     "lineLength": 10,
     "lineLengthMultiplier": 0.5,
-    "origin": {
+    "originPosition": 9,
+    "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": -390
+      "y": 0
     }
   }
 ]
