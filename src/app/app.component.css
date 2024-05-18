@@ -55,6 +55,10 @@ main {
         font-size: 20pt;
       }
 
+      td.selected {
+        color:green;
+      }
+
     }
 
     div.rules, div.variables {

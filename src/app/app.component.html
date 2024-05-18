@@ -87,7 +87,7 @@
 
               </p>
               <p>
-                <label>Translation</label>
+                <label title="Drag to change translation">Translation</label>
                 ({{ canvas.translation.xAsString }} , {{ canvas.translation.yAsString }})
                 &nbsp;
                 =>
@@ -99,24 +99,24 @@
                 )
 
               </p>
-              <button (click)="updateOriginFromTranslation()">Correct with translation</button>
+              <button (click)="updateOriginFromTranslation()" title="Use values from translation to correct origin">Correct with translation</button>
               <div class="origin-navigator">
-                <table class="origins">
+                <table class="origins" title="Click to select preselected positions">
                   <tbody>
                   <tr>
-                    <td (click)="setOriginFromForm('TL')">&#8598;</td>
-                    <td (click)="setOriginFromForm('TC')">&uarr;</td>
-                    <td (click)="setOriginFromForm('TR')">&#8599;</td>
+                    <td  [class.selected]="lsystem.OriginPosition === OriginPositions.TopLeft" (click)="setOriginFromForm('TL')">&#8598;</td>
+                    <td  [class.selected]="lsystem.OriginPosition === OriginPositions.CenterTop" (click)="setOriginFromForm('TC')">&uarr;</td>
+                    <td  [class.selected]="lsystem.OriginPosition === OriginPositions.TopRight" (click)="setOriginFromForm('TR')">&#8599;</td>
                   </tr>
                   <tr>
-                    <td (click)="setOriginFromForm('LC')">&larr;</td>
-                    <td (click)="setOriginFromForm('C')">&#x25cf;</td>
-                    <td (click)="setOriginFromForm('RC')">&rarr;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterLeft" (click)="setOriginFromForm('LC')">&larr;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CENTER" (click)="setOriginFromForm('C')">&#x25cf;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterRight" (click)="setOriginFromForm('RC')">&rarr;</td>
                   </tr>
                   <tr>
-                    <td (click)="setOriginFromForm('BL')">&#8601;</td>
-                    <td (click)="setOriginFromForm('BC')">&darr;</td>
-                    <td (click)="setOriginFromForm('BR')">&#8600;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomLeft" (click)="setOriginFromForm('BL')">&#8601;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterBottom"  (click)="setOriginFromForm('BC')">&darr;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomRight"  (click)="setOriginFromForm('BR')">&#8600;</td>
                   </tr>
                   </tbody>
                 </table>
@@ -182,7 +182,9 @@
           </div>
           <button (click)="submitValues()">Redraw!</button>
           &nbsp;
-          <button (click)="showJSON()">Copy JSON to clipboard</button>
+          <button (click)="copyJSONToClipboard()">Copy JSON to clipboard</button>
+          &nbsp;
+          <button (click)="copySVGToClipboard()">Copy Image/SVG to clipboard</button>
         </form>
       }
     </section>

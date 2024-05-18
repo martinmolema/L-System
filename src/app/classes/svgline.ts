@@ -1,3 +1,5 @@
+import {Point} from "./point";
+
 export class SVGLine {
   x1: number;
   x2: number;
@@ -18,5 +20,13 @@ export class SVGLine {
     if (className !== '') {
       this.classList.push(className);
     }
+  }
+
+  toString(offset: Point): string {
+    const x1 = (this.x1 + offset.x).toFixed(1);
+    const y1 = (this.y1 + offset.y).toFixed(1);
+    const x2 = (this.x2 + offset.x).toFixed(1);
+    const y2 = (this.y2 + offset.y).toFixed(1);
+    return `<line x1="${x1}" x2="${x2}" y1="${y1}" y2="${y2}" stroke="${this.stroke}" stroke-width="${this.stroke}"/>`;
   }
 }

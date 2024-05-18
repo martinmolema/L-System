@@ -18,6 +18,7 @@ import {DrawingCanvas} from "./classes/drawing-canvas";
 import {Observable, Subscription} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {LSystemJSONParameters} from "./classes/lsystem-jsonparameters";
+import {Point} from "./classes/point";
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -174,6 +175,9 @@ export class AppComponent {
       this.originX?.setValue(newx);
       this.originY?.setValue(newy);
 
+      this.lsystem.OriginCoordinates = new Point(newx, newy);
+      this.lsystem.OriginPosition = OriginPositions.UseCoordinates;
+
     }
   }
 
@@ -263,12 +267,21 @@ export class AppComponent {
     this.changeParametersAndRedraw();
   }
 
-  showJSON():void {
+  copyJSONToClipboard():void {
     const json = JSON.stringify(this.lsystem.createParameterObject());
     const type = "text/plain";
     const blob = new Blob([json], { type });
     const data = [new ClipboardItem({[type]: blob})];
     navigator.clipboard.write(data);
+  }
+
+  copySVGToClipboard(): void {
+    const svg = this.lsystem.createLinesAsSVGStringComplete(new Point(400,400));
+    const type = "text/plain";
+    const blob = new Blob([svg], { type });
+    const data = [new ClipboardItem({[type]: blob})];
+    navigator.clipboard.write(data);
+
   }
 
   changeParametersAndRedraw(): void {
@@ -590,6 +603,8 @@ export class AppComponent {
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
 
+    this.lsystem.OriginCoordinates = new Point(newX, newY);
+
   }
 
   setOriginFromPosition(shortname: OriginPositions) {
@@ -628,8 +643,11 @@ export class AppComponent {
     const newY = this.canvas.OriginY;
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
+
+    this.lsystem.OriginCoordinates = new Point(newX, newY);
   }
 
+  protected readonly OriginPositions = OriginPositions;
 }
 
 

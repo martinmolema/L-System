@@ -76,6 +76,15 @@ export class LSystemCalculator {
     this.originPosition = shortname;
   }
 
+  get OriginCoordinates(): Point {
+    return this.originCoordinates;
+  }
+
+  set OriginCoordinates(p: Point) {
+    this.originCoordinates.x = p.x;
+    this.originCoordinates.y = p.y;
+  }
+
 
   clearVariables(): void {
     this.variables = new Array<LSystemVariable>();
@@ -160,6 +169,21 @@ export class LSystemCalculator {
     this.totalLineLength = Math.ceil(total);
 
     return this.polylineString;
+  }
+
+  createLinesAsStringArray(origin:Point):string[] {
+    const linesAsStringArr = this.lines.map<string>((line: SVGLine) => line.toString(origin));
+    return linesAsStringArr;
+  }
+
+  createLinesAsSVGStringComplete(canvasOrigin: Point): string {
+    const linesAsString = this.createLinesAsStringArray(this.OriginCoordinates).join('\n');
+    const result = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
+    <g transform="translate(${canvasOrigin.x} ${canvasOrigin.y}) scale(1,-1)">
+    ${linesAsString}
+    </g>
+    </svg>`;
+    return result;
   }
 
   generateOneIteration(nrOfIterations: number, formula: string, lineLength: number) {
