@@ -121,7 +121,10 @@ This results in :
 
 Using a different formula for drawing a tree (canopy)
 > `X= >[-FX]+FX`
-> Axiom = FX
+
+and Axiom:
+ 
+> `Axiom = FX`
 
 Yields the following iterations:
 1. FX
@@ -129,7 +132,7 @@ Yields the following iterations:
 3. F>[-F>[-FX]+FX]+F>[-FX]+FX
 4. F>[-F>[-F>[-FX]+FX]+F>[-FX]+FX]+F>[-F>[-FX]+FX]+F>[-FX]+FX
 
-Notica how the [ and ] get nested.
+Notice how the [ and ] get nested quite deep.
 
 ## Operations
 
