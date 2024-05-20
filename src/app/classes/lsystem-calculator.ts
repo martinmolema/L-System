@@ -106,6 +106,7 @@ export class LSystemCalculator {
 
   addVariableObject(variable: LSystemVariable) {
     this.variables.push(variable);
+    this.clearCalculatedFormula();
   }
 
   addVariableSimple(varname: string, isdrawingVariable: boolean = false) {
@@ -114,6 +115,7 @@ export class LSystemCalculator {
 
   setAxiom(axiom: string) {
     this.axiom = axiom;
+    this.clearCalculatedFormula();
   }
 
   processRules() {
@@ -127,12 +129,17 @@ export class LSystemCalculator {
 
         this.processedRules.set(varname, rulepart);
       }
-    })
+    });
+    this.clearCalculatedFormula();
+  }
+
+  clearCalculatedFormula(): void {
+    this.completeFormula = '';
   }
 
   startGeneration(nrOfIterations: number) {
     this.nrOfIterationsRequested = nrOfIterations;
-    this.lastPosition = new Point(0, 0, 0 , '');
+    this.lastPosition = new Point(0, 0, 0, '');
     this.angle = this.startingAngle;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
@@ -253,7 +260,7 @@ export class LSystemCalculator {
 
     let opacityValue = 1;
 
-    switch(this.fadeStrokeOpacity) {
+    switch (this.fadeStrokeOpacity) {
       case "None":
         break;
       case "Normal":
@@ -267,7 +274,7 @@ export class LSystemCalculator {
     const line = new SVGLine(point1.x, point1.y, newx, newy, 'shape', this.strokeColor, 1, opacityValue);
     // line.setAttribute("stroke-opacity", (iterationNr / nrOfIterationsRequested).toString());
 
-    if (this.fadeStrokeOpacity !==  "None") {
+    if (this.fadeStrokeOpacity !== "None") {
       line.classList.push("fade-stroke");
       if (this.fadeStrokeOpacity === 'Reverse') {
         line.classList.push("reverse");
@@ -314,7 +321,7 @@ export class LSystemCalculator {
     this.lineLength = params.lineLength || 1;
     this.lineLengthMultiplier = params.lineLengthMultiplier;
     this.originPosition = params.originPosition || OriginPositions.CENTER;
-    this.originCoordinates = params.originCoordinates || new Point(0,0);
+    this.originCoordinates = params.originCoordinates || new Point(0, 0);
     this.strokeColor = params.strokeColor || 'black';
     this.fadeStrokeOpacity = params.fadeStrokeOpacity || 'None';
   }
