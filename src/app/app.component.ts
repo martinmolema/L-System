@@ -187,7 +187,7 @@ export class AppComponent {
     this.updateFormFromLSystem(this.lsystem);
     this.setOriginFromPosition(this.lsystem.OriginPosition);
     this.resetZoom();
-    this.redraw(4);
+    this.redraw(this.lsystem.nrOfIterationsRequested);
 
   }
   resetZoom(): void {
