@@ -211,3 +211,8 @@ The website has the following functions available:
 # Other references
 
 * [Mozilla Development Network - SVG: Scalable Vector Graphics](https://developer.mozilla.org/en-US/docs/Web/SVG)
+
+# Thanks to
+
+* [Travis Geis](https://www.travisgeis.com/2018/04/24/drawing-fractals-in-the-browser-with-l-systems-and-es6/)
+* [Paul Bourke](https://paulbourke.net/fractals/lsys/)
