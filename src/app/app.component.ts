@@ -361,8 +361,9 @@ export class AppComponent {
   }
 
   redraw(nrOfIterations: number): void {
-
     this.lsystem.startGeneration(nrOfIterations);
+
+    console.log(`Calc time: ${this.lsystem.CalculationTime}`);
     // this.lsystem.createPolyline();
   }
 

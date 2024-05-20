@@ -246,11 +246,15 @@
     <section>
       <app-lsystem [lsystem]="lsystem" [canvas]="canvas"></app-lsystem>
     </section>
-    <section>
-      <div>
-      {{ lsystem.completeFormula }}
-      </div>
+    <section class="formula">
+      <div>{{ lsystem.completeFormula }}</div>
       <button (click)="copyResultFormulaToClipboard()">Copy</button>
+    </section>
+    <section>
+      <p>Calculation time: {{ lsystem.CalculationTime.toLocaleString() }}ms
+        | {{ lsystem.lines.length.toLocaleString() }} lines
+        | {{ lsystem.RecursiveIterations.toLocaleString() }}
+        recursive iterations</p>
     </section>
   </article>
 </main>

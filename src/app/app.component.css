@@ -131,7 +131,7 @@ main {
       margin: 0;
     }
 
-    section:last-of-type {
+    section.formula {
       width: 95%;
       font-family: monospace;
       height: 5rem;

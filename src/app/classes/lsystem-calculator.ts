@@ -22,6 +22,8 @@ export class LSystemCalculator {
   private totalLineLength: number = 0;
   public fadeStrokeOpacity: StrokeOpacitySettings;
   public strokeColor: string = 'black';
+  private calculationTime: number = 0;
+  private recursiveIterations: number = 0;
 
   private angle = 0;
   private stack: Array<StackItem>;
@@ -76,6 +78,14 @@ export class LSystemCalculator {
   set OriginCoordinates(p: Point) {
     this.originCoordinates.x = p.x;
     this.originCoordinates.y = p.y;
+  }
+
+  get CalculationTime(): number {
+    return this.calculationTime;
+  }
+
+  get RecursiveIterations(): number {
+    return this.recursiveIterations;
   }
 
 
@@ -140,6 +150,7 @@ export class LSystemCalculator {
   }
 
   startGeneration(nrOfIterations: number) {
+
     this.nrOfIterationsRequested = nrOfIterations;
     this.lastPosition = new Point(0, 0, 0, '');
     this.angle = this.startingAngle;
@@ -148,10 +159,15 @@ export class LSystemCalculator {
     this.points = new Array<Point>();
     this.clearCalculatedFormula();
 
+    this.recursiveIterations = 0;
+
     this.nrOfIterationsRequested = nrOfIterations;
 
+    const startDateTime = new Date();
     this.completeFormula = this.generateOneIteration(nrOfIterations, this.axiom, this.lineLength);
+    const endDateTime = new Date();
 
+    this.calculationTime = (endDateTime.getTime() - startDateTime.getTime());
   }
 
   createPolyline(): string {
@@ -197,6 +213,7 @@ export class LSystemCalculator {
   generateOneIteration(nrOfIterations: number, formula: string, lineLength: number): string {
     let returnFormula = '';
     if (nrOfIterations !== 0) {
+      this.recursiveIterations++;
 
       for (let char of formula) {
         if (this.processedRules.has(char)) {
@@ -218,7 +235,7 @@ export class LSystemCalculator {
         }
       }
     }
-    console.log(`${returnFormula}`)
+
     return returnFormula;
   }
 
