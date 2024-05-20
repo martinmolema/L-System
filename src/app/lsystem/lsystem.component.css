@@ -13,6 +13,32 @@ svg {
     stroke-width:1;
   }
 
+  /*
+
+  line.fade-stroke.iteration-10 { stroke-opacity: 1.0;}
+  line.fade-stroke.iteration-9  { stroke-opacity: 0.9;}
+  line.fade-stroke.iteration-8  { stroke-opacity: 0.8;}
+  line.fade-stroke.iteration-7  { stroke-opacity: 0.7;}
+  line.fade-stroke.iteration-6  { stroke-opacity: 0.6;}
+  line.fade-stroke.iteration-5  { stroke-opacity: 0.5;}
+  line.fade-stroke.iteration-4  { stroke-opacity: 0.5;}
+  line.fade-stroke.iteration-3  { stroke-opacity: 0.3;}
+  line.fade-stroke.iteration-2  { stroke-opacity: 0.2;}
+  line.fade-stroke.iteration-1  { stroke-opacity: 0.1;}
+  line.fade-stroke.iteration-0  { stroke-opacity: 0.1;}
+
+  line.fade-stroke.reverse.iteration-0  { stroke-opacity: 1.0;}
+  line.fade-stroke.reverse.iteration-1  { stroke-opacity: 0.9;}
+  line.fade-stroke.reverse.iteration-2  { stroke-opacity: 0.8;}
+  line.fade-stroke.reverse.iteration-3  { stroke-opacity: 0.7;}
+  line.fade-stroke.reverse.iteration-4  { stroke-opacity: 0.6;}
+  line.fade-stroke.reverse.iteration-5  { stroke-opacity: 0.5;}
+  line.fade-stroke.reverse.iteration-6  { stroke-opacity: 0.5;}
+  line.fade-stroke.reverse.iteration-7  { stroke-opacity: 0.3;}
+  line.fade-stroke.reverse.iteration-8  { stroke-opacity: 0.2;}
+  line.fade-stroke.reverse.iteration-9  { stroke-opacity: 0.1;}
+  line.fade-stroke.reverse.iteration-10 { stroke-opacity: 0.1;}
+  */
 }
 
 
