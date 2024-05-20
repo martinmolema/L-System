@@ -476,5 +476,90 @@
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black"
+  },
+  {
+    "systemName": "Bushy plant (Saupe)",
+    "variables": [
+      {
+        "varname": "V",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "W",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Z",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "VZFFF",
+    "rules": [
+      "V=[+++W][---W]YV",
+      "W=+X[-W]Z",
+      "X=-W[+X]Z",
+      "Y=YZ",
+      "Z=[-FFF][+FFF]F"
+    ],
+    "rotationAngle": 20,
+    "startingAngle": 90,
+    "lineLength": 10,
+    "lineLengthMultiplier": 0.5,
+    "originPosition": 9,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": -400
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
+  },
+  {
+    "systemName": "Dragon",
+    "variables": [
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "FX+FX+",
+    "rules": [
+      "X=X+YF",
+      "Y=FX-Y"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "originPosition": 1,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": 0
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   }
 ]
