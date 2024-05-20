@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {LSystemComponent} from "./lsystem/lsystem.component";
-import {LSystemCalculator, OriginPositions, SpecialChars} from "./classes/lsystem-calculator";
+import {LSystemCalculator, SpecialChars} from "./classes/lsystem-calculator";
 import {
   AbstractControl,
   FormArray,
@@ -16,9 +16,11 @@ import {FormErrorDirective} from "./directives/form-error.directive";
 import {LSystemVariable} from "./classes/lsystem-variable";
 import {DrawingCanvas} from "./classes/drawing-canvas";
 import {Observable, Subscription} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {LSystemJSONParameters} from "./classes/lsystem-jsonparameters";
 import {Point} from "./classes/point";
+import {DecimalPipe} from "@angular/common";
+import {OriginPositions} from "./classes/origin-positions";
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -79,7 +81,7 @@ function checkVariablesAndRules(form: FormGroup): null | ValidationErrors {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LSystemComponent, ReactiveFormsModule, FormErrorDirective, FormsModule],
+  imports: [RouterOutlet, LSystemComponent, ReactiveFormsModule, FormErrorDirective, FormsModule, DecimalPipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -95,7 +97,7 @@ export class AppComponent {
   canvas: DrawingCanvas;
   formgroup: FormGroup;
 
-  idxSelectedSystem: number = 3;
+  idxSelectedSystem: number = 2;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -111,19 +113,29 @@ export class AppComponent {
 
     this.createForm(this.lsystem, 0);
 
-    this.setupLSystems().subscribe(data => {
-      this.allSystems = data;
-      this.lsystem = this.allSystems[this.idxSelectedSystem];
-      this.createForm(this.lsystem, 1);
+    this.getDataForCurves().subscribe({
+      next: (data) => {
+        this.allSystems = data;
+        this.lsystem = this.allSystems[this.idxSelectedSystem];
+        this.createForm(this.lsystem, 3);
 
-      this.createHandlers();
+        this.createHandlers();
 
-      this.setupSystemAndRedraw();
+        this.setupSystemAndRedraw();
+      },
+      error: (err: HttpErrorResponse) => {
+        alert(err.message);
+      }
     });
 
   }
 
 
+  /**
+   * Creates a new form based on a given LSystemCalculator
+   * @param lsystem
+   * @param nrOfIterationsRequested
+   */
   createForm(lsystem: LSystemCalculator, nrOfIterationsRequested: number): void {
     this.formgroup = this.formBuilder.group({
         autoUpdate: [this.autoUpdateDrawing],
@@ -135,7 +147,8 @@ export class AppComponent {
         originY: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
         lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required]],
         axiom: [lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
-
+        fadeStrokeOpacity: [lsystem.fadeStrokeOpacity],
+        strokeColor:[lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
         listOfVariables: this.formBuilder.array([]),
         listOfRules: this.formBuilder.array([]),
       },
@@ -146,6 +159,10 @@ export class AppComponent {
     this.updateRules();
   }
 
+  /**
+   * Update the from from an LSystem. This will create a new form and then create a new handler for events.
+   * @param lsystem
+   */
   updateFormFromLSystem(lsystem: LSystemCalculator): void {
     // create a new form
     this.createForm(lsystem, 1);
@@ -161,8 +178,12 @@ export class AppComponent {
   setupSystemAndRedraw(){
     this.updateFormFromLSystem(this.lsystem);
     this.setOriginFromPosition(this.lsystem.OriginPosition);
-    this.redraw(1);
+    this.resetZoom();
+    this.redraw(4);
 
+  }
+  resetZoom(): void {
+    this.canvas.resetZoom();
   }
 
   updateOriginFromTranslation(): void {
@@ -318,6 +339,8 @@ export class AppComponent {
     this.lsystem.startingAngle = this.startAngle?.value;
     this.lsystem.rotationAngle = this.rotationAngle?.value;
     this.lsystem.lineLengthMultiplier = this.lengthMultiplier?.value;
+    this.lsystem.fadeStrokeOpacity = this.fadeStrokeOpacity?.value;
+    this.lsystem.strokeColor = this.strokeColor?.value;
 
     this.canvas.setOrigin(this.originX?.value, this.originY?.value);
 
@@ -329,41 +352,17 @@ export class AppComponent {
     // this.lsystem.createPolyline();
   }
 
-  get autoUpdate(): AbstractControl | null {
-    return this.formgroup.get('autoUpdate');
-  }
-
-  get nrOfIterations(): AbstractControl | null {
-    return this.formgroup.get('nrOfIterations');
-  }
-
-  get lineLength(): AbstractControl | null {
-    return this.formgroup.get('lineLength');
-  }
-
-  get originX(): AbstractControl | null {
-    return this.formgroup.get('originX');
-  }
-
-  get originY(): AbstractControl | null {
-    return this.formgroup.get('originY');
-  }
-
-  get axiom(): AbstractControl | null {
-    return this.formgroup.get('axiom');
-  }
-
-  get rotationAngle(): AbstractControl | null {
-    return this.formgroup.get('rotationAngle');
-  }
-
-  get startAngle(): AbstractControl | null {
-    return this.formgroup.get('startAngle');
-  }
-
-  get lengthMultiplier(): AbstractControl | null {
-    return this.formgroup.get('lengthMultiplier');
-  }
+  get autoUpdate(): AbstractControl | null {    return this.formgroup.get('autoUpdate');  }
+  get nrOfIterations(): AbstractControl | null {    return this.formgroup.get('nrOfIterations');  }
+  get lineLength(): AbstractControl | null {    return this.formgroup.get('lineLength');  }
+  get originX(): AbstractControl | null {    return this.formgroup.get('originX');  }
+  get originY(): AbstractControl | null {    return this.formgroup.get('originY');  }
+  get axiom(): AbstractControl | null {return this.formgroup.get('axiom');}
+  get rotationAngle(): AbstractControl | null {return this.formgroup.get('rotationAngle');}
+  get startAngle(): AbstractControl | null {return this.formgroup.get('startAngle');}
+  get lengthMultiplier(): AbstractControl | null {return this.formgroup.get('lengthMultiplier');}
+  get fadeStrokeOpacity(): AbstractControl | null {return this.formgroup.get('fadeStrokeOpacity');}
+  get strokeColor(): AbstractControl | null {return this.formgroup.get('strokeColor');}
 
   get variables(): FormArray | undefined {
     const items = this.formgroup.get('listOfVariables');
@@ -392,17 +391,24 @@ export class AppComponent {
   deleteOneRule(index: number): void {
     this.rules?.removeAt(index);
   }
-  setupLSystems(): Observable<Array<LSystemCalculator>> {
+
+  getDataForCurves(): Observable<Array<LSystemCalculator>> {
     return new Observable<Array<LSystemCalculator>>( subscriber => {
-      this.http.get<Array<LSystemJSONParameters>>('./assets/definitions.json').subscribe(data => {
-        console.log(data);
-        const items = new Array<LSystemCalculator>();
-        data.forEach((sys: LSystemJSONParameters) => {
-          const newSystem = new LSystemCalculator(sys.systemName, OriginPositions.CENTER);
-          newSystem.initFromParametersObject(sys);
-          items.push(newSystem);
-        });
-        subscriber.next(items);
+      this.http.get<Array<LSystemJSONParameters>>('./assets/lsystem-definitions.json').subscribe({
+        next: (data) => {
+          console.log(data);
+          const items = new Array<LSystemCalculator>();
+          data.forEach((sys: LSystemJSONParameters) => {
+            const newSystem = new LSystemCalculator(sys.systemName, OriginPositions.CENTER);
+            newSystem.initFromParametersObject(sys);
+            items.push(newSystem);
+          });
+          items.sort((sys1, sys2) => sys1.systemName.localeCompare(sys2.systemName));
+          subscriber.next(items);
+        },
+        error: (err: HttpErrorResponse) => {
+          subscriber.error(err);
+        }
       });
     });
   }
@@ -479,7 +485,7 @@ export class AppComponent {
     oneLsystem = new LSystemCalculator('Peano Curve', OriginPositions.CENTER);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addVariableSimple('Y');
-    oneLsystem.addVariableSimple('F');
+    oneLsystem.addVariableSimple('F', true);
     oneLsystem.addRule('X=XFYFX+F+YFXFY-F-XFYFX');
     oneLsystem.addRule('Y=YFXFY-F-XFYFX+F+YFXFY');
     oneLsystem.setAxiom('X');
@@ -558,7 +564,7 @@ export class AppComponent {
 
   setOriginFromForm(shortname: string) {
     this.canvas.resetTranslation();
-    console.log(`Set origin => ${shortname}`);
+    this.resetZoom();
 
     switch (shortname) {
       case 'TL':

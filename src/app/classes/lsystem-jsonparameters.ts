@@ -1,6 +1,7 @@
 import {LSystemVariable} from "./lsystem-variable";
-import {OriginPositions} from "./lsystem-calculator";
+import {StrokeOpacitySettings} from "./lsystem-calculator";
 import {Point} from "./point";
+import {OriginPositions} from "./origin-positions";
 
 export class LSystemJSONParameters {
   systemName: string;
@@ -13,6 +14,8 @@ export class LSystemJSONParameters {
   lineLengthMultiplier: number;
   originPosition: OriginPositions;
   originCoordinates: Point;
+  fadeStrokeOpacity: StrokeOpacitySettings;
+  strokeColor: string;
 
   constructor(systemName: string) {
     this.systemName = systemName;
@@ -25,5 +28,7 @@ export class LSystemJSONParameters {
     this.lineLengthMultiplier = 0;
     this.originPosition = OriginPositions.CENTER;
     this.originCoordinates = new Point(0,0);
+    this.fadeStrokeOpacity = 'None';
+    this.strokeColor = 'black';
   }
 }

@@ -7,7 +7,7 @@ export class Point {
   constructor(x: number, y:number, iterationNr:number = -1, letter: string = '') {
     this.x = x;
     this.y = y;
-    this.iterationNr = iterationNr | -1;
+    this.iterationNr = iterationNr || -1;
     this.letter = letter || '';
   }
 

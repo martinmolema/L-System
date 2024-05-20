@@ -29,13 +29,10 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
 
   startPoint = new Point(0, 0);
   translationStartValue = new Point(0, 0);
-  zoomFactor = 1;
-  transformString: string;
   isDragging = false;
   CTM: any;
 
   constructor() {
-    this.transformString = '';
     this.canvas = new DrawingCanvas(0, 0, 0, 0);
   }
 
@@ -53,14 +50,12 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
 
   handleWheelevent(event: WheelEvent): void {
     if (event.deltaY < 0) {
-      this.zoomFactor += 0.1;
+      this.canvas.zoomFactor += 0.1;
     } else {
-      this.zoomFactor -= 0.1;
+      this.canvas.zoomFactor -= 0.1;
     }
-    this.zoomFactor = Math.min(5, this.zoomFactor);
-    this.zoomFactor = Math.max(0.1, this.zoomFactor);
-
-    this.setZoomTranslation(this.zoomFactor);
+    this.canvas.zoomFactor = Math.min(5, this.canvas.zoomFactor);
+    this.canvas.zoomFactor = Math.max(0.1, this.canvas.zoomFactor);
   }
 
   startDrag(event: MouseEvent): void {
@@ -85,17 +80,12 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
       const newX = Math.floor((event.clientX - this.CTM.e) / this.CTM.a);
       const newY = Math.floor((event.clientY - this.CTM.f) / this.CTM.d);
 
-      let diffX = newX - this.startPoint.x;
-      let diffY = newY - this.startPoint.y;
+      let diffX = (newX - this.startPoint.x) * (1/this.canvas.zoomFactor);
+      let diffY = (newY - this.startPoint.y)  * (1/this.canvas.zoomFactor);
 
       this.canvas.translation.setXY(this.translationStartValue.x + diffX, this.translationStartValue.y + diffY);
     }
 
-  }
-
-  setZoomTranslation(zoom: number) {
-    const zoomStr = `scale(${zoom},${zoom})`;
-    this.transformString = `${zoomStr}`;
   }
 
 }

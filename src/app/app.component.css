@@ -8,7 +8,6 @@ main {
     width: 50%;
     height: fit-content;
 
-
     .card {
       border: 1px solid lightgray;
       border-radius: 4px;
@@ -22,9 +21,16 @@ main {
       display: flex;
       flex-direction: row;
 
-      div.left,
+      .math {
+        font-family: monospace;
+        font-size: small;
+      }
+
+      div.left {
+        width: 20rem;
+      }
       div.right {
-        width: fit-content;
+        width: 30rem;
       }
 
       div.right {
@@ -153,9 +159,4 @@ main {
       }
     }
   }
-}
-
-
-textarea {
-  font-family: monospace;
 }

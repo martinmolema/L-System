@@ -72,12 +72,30 @@
                 <input name="lengthMultiplier" id="inputLengthMultiplier"
                        formControlName="lengthMultiplier" type="number"
                        min="0.001" max="10" step="0.1">
-                <span>&nbsp; (for &lt; and &gt;)</span>
               </p>
+              <div class="math">
+                <label></label>
+                <pre>
+                  &lt; &rarr; {{ 1 / lengthMultiplier?.value | number:'1.1-1' }}
+                  &gt; &rarr; {{ lengthMultiplier?.value | number:'1.1-1' }}</pre>
+              </div>
             </div>
             <div class="right card">
               <p>
-                <label for="inputOriginX">Origin</label>
+                <label for="inputStrokeColor">Stroke color:</label>
+                <input id="inputStrokeColor" type="text" formControlName="strokeColor" required>
+              </p>
+              <p>
+                <label for="inputFadeStrokeOpacity">Use fading lines</label>
+                <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
+                  <option value="None">None</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Reverse">Reverse</option>
+                </select>
+
+              </p>
+              <p>
+                <label for="inputOriginX">Origin drawing</label>
                 <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
                 <span class="prefix">x:</span>
                 <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
@@ -99,24 +117,44 @@
                 )
 
               </p>
-              <button (click)="updateOriginFromTranslation()" title="Use values from translation to correct origin">Correct with translation</button>
+              <button (click)="updateOriginFromTranslation()" title="Use values from translation to correct origin">
+                Correct with translation
+              </button>
               <div class="origin-navigator">
                 <table class="origins" title="Click to select preselected positions">
                   <tbody>
                   <tr>
-                    <td  [class.selected]="lsystem.OriginPosition === OriginPositions.TopLeft" (click)="setOriginFromForm('TL')">&#8598;</td>
-                    <td  [class.selected]="lsystem.OriginPosition === OriginPositions.CenterTop" (click)="setOriginFromForm('TC')">&uarr;</td>
-                    <td  [class.selected]="lsystem.OriginPosition === OriginPositions.TopRight" (click)="setOriginFromForm('TR')">&#8599;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.TopLeft"
+                        (click)="setOriginFromForm('TL')">&#8598;
+                    </td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterTop"
+                        (click)="setOriginFromForm('TC')">&uarr;
+                    </td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.TopRight"
+                        (click)="setOriginFromForm('TR')">&#8599;
+                    </td>
                   </tr>
                   <tr>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterLeft" (click)="setOriginFromForm('LC')">&larr;</td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CENTER" (click)="setOriginFromForm('C')">&#x25cf;</td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterRight" (click)="setOriginFromForm('RC')">&rarr;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterLeft"
+                        (click)="setOriginFromForm('LC')">&larr;
+                    </td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CENTER"
+                        (click)="setOriginFromForm('C')">&#x25cf;
+                    </td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterRight"
+                        (click)="setOriginFromForm('RC')">&rarr;
+                    </td>
                   </tr>
                   <tr>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomLeft" (click)="setOriginFromForm('BL')">&#8601;</td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterBottom"  (click)="setOriginFromForm('BC')">&darr;</td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomRight"  (click)="setOriginFromForm('BR')">&#8600;</td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomLeft"
+                        (click)="setOriginFromForm('BL')">&#8601;
+                    </td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterBottom"
+                        (click)="setOriginFromForm('BC')">&darr;
+                    </td>
+                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomRight"
+                        (click)="setOriginFromForm('BR')">&#8600;
+                    </td>
                   </tr>
                   </tbody>
                 </table>
@@ -134,6 +172,10 @@
                         }
 
                       </div>-->
+              <P>
+                <label>Zoomfactor</label> <span>{{ canvas.zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
+                <button (click)="resetZoom()">Reset</button>
+              </P>
             </div>
           </div>
           <div>

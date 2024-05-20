@@ -7,6 +7,7 @@ export class DrawingCanvas {
   private svgHeight = 0;
 
   public translation: Point;
+  public zoomFactor:number;
 
   constructor(originX: number, originY: number, svgWidth: number, svgHeight: number) {
     this.originX = originX;
@@ -14,6 +15,11 @@ export class DrawingCanvas {
     this.svgWidth = svgWidth;
     this.svgHeight = svgHeight;
     this.translation = new Point(0, 0);
+    this.zoomFactor = 1;
+  }
+
+  resetZoom(): void {
+    this.zoomFactor = 1;
   }
 
   setTranslation(x: number, y: number) : void {

@@ -3,21 +3,10 @@ import {Point} from "./point";
 import {SVGLine} from "./svgline";
 import {LSystemVariable} from "./lsystem-variable";
 import {LSystemJSONParameters} from "./lsystem-jsonparameters";
+import {OriginPositions} from "./origin-positions";
 
 export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
-
-export enum OriginPositions {
-  UseCoordinates,
-  CENTER,
-  TopLeft,
-  TopRight,
-  BottomLeft,
-  BottomRight,
-  CenterLeft,
-  CenterRight,
-  CenterTop,
-  CenterBottom
-}
+export type StrokeOpacitySettings = 'None' | 'Normal' | 'Reverse';
 
 export class LSystemCalculator {
 
@@ -30,6 +19,8 @@ export class LSystemCalculator {
   private points: Array<Point>;
   private polylineString: string = '';
   private totalLineLength: number = 0;
+  public fadeStrokeOpacity: StrokeOpacitySettings;
+  public strokeColor: string = 'black';
 
   private angle = 0;
   private stack: Array<StackItem>;
@@ -58,6 +49,7 @@ export class LSystemCalculator {
       this.originCoordinates = new Point(0, 0);
       this.originPosition = origin;
     }
+    this.fadeStrokeOpacity = "None";
   }
 
   get TotalLineLength(): number {
@@ -140,7 +132,7 @@ export class LSystemCalculator {
 
   startGeneration(nrOfIterations: number) {
     this.nrOfIterationsRequested = nrOfIterations;
-    this.lastPosition = new Point(0, 0);
+    this.lastPosition = new Point(0, 0, 0 , '');
     this.angle = this.startingAngle;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
@@ -171,7 +163,7 @@ export class LSystemCalculator {
     return this.polylineString;
   }
 
-  createLinesAsStringArray(origin:Point):string[] {
+  createLinesAsStringArray(origin: Point): string[] {
     const linesAsStringArr = this.lines.map<string>((line: SVGLine) => line.toString(origin));
     return linesAsStringArr;
   }
@@ -192,7 +184,7 @@ export class LSystemCalculator {
         this.completeFormula += char;
 
         if (this.processedRules.has(char)) {
-          lineLength = this.processNonRuleCharFromFormula(char, lineLength);
+          lineLength = this.processNonRuleCharFromFormula(char, lineLength, nrOfIterations, char);
 
           const newFormula = this.processedRules.get(char);
 
@@ -200,7 +192,7 @@ export class LSystemCalculator {
             this.generateOneIteration(nrOfIterations - 1, newFormula, lineLength);
           }
         } else {
-          lineLength = this.processNonRuleCharFromFormula(char, lineLength);
+          lineLength = this.processNonRuleCharFromFormula(char, lineLength, nrOfIterations, char);
         }
       }
     }
@@ -212,7 +204,7 @@ export class LSystemCalculator {
    * @param char
    * @param length
    */
-  processNonRuleCharFromFormula(char: string, length: number) {
+  processNonRuleCharFromFormula(char: string, length: number, iterationNr: number, letter: string) {
 
     if (SpecialChars.includes(char)) {
       switch (char) {
@@ -226,6 +218,7 @@ export class LSystemCalculator {
           if (this.lastPosition && item) {
             this.lastPosition.x = item.position.x;
             this.lastPosition.y = item.position.y;
+            this.lastPosition.iterationNr = item.position.iterationNr;
             this.angle = item.angle;
           }
           break;
@@ -245,30 +238,48 @@ export class LSystemCalculator {
     } else {
       const drawingVariables = this.variables.filter(v => v.isDrawingVariable).map(v => v.varname);
       if (drawingVariables.includes(char)) {
-        this.lastPosition = this.drawLine(this.lastPosition, length);
+        this.lastPosition = this.addLineToCurve(this.lastPosition, length, iterationNr, letter);
       }
     }
     return length;
   }
 
-  drawLine(point1: Point | undefined, length: number): undefined | Point {
+  addLineToCurve(point1: Point | undefined, length: number, iterationNr: number, letter: string): undefined | Point {
     if (point1 === undefined) {
       return;
     }
     const newx = point1.x + Math.cos((this.angle / 180) * Math.PI) * length;
     const newy = point1.y + Math.sin((this.angle / 180) * Math.PI) * length;
 
-    const line = new SVGLine(point1.x, point1.y, newx, newy);
+    let opacityValue = 1;
+
+    switch(this.fadeStrokeOpacity) {
+      case "None":
+        break;
+      case "Normal":
+        opacityValue = (1 / this.nrOfIterationsRequested) * iterationNr;
+        break;
+      case "Reverse":
+        opacityValue = 1 - (1 / this.nrOfIterationsRequested) * iterationNr;
+        break;
+    }
+
+    const line = new SVGLine(point1.x, point1.y, newx, newy, 'shape', this.strokeColor, 1, opacityValue);
     // line.setAttribute("stroke-opacity", (iterationNr / nrOfIterationsRequested).toString());
 
-    line.classList.push("shape");
-    line.classList.push(`letter-${point1.letter}`);
-    line.classList.push(`iteration-${point1.iterationNr}`);
+    if (this.fadeStrokeOpacity !==  "None") {
+      line.classList.push("fade-stroke");
+      if (this.fadeStrokeOpacity === 'Reverse') {
+        line.classList.push("reverse");
+      }
+    }
+    line.classList.push(`letter-${letter}`);
+    line.classList.push(`iteration-${iterationNr}`);
 
     this.lines.push(line);
     this.points.push(point1);
 
-    return new Point(newx, newy, 0, '');
+    return new Point(newx, newy, iterationNr, letter);
 
   }
 
@@ -276,7 +287,7 @@ export class LSystemCalculator {
     this.angle += rotation;
   }
 
-  createParameterObject(): LSystemJSONParameters{
+  createParameterObject(): LSystemJSONParameters {
     const params = new LSystemJSONParameters(this.systemName);
     params.systemName = this.systemName;
     params.variables = this.variables;
@@ -288,20 +299,24 @@ export class LSystemCalculator {
     params.lineLengthMultiplier = this.lineLengthMultiplier;
     params.originPosition = this.originPosition;
     params.originCoordinates = this.originCoordinates;
+    params.fadeStrokeOpacity = this.fadeStrokeOpacity;
+    params.strokeColor = this.strokeColor;
     return params;
   }
 
   initFromParametersObject(params: LSystemJSONParameters): void {
     this.systemName = params.systemName;
     this.variables = params.variables;
-    this.axiom = params.axiom;
-    this.rules = params.rules;
-    this.rotationAngle = params.rotationAngle;
-    this.startingAngle = params.startingAngle;
-    this.lineLength = params.lineLength;
+    this.axiom = params.axiom || '';
+    this.rules = params.rules || '';
+    this.rotationAngle = params.rotationAngle || 10;
+    this.startingAngle = params.startingAngle || 90;
+    this.lineLength = params.lineLength || 1;
     this.lineLengthMultiplier = params.lineLengthMultiplier;
-    this.originPosition = params.originPosition;
-    this.originCoordinates = params.originCoordinates;
+    this.originPosition = params.originPosition || OriginPositions.CENTER;
+    this.originCoordinates = params.originCoordinates || new Point(0,0);
+    this.strokeColor = params.strokeColor || 'black';
+    this.fadeStrokeOpacity = params.fadeStrokeOpacity || 'None';
   }
 
 }
