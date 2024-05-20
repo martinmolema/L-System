@@ -114,6 +114,22 @@ Notice that level 3 is only partly displayed otherwise the image becomes too lar
 3:                    F-F+F  F-F+F  F-F+F
 ```
 
+This results in :
+1. F+F+F
+2. F-F+F+F-F+F+F-F+F
+3. F-F+F-F-F+F+F-F+F+F-F+F-F-F+F+F-F+F+F-F+F-F-F+F+F-F+F
+
+Using a different formula for drawing a tree (canopy)
+> `X= >[-FX]+FX`
+> Axiom = FX
+
+Yields the following iterations:
+1. FX
+2. F>[-FX]+FX
+3. F>[-F>[-FX]+FX]+F>[-FX]+FX
+4. F>[-F>[-F>[-FX]+FX]+F>[-FX]+FX]+F>[-F>[-FX]+FX]+F>[-FX]+FX
+
+Notica how the [ and ] get nested.
 
 ## Operations
 

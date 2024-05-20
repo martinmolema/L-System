@@ -247,7 +247,10 @@
       <app-lsystem [lsystem]="lsystem" [canvas]="canvas"></app-lsystem>
     </section>
     <section>
+      <div>
       {{ lsystem.completeFormula }}
+      </div>
+      <button (click)="copyResultFormulaToClipboard()">Copy</button>
     </section>
   </article>
 </main>

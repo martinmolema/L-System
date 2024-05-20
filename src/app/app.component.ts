@@ -97,7 +97,7 @@ export class AppComponent {
   canvas: DrawingCanvas;
   formgroup: FormGroup;
 
-  idxSelectedSystem: number = 1;
+  idxSelectedSystem: number = 8;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -304,6 +304,14 @@ export class AppComponent {
 
   copySVGToClipboard(): void {
     const svg = this.lsystem.createLinesAsSVGStringComplete(new Point(400,400));
+    const type = "text/plain";
+    const blob = new Blob([svg], { type });
+    const data = [new ClipboardItem({[type]: blob})];
+    navigator.clipboard.write(data);
+
+  }
+  copyResultFormulaToClipboard(): void {
+    const svg = this.lsystem.completeFormula;
     const type = "text/plain";
     const blob = new Blob([svg], { type });
     const data = [new ClipboardItem({[type]: blob})];

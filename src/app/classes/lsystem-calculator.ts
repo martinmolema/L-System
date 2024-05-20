@@ -13,6 +13,7 @@ export class LSystemCalculator {
   public systemName: string;
   private rules: string[] = new Array<string>();
   private variables: Array<LSystemVariable> = new Array<LSystemVariable>();
+  private drawingVariables: Array<string> = new Array<string>();
   private axiom = '';
   private originPosition: OriginPositions;
   private originCoordinates: Point;
@@ -107,6 +108,7 @@ export class LSystemCalculator {
   addVariableObject(variable: LSystemVariable) {
     this.variables.push(variable);
     this.clearCalculatedFormula();
+    this.drawingVariables = this.variables.filter(v => v.isDrawingVariable).map(v => v.varname);
   }
 
   addVariableSimple(varname: string, isdrawingVariable: boolean = false) {
@@ -144,11 +146,11 @@ export class LSystemCalculator {
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
     this.points = new Array<Point>();
-    this.completeFormula = '';
+    this.clearCalculatedFormula();
 
     this.nrOfIterationsRequested = nrOfIterations;
 
-    this.generateOneIteration(nrOfIterations, this.axiom, this.lineLength);
+    this.completeFormula = this.generateOneIteration(nrOfIterations, this.axiom, this.lineLength);
 
   }
 
@@ -185,25 +187,39 @@ export class LSystemCalculator {
     return result;
   }
 
-  generateOneIteration(nrOfIterations: number, formula: string, lineLength: number) {
+  /**
+   * Returns the rewritten formula (@see @param formula)
+   * @param nrOfIterations
+   * @param formula
+   * @param lineLength
+   * @returns {string} the rewritten formula
+   */
+  generateOneIteration(nrOfIterations: number, formula: string, lineLength: number): string {
+    let returnFormula = '';
     if (nrOfIterations !== 0) {
-      for (let char of formula) {
-        this.completeFormula += char;
 
+      for (let char of formula) {
         if (this.processedRules.has(char)) {
-          lineLength = this.processNonRuleCharFromFormula(char, lineLength, nrOfIterations, char);
+
+          if (this.drawingVariables.includes(char)) {
+            lineLength = this.processNonRuleCharFromFormula(char, lineLength, nrOfIterations, char);
+          }
 
           const newFormula = this.processedRules.get(char);
 
           if (newFormula !== undefined) {
-            this.generateOneIteration(nrOfIterations - 1, newFormula, lineLength);
+            const rewrittenFormula= this.generateOneIteration(nrOfIterations - 1, newFormula, lineLength);
+
+            returnFormula += (rewrittenFormula === "") ? char : rewrittenFormula;
           }
         } else {
+          returnFormula += char;
           lineLength = this.processNonRuleCharFromFormula(char, lineLength, nrOfIterations, char);
         }
       }
     }
-    return;
+    console.log(`${returnFormula}`)
+    return returnFormula;
   }
 
   /**
@@ -243,8 +259,7 @@ export class LSystemCalculator {
           break;
       }
     } else {
-      const drawingVariables = this.variables.filter(v => v.isDrawingVariable).map(v => v.varname);
-      if (drawingVariables.includes(char)) {
+      if (this.drawingVariables.includes(char)) {
         this.lastPosition = this.addLineToCurve(this.lastPosition, length, iterationNr, letter);
       }
     }
