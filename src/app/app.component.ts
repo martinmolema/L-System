@@ -147,7 +147,7 @@ export class AppComponent {
         lineLength: [lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
         originX: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
         originY: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
-        lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required]],
+        lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required, Validators.min(0.01),Validators.max(20)]],
         axiom: [lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
         fadeStrokeOpacity: [lsystem.fadeStrokeOpacity],
         strokeColor:[lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
@@ -671,6 +671,51 @@ export class AppComponent {
       this.nrOfIterations.setValue(this.nrOfIterations.value + 1);
     }
   }
+
+  changeLineLength(amount: number): void {
+    if (this.lineLength!== null) {
+      let newValue = this.lineLength.value + amount;
+
+      newValue = Math.max(0, Math.min(500, newValue));
+      this.lineLength.setValue(newValue);
+    }
+  }
+  changeRotationAngle(amount: number): void {
+    if (this.rotationAngle!== null) {
+      let newValue = this.rotationAngle.value + amount;
+
+      newValue = Math.max(-180, Math.min(180, newValue));
+      this.rotationAngle.setValue(newValue);
+    }
+  }
+  changeStartAngle(amount: number): void {
+    if (this.startAngle!== null) {
+      let newValue = this.startAngle.value + amount;
+
+      newValue = Math.max(-180, Math.min(180, newValue));
+      this.startAngle.setValue(newValue);
+    }
+  }
+  changeLineLengthMultiplier(amount: number): void {
+    if (this.lengthMultiplier!== null) {
+      let newValue = this.lengthMultiplier.value + amount;
+
+      newValue = Math.max(0.01, Math.min(30, newValue)) * 10;
+
+      if (amount < 0) {
+        newValue = Math.floor(newValue ) / 10;
+      }
+      else {
+        newValue = Math.ceil(newValue ) / 10;
+      }
+
+      if (newValue < 0.01) {
+        newValue = 0.01;
+      }
+      this.lengthMultiplier.setValue(newValue);
+    }
+  }
+
 }
 
 

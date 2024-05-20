@@ -47,6 +47,13 @@ main {
 
     }
 
+    input+button {
+      margin-left: 15px;
+    }
+    button+button {
+      margin-left:5px;
+    }
+
     table.origins {
       td {
         font-size: 14pt;
@@ -99,13 +106,13 @@ main {
       position: relative;
     }
 
-    .angle {
-      margin-right: 1rem;
-    }
-
     input[type=number] {
       text-align: right;
       width:5em;
+    }
+
+    button.updown {
+      font-weight: bold;
     }
   }
 

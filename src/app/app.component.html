@@ -6,7 +6,8 @@
     <section>
       <p>
         To learn more about what an L-System is see the <a href="https://en.wikipedia.org/wiki/L-system">Wikipedia</a>
-        page. See my <a href="https://github.com/martinmolema/L-System/tree/master">Github Page</a> for an explanation in the README.md file.
+        page. See my <a href="https://github.com/martinmolema/L-System/tree/master">Github Page</a> for an explanation
+        in the README.md file.
       </p>
       <p>
         Many thanks to <a href="https://paulbourke.net/fractals/lsys/">Paul Bourke</a> for all the fractal formulas.
@@ -45,36 +46,42 @@
                 <label for="inputNrOfIterations">Iterations</label>
                 <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number"
                        min="0" max="50">
-                <button (click)="decreaseIteration()">-</button>
-                <button (click)="increaseIteration()">+</button>
+                <button class="updown" (click)="decreaseIteration()" title="decrease value">-</button>
+                <button class="updown" (click)="increaseIteration()" title="increase value">+</button>
               </p>
               <p>
                 <label for="inputLineLength">Line length</label>
                 <input name="linelength" id="inputLineLength" formControlName="lineLength" type="number"
                        min="1" max="999">
+                <button class="updown" (click)="changeLineLength(-2)" title="decrease value">-</button>
+                <button class="updown" (click)="changeLineLength(2)" title="increase value">+</button>
               </p>
               <p>
                 <label for="inputAxiom">Axiom</label>
-                <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1" size="4">
+                <input name="axiom" id="inputAxiom" formControlName="axiom" type="text" minlength="1" size="15">
               </p>
               <p>
                 <label for="inputRotationAngle">Rotation Angle</label>
                 <input name="rotationangle" id="inputRotationAngle" formControlName="rotationAngle" type="number"
                        min="-180"
                        max="180" class="angle">
-                <span class="suffix"> &deg;</span>
+                <button class="updown" (click)="changeRotationAngle(-5)" title="decrease value">-</button>
+                <button class="updown" (click)="changeRotationAngle(5)" title="increase value">+</button>
               </p>
               <p>
                 <label for="inputStartAngle">Start Angle</label>
                 <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number"
                        min="-180" max="180" class="angle">
-                <span class="suffix"> &deg;</span>
+                <button class="updown" (click)="changeStartAngle(-5)" title="decrease value">-</button>
+                <button class="updown" (click)="changeStartAngle(5)" title="increase value">+</button>
               </p>
               <p>
                 <label for="inputLengthMultiplier">Length multiplier</label>
                 <input name="lengthMultiplier" id="inputLengthMultiplier"
                        formControlName="lengthMultiplier" type="number"
                        min="0.001" max="10" step="0.1">
+                <button class="updown" (click)="changeLineLengthMultiplier(-0.1)" title="decrease value">-</button>
+                <button class="updown" (click)="changeLineLengthMultiplier(0.1)">+</button>
               </p>
               <div class="math">
                 <label></label>
@@ -186,7 +193,7 @@
               @if (rules) {
                 <h3><span>Rules:</span>
                   <span>
-              <button (click)="addNewRule('P=F')">+</button>
+              <button (click)="addNewRule('P=F')" title="increase value">+</button>
               <button (click)="parseRulesForVariables()">Parse for vars</button>
                 </span>
                 </h3>
@@ -208,7 +215,7 @@
                 <h3><span>
             Variables:
             </span>
-                  <button (click)="addNewVariableFromForm('?', true)">+</button>
+                  <button (click)="addNewVariableFromForm('?', true)" title="increase value">+</button>
                 </h3>
                 <ng-container formArrayName="listOfVariables">
                   @for (item of variables.controls; track variables.controls; let j = $index) {

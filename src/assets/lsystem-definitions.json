@@ -81,7 +81,7 @@
     "rotationAngle": 40,
     "startingAngle": 90,
     "lineLength": 200,
-    "lineLengthMultiplier": 0.5,
+    "lineLengthMultiplier": 0.7,
     "originPosition": 9,
     "originCoordinates": {
       "iterationNr": -1,
@@ -89,9 +89,9 @@
       "x": 0,
       "y": 0
     },
-    "nrOfIterationsToDrawAtSelection": 3,
-    "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "nrOfIterationsToDrawAtSelection": 9,
+    "fadeStrokeOpacity": "Normal",
+    "strokeColor": "green"
   },
   {
     "systemName": "plant left oriented",
