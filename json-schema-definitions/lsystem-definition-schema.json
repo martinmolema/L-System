@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://molema.org/math-lsystem",
+  "title": "L-system definitions",
+  "description": "A list of L-System Definitions",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "systemName": {
+        "type": "string",
+        "description": "The unique name of the system"
+      },
+      "variables": {
+        "type": "array",
+        "description": "all the variables in the formula so we can determine which variables will actually draw lines",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "varname": {
+            "type": "string"
+          },
+          "isDrawingVariable": {
+            "type": "boolean"
+          }
+        }
+      },
+      "rules": {
+        "type": "array",
+        "uniqueItems": true,
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "description": "The formulas governing the L-System"
+        }
+      },
+      "axiom": {
+        "type": "string",
+        "description": "The first set of chars to be parsed"
+      },
+      "rotationAngle": {
+        "type": "number",
+        "default": 45,
+        "description": ""
+      },
+      "startingAngle": {
+        "type": "number",
+        "default": 90,
+        "description": ""
+      },
+      "lineLength": {
+        "type": "number",
+        "default": 10,
+        "description": ""
+      },
+      "lineLengthMultiplier": {
+        "type": "number",
+        "default": 1,
+        "description": ""
+      },
+      "strokeColor": {
+        "type": "string",
+        "default": "black",
+        "description": "The color used when to draw lines"
+      },
+      "fadeStrokeOpacity": {
+        "enum": [
+          "None",
+          "Normal",
+          "Reverse"
+        ],
+        "default": "None",
+        "description": "Whether to make the lines fade with higher iterations"
+      },
+      "originPosition": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 10,
+        "default": 1,
+        "description": "The type of origin e.g. Center, TopLeft, etc. This is an numeric enum!"
+      },
+      "originCoordinates": {
+        "type": "object",
+        "description": "If the originPosition is value zero (0), then a set of coordinates must be specified, relative to the canvas' origin (0,0). Notice that the Y-axis positive value go from bottom to top!",
+        "properties": {
+          "x": {
+            "type": "number",
+            "default": 0
+          },
+          "y": {
+            "type": "number",
+            "default": 0
+          }
+        }
+      }
+
+    },
+    "required": ["systemName","rules","variables","axiom","rotationAngle","lineLength"]
+  }
+}

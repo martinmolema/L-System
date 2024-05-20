@@ -30,7 +30,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "squares",
@@ -54,7 +56,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Fractal tree",
@@ -111,7 +115,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "square sierpinski",
@@ -139,7 +145,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "??",
@@ -163,7 +171,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "triangles",
@@ -202,7 +212,7 @@
       },
       {
         "varname": "F",
-        "isDrawingVariable": false
+        "isDrawingVariable": true
       }
     ],
     "axiom": "X",
@@ -220,7 +230,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Sierpinski Arrowhead",
@@ -253,13 +265,15 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Hilbert curve",
     "variables": [
       {
-        "varname": "F",
+        "rename": "F",
         "isDrawingVariable": true
       },
       {
@@ -310,7 +324,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Quadratic Gosper",
@@ -343,7 +359,9 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "L-system leaf",
@@ -387,6 +405,76 @@
       "letter": "",
       "x": 0,
       "y": 0
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
+  },
+  {
+    "systemName": "Peano Curve - space filling",
+    "variables": [
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "X",
+    "rules": [
+      "X=>XFYFX+F+YFXFY-F-XFYFX",
+      "Y=>YFXFY-F-XFYFX+F+YFXFY"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 0,
+    "lineLength": 75,
+    "lineLengthMultiplier": 0.5,
+    "originPosition": 0,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": -301,
+      "y": -293
     }
+  },
+  {
+    "systemName": "Quadratic Koch Island (variant B)",
+    "variables": [
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "Y",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "X+X+X+X+X+X+X+X+X+X+X+X",
+    "rules": [
+      "X=X+YF++YF-FX--FXFX-YF+X",
+      "Y=-FX+YFYF++YF+FX--FX-YF"
+    ],
+    "rotationAngle": 30,
+    "startingAngle": 0,
+    "lineLength": 3,
+    "lineLengthMultiplier": 1,
+    "originPosition": 1,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": 0
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   }
 ]
