@@ -45,6 +45,8 @@
                 <label for="inputNrOfIterations">Iterations</label>
                 <input name="iterations" id="inputNrOfIterations" formControlName="nrOfIterations" type="number"
                        min="0" max="50">
+                <button (click)="decreaseIteration()">-</button>
+                <button (click)="increaseIteration()">+</button>
               </p>
               <p>
                 <label for="inputLineLength">Line length</label>

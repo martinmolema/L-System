@@ -86,9 +86,9 @@ function checkVariablesAndRules(form: FormGroup): null | ValidationErrors {
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'Martin \'s L-System Playground';
-
+  protected readonly OriginPositions = OriginPositions;
   protected readonly Math = Math;
+
   lsystem: LSystemCalculator;
   allSystems: Array<LSystemCalculator>;
   autoUpdateDrawing: boolean = true;
@@ -97,7 +97,7 @@ export class AppComponent {
   canvas: DrawingCanvas;
   formgroup: FormGroup;
 
-  idxSelectedSystem: number = 2;
+  idxSelectedSystem: number = 1;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -111,13 +111,13 @@ export class AppComponent {
 
     this.formgroup = this.formBuilder.group({});
 
-    this.createForm(this.lsystem, 0);
+    this.createForm(this.lsystem);
 
     this.getDataForCurves().subscribe({
       next: (data) => {
         this.allSystems = data;
         this.lsystem = this.allSystems[this.idxSelectedSystem];
-        this.createForm(this.lsystem, 3);
+        this.createForm(this.lsystem);
 
         this.createHandlers();
 
@@ -136,10 +136,12 @@ export class AppComponent {
    * @param lsystem
    * @param nrOfIterationsRequested
    */
-  createForm(lsystem: LSystemCalculator, nrOfIterationsRequested: number): void {
+  createForm(lsystem: LSystemCalculator): void {
+    this.clearFormHandler();
+
     this.formgroup = this.formBuilder.group({
         autoUpdate: [this.autoUpdateDrawing],
-        nrOfIterations: [nrOfIterationsRequested, [Validators.required, Validators.min(0), Validators.max(30)]],
+        nrOfIterations: [lsystem.nrOfIterationsRequested, [Validators.required, Validators.min(0), Validators.max(30)]],
         rotationAngle: [lsystem.rotationAngle, [Validators.required, Validators.min(-180), Validators.max(+180)]],
         startAngle: [lsystem.startingAngle, [Validators.required, Validators.min(-180), Validators.max(+180)]],
         lineLength: [lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
@@ -159,13 +161,19 @@ export class AppComponent {
     this.updateRules();
   }
 
+  clearFormHandler(): void {
+    if (this.valueChangeSubscriber) {
+      this.valueChangeSubscriber.unsubscribe();
+    }
+  }
+
   /**
    * Update the from from an LSystem. This will create a new form and then create a new handler for events.
    * @param lsystem
    */
   updateFormFromLSystem(lsystem: LSystemCalculator): void {
     // create a new form
-    this.createForm(lsystem, 1);
+    this.createForm(lsystem);
 
     this.createHandlers();
   }
@@ -270,9 +278,7 @@ export class AppComponent {
   }
 
   createHandlers(): void {
-    if (this.valueChangeSubscriber) {
-      this.valueChangeSubscriber.unsubscribe();
-    }
+    this.clearFormHandler();
     this.valueChangeSubscriber = this.formgroup.valueChanges.subscribe(() => {
       if (this.formgroup.valid) {
         this.autoUpdateDrawing = this.autoUpdate ? this.autoUpdate.value : this.autoUpdateDrawing;
@@ -413,7 +419,7 @@ export class AppComponent {
     });
   }
 
-  createJSON() {
+  /*createJSON() {
     this.allSystems = new Array<LSystemCalculator>();
 
     let oneLsystem = new LSystemCalculator('bushy cactus tree', OriginPositions.CenterBottom);
@@ -560,7 +566,7 @@ export class AppComponent {
 
     return this.allSystems;
 
-  }
+  }*/
 
   setOriginFromForm(shortname: string) {
     this.canvas.resetTranslation();
@@ -653,7 +659,18 @@ export class AppComponent {
     this.lsystem.OriginCoordinates = new Point(newX, newY);
   }
 
-  protected readonly OriginPositions = OriginPositions;
+
+  decreaseIteration(): void {
+    if (this.nrOfIterations !== null && this.nrOfIterations.value > 1)  {
+      this.nrOfIterations.setValue(this.nrOfIterations.value - 1);
+    }
+  }
+
+  increaseIteration(): void {
+    if (this.nrOfIterations !== null) {
+      this.nrOfIterations.setValue(this.nrOfIterations.value + 1);
+    }
+  }
 }
 
 

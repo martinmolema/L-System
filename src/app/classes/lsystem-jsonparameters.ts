@@ -16,6 +16,7 @@ export class LSystemJSONParameters {
   originCoordinates: Point;
   fadeStrokeOpacity: StrokeOpacitySettings;
   strokeColor: string;
+  nrOfIterationsToDrawAtSelection: number;
 
   constructor(systemName: string) {
     this.systemName = systemName;
@@ -30,5 +31,6 @@ export class LSystemJSONParameters {
     this.originCoordinates = new Point(0,0);
     this.fadeStrokeOpacity = 'None';
     this.strokeColor = 'black';
+    this.nrOfIterationsToDrawAtSelection = 3;
   }
 }

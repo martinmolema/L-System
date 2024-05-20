@@ -32,7 +32,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "squares",
@@ -58,7 +59,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Fractal tree",
@@ -86,7 +88,10 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "nrOfIterationsToDrawAtSelection": 3,
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "plant left oriented",
@@ -117,7 +122,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "square sierpinski",
@@ -147,10 +153,11 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
-    "systemName": "??",
+    "systemName": "Simple snowflake",
     "variables": [
       {
         "varname": "F",
@@ -173,7 +180,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "triangles",
@@ -197,7 +205,10 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "nrOfIterationsToDrawAtSelection": 3,
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Peano Curve",
@@ -232,7 +243,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Sierpinski Arrowhead",
@@ -267,7 +279,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Hilbert curve",
@@ -300,7 +313,10 @@
       "letter": "",
       "x": 0,
       "y": 0
-    }
+    },
+    "nrOfIterationsToDrawAtSelection": 3,
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Quadratic Snowflake variant B",
@@ -326,7 +342,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Quadratic Gosper",
@@ -361,7 +378,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "L-system leaf",
@@ -407,7 +425,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Peano Curve - space filling",
@@ -440,7 +459,10 @@
       "letter": "",
       "x": -301,
       "y": -293
-    }
+    },
+    "nrOfIterationsToDrawAtSelection": 3,
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "black"
   },
   {
     "systemName": "Quadratic Koch Island (variant B)",
@@ -475,7 +497,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Bushy plant (Saupe)",
@@ -525,7 +548,8 @@
       "y": -400
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   },
   {
     "systemName": "Dragon",
@@ -560,6 +584,7 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black"
+    "strokeColor": "black",
+    "nrOfIterationsToDrawAtSelection": 3
   }
 ]

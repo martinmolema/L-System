@@ -43,6 +43,13 @@
         "default": 45,
         "description": ""
       },
+      "nrOfIterationsToDrawAtSelection": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10,
+        "description": "The suggested number of iterations to draw when this item is loaded.",
+        "default": 3
+      },
       "startingAngle": {
         "type": "number",
         "default": 90,

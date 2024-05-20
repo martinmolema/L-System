@@ -308,6 +308,7 @@ export class LSystemCalculator {
     params.originCoordinates = this.originCoordinates;
     params.fadeStrokeOpacity = this.fadeStrokeOpacity;
     params.strokeColor = this.strokeColor;
+    params.nrOfIterationsToDrawAtSelection = this.nrOfIterationsRequested;
     return params;
   }
 
@@ -324,6 +325,7 @@ export class LSystemCalculator {
     this.originCoordinates = params.originCoordinates || new Point(0, 0);
     this.strokeColor = params.strokeColor || 'black';
     this.fadeStrokeOpacity = params.fadeStrokeOpacity || 'None';
+    this.nrOfIterationsRequested = params.nrOfIterationsToDrawAtSelection;
   }
 
 }
