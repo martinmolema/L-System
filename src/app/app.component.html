@@ -93,13 +93,11 @@
               <p>
                 <label for="cbxUsePolyline">Animated polyline</label>
                 <input id="cbxUsePolyline" formControlName="usePolyline" type="checkbox">
-              </p>
-              @if (usePolyline?.value === true) {
-                <p>
+                @if (usePolyline?.value === true) {
                   <label for="cbxFillPolyline">Fill Polyline</label>
                   <input id="cbxFillPolyline" formControlName="fillPolyline" type="checkbox">
-                </p>
-              }
+                }
+              </p>
               <p>
                 <label for="inputStrokeColor">Stroke color:</label>
                 <input id="inputStrokeColor" type="text" formControlName="strokeColor" required>
