@@ -17,6 +17,8 @@ export class LSystemJSONParameters {
   fadeStrokeOpacity: StrokeOpacitySettings;
   strokeColor: string;
   nrOfIterationsToDrawAtSelection: number;
+  fillPolyline: boolean;
+  usePolyline: boolean;
 
   constructor(systemName: string) {
     this.systemName = systemName;
@@ -32,5 +34,7 @@ export class LSystemJSONParameters {
     this.fadeStrokeOpacity = 'None';
     this.strokeColor = 'black';
     this.nrOfIterationsToDrawAtSelection = 3;
+    this.fillPolyline = false;
+    this.usePolyline = false;
   }
 }

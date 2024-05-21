@@ -92,7 +92,7 @@ export class AppComponent {
   lsystem: LSystemCalculator;
   allSystems: Array<LSystemCalculator>;
   autoUpdateDrawing: boolean = true;
-  valueChangeSubscriber: Subscription | undefined = undefined;
+  valueChangeSubscribers: Array<Subscription>;
 
   canvas: DrawingCanvas;
   formgroup: FormGroup;
@@ -103,6 +103,7 @@ export class AppComponent {
     private formBuilder: FormBuilder,
     private http: HttpClient
   ) {
+    this.valueChangeSubscribers = new Array<Subscription>();
 
 
     this.allSystems = new Array<LSystemCalculator>();
@@ -134,10 +135,9 @@ export class AppComponent {
   /**
    * Creates a new form based on a given LSystemCalculator
    * @param lsystem
-   * @param nrOfIterationsRequested
    */
   createForm(lsystem: LSystemCalculator): void {
-    this.clearFormHandler();
+    this.clearFormHandlers();
 
     this.formgroup = this.formBuilder.group({
         autoUpdate: [this.autoUpdateDrawing],
@@ -150,6 +150,8 @@ export class AppComponent {
         lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required, Validators.min(0.01),Validators.max(20)]],
         axiom: [lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
         fadeStrokeOpacity: [lsystem.fadeStrokeOpacity],
+        usePolyline: [lsystem.UsePolyline],
+        fillPolyline: [lsystem.FillPolyline],
         strokeColor:[lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
         listOfVariables: this.formBuilder.array([]),
         listOfRules: this.formBuilder.array([]),
@@ -161,9 +163,10 @@ export class AppComponent {
     this.updateRules();
   }
 
-  clearFormHandler(): void {
-    if (this.valueChangeSubscriber) {
-      this.valueChangeSubscriber.unsubscribe();
+  clearFormHandlers(): void {
+    if (this.valueChangeSubscribers) {
+      this.valueChangeSubscribers.forEach(sub => sub.unsubscribe());
+      this.valueChangeSubscribers = new Array<Subscription>();
     }
   }
 
@@ -185,8 +188,10 @@ export class AppComponent {
 
   setupSystemAndRedraw(){
     this.updateFormFromLSystem(this.lsystem);
+
     this.setOriginFromPosition(this.lsystem.OriginPosition);
     this.resetZoom();
+
     this.redraw(this.lsystem.nrOfIterationsRequested);
 
   }
@@ -278,14 +283,55 @@ export class AppComponent {
   }
 
   createHandlers(): void {
-    this.clearFormHandler();
-    this.valueChangeSubscriber = this.formgroup.valueChanges.subscribe(() => {
-      if (this.formgroup.valid) {
-        this.autoUpdateDrawing = this.autoUpdate ? this.autoUpdate.value : this.autoUpdateDrawing;
+    this.clearFormHandlers();
+    // the list of items below will immediately trigger a recalculation
+    [
+      this.nrOfIterations,
+      this.lineLength,
+      this.axiom,
+      this.rotationAngle,
+      this.startAngle,
+      this.lengthMultiplier,
+      this.fadeStrokeOpacity,
+      this.usePolyline
+    ].forEach((field: AbstractControl | null) => {
+      if (field !== null) {
+        this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
+          if (this.formgroup.valid) {
+            this.autoUpdateDrawing = this.autoUpdate ? this.autoUpdate.value : this.autoUpdateDrawing;
 
-        if (this.autoUpdateDrawing) {
-          this.changeParametersAndRedraw();
-        }
+            if (this.autoUpdateDrawing) {
+              this.changeParametersAndRedraw();
+            }
+          }
+        }));
+      }
+
+    });
+    if (this.variables) {
+      this.valueChangeSubscribers.push(this.variables?.valueChanges.subscribe((variable: FormGroup) => {
+        this.processFormVariables();
+      }));
+    }
+
+    if (this.rules) {
+      this.valueChangeSubscribers.push(this.rules?.valueChanges.subscribe((rule: FormGroup) => {
+        this.processFormRules();
+      }))
+    }
+
+    // the fields below will only change information on the L-system object that will cause the HTML in the component
+    // to change some aspects; not recalc the whole system
+    [
+      this.fillPolyline,
+      this.strokeColor,
+      this.originX,
+      this.originY,
+    ].forEach((field: AbstractControl | null) => {
+      if (field !== null) {
+        this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
+           this.changeLSystemSimpleParameters();
+        }));
       }
     });
   }
@@ -320,18 +366,24 @@ export class AppComponent {
   }
 
   changeParametersAndRedraw(): void {
-    this.changeLSystemParameters();
+    this.changeLSystemParametersForCalculation();
     if (this.nrOfIterations) {
       this.redraw(parseInt(this.nrOfIterations.value));
     }
   }
 
 
-  changeLSystemParameters() {
+  processFormVariables(): void {
+    this.lsystem.clearVariables();
+    this.variables?.controls.map(c => c as FormGroup).forEach((variable: FormGroup) => {
+      const name =variable.get('variableName')?.value;
+      const isDrawing = variable.get('isDrawing')?.value;
 
-    this.canvas.setOrigin(this.originX?.value, this.originY?.value);
-    this.lsystem.lineLength = this.lineLength?.value;
+      this.lsystem.addVariableSimple(name, isDrawing);
+    });
+  }
 
+  processFormRules(): void {
     this.lsystem.clearRules();
     this.rules?.controls.forEach((control: AbstractControl) => {
       const formGroup = (control as FormGroup);
@@ -341,30 +393,33 @@ export class AppComponent {
       }
 
     });
+  }
 
-    this.lsystem.clearVariables();
-    this.variables?.controls.map(c => c as FormGroup).forEach((variable: FormGroup) => {
-      const name =variable.get('variableName')?.value;
-      const isDrawing = variable.get('isDrawing')?.value;
+  changeLSystemParametersForCalculation() {
 
-      this.lsystem.addVariableSimple(name, isDrawing);
-    });
+    this.canvas.setOrigin(this.originX?.value, this.originY?.value);
+    this.lsystem.lineLength = this.lineLength?.value;
     this.lsystem.setAxiom(this.axiom?.value);
     this.lsystem.startingAngle = this.startAngle?.value;
     this.lsystem.rotationAngle = this.rotationAngle?.value;
     this.lsystem.lineLengthMultiplier = this.lengthMultiplier?.value;
     this.lsystem.fadeStrokeOpacity = this.fadeStrokeOpacity?.value;
-    this.lsystem.strokeColor = this.strokeColor?.value;
+    this.lsystem.UsePolyline = this.usePolyline?.value;
 
+    this.processFormRules();
+    this.processFormVariables();
+
+    this.changeLSystemSimpleParameters();
+  }
+
+  changeLSystemSimpleParameters(): void {
     this.canvas.setOrigin(this.originX?.value, this.originY?.value);
-
+    this.lsystem.FillPolyline = this.fillPolyline?.value;
+    this.lsystem.strokeColor = this.strokeColor?.value;
   }
 
   redraw(nrOfIterations: number): void {
-    this.lsystem.startGeneration(nrOfIterations);
-
-    console.log(`Calc time: ${this.lsystem.CalculationTime}`);
-    // this.lsystem.createPolyline();
+    this.lsystem.startGeneration(nrOfIterations)
   }
 
   get autoUpdate(): AbstractControl | null {    return this.formgroup.get('autoUpdate');  }
@@ -378,6 +433,8 @@ export class AppComponent {
   get lengthMultiplier(): AbstractControl | null {return this.formgroup.get('lengthMultiplier');}
   get fadeStrokeOpacity(): AbstractControl | null {return this.formgroup.get('fadeStrokeOpacity');}
   get strokeColor(): AbstractControl | null {return this.formgroup.get('strokeColor');}
+  get usePolyline(): AbstractControl | null {return this.formgroup.get('usePolyline');}
+  get fillPolyline(): AbstractControl | null {return this.formgroup.get('fillPolyline');}
 
   get variables(): FormArray | undefined {
     const items = this.formgroup.get('listOfVariables');

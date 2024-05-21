@@ -79,6 +79,14 @@
         "default": "None",
         "description": "Whether to make the lines fade with higher iterations"
       },
+      "usePolyline": {
+        "type": "boolean",
+        "default": false
+      },
+      "fillPolyline": {
+        "type": "boolean",
+        "default": false
+      },
       "originPosition": {
         "type": "integer",
         "minimum": 0,

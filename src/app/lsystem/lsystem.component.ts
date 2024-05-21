@@ -12,6 +12,7 @@ import {Point} from "../classes/point";
 import {LSystemCalculator} from "../classes/lsystem-calculator";
 import {DrawingCanvas} from "../classes/drawing-canvas";
 
+const SVG_NS = "http://www.w3.org/2000/svg";
 
 @Component({
   selector: 'app-lsystem',
@@ -25,7 +26,8 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   @Input() lsystem: LSystemCalculator | undefined = undefined;
   @Input() canvas: DrawingCanvas;
   @ViewChild("drawing") drawingElement: ElementRef | undefined;
-  // @ViewChild("animation") polylineAnimation: ElementRef | undefined;
+  @ViewChild("polylineElement") polylineElement: ElementRef | undefined;
+  @Input() uniqueDrawingID: string = '';
 
   startPoint = new Point(0, 0);
   translationStartValue = new Point(0, 0);
@@ -37,6 +39,36 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
+    if (changes['uniqueDrawingID'] || changes['lsystem']) {
+      /**
+       * <animate attributeName="stroke-dashoffset" #animation
+       *                    [attr.from]="lsystem?.TotalLineLength"
+       *                    [attr.to]="0"
+       *                    begin="0s"
+       *                    fill="freeze"
+       *                    restart="always"
+       *                    dur="5s"/>
+       */
+      const svgPolylineElement = this.polylineElement?.nativeElement;
+      if (svgPolylineElement) {
+        while (svgPolylineElement.lastChild) {
+          svgPolylineElement.removeChild(svgPolylineElement.lastChild);
+        }
+        const animation:SVGAnimationElement = document.createElementNS(SVG_NS,"animate") as SVGAnimationElement;
+        const totalLength = this.lsystem?.TotalLineLength ? this.lsystem.TotalLineLength : 0;
+        animation.setAttribute('attributeName', 'stroke-dashoffset');
+        animation.setAttribute('from', totalLength.toString() );
+        animation.setAttribute('to', '0');
+        animation.setAttribute('begin', '0s');
+        animation.setAttribute('fill', 'freeze');
+        animation.setAttribute('restart', 'always');
+        animation.setAttribute('dur', '3s');
+        animation.id =  "my-animation";
+        svgPolylineElement.appendChild(animation);
+        animation.beginElementAt(0);
+      }
+    }
   }
 
   ngOnInit(): void {

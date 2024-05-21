@@ -37,7 +37,6 @@
         <form [formGroup]="formgroup">
           <div class="column">
             <div class="left card">
-
               <p>
                 <label for="auto-update">Auto update drawing</label>
                 <input checked type="checkbox" id="auto-update" formControlName="autoUpdate">
@@ -92,18 +91,30 @@
             </div>
             <div class="right card">
               <p>
+                <label for="cbxUsePolyline">Draw polyline instead of lines</label>
+                <input id="cbxUsePolyline" formControlName="usePolyline" type="checkbox">
+              </p>
+              @if (usePolyline?.value === true) {
+                <p>
+                  <label for="cbxFillPolyline">Fill Polyline</label>
+                  <input id="cbxFillPolyline" formControlName="fillPolyline" type="checkbox">
+                </p>
+              }
+              <p>
                 <label for="inputStrokeColor">Stroke color:</label>
                 <input id="inputStrokeColor" type="text" formControlName="strokeColor" required>
               </p>
-              <p>
-                <label for="inputFadeStrokeOpacity">Use fading lines</label>
-                <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
-                  <option value="None">None</option>
-                  <option value="Normal">Normal</option>
-                  <option value="Reverse">Reverse</option>
-                </select>
+              @if (usePolyline?.value === false) {
+                <p>
+                  <label for="inputFadeStrokeOpacity">Use fading lines</label>
+                  <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
+                    <option value="None">None</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Reverse">Reverse</option>
+                  </select>
 
-              </p>
+                </p>
+              }
               <p>
                 <label for="inputOriginX">Origin drawing</label>
                 <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
@@ -244,7 +255,7 @@
 
   <article id="drawingarea">
     <section>
-      <app-lsystem [lsystem]="lsystem" [canvas]="canvas"></app-lsystem>
+      <app-lsystem [lsystem]="lsystem" [canvas]="canvas" [uniqueDrawingID]="lsystem.uniqueDrawingID"></app-lsystem>
     </section>
     <section class="formula">
       <div>{{ lsystem.completeFormula }}</div>

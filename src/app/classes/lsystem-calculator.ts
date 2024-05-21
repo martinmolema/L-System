@@ -24,6 +24,9 @@ export class LSystemCalculator {
   public strokeColor: string = 'black';
   private calculationTime: number = 0;
   private recursiveIterations: number = 0;
+  private usePolyline: boolean = false;
+  private fillPolyline: boolean = false;
+  public uniqueDrawingID: string = '';
 
   private angle = 0;
   private stack: Array<StackItem>;
@@ -60,7 +63,12 @@ export class LSystemCalculator {
   }
 
   get PolylineString(): string {
-    return this.polylineString;
+    if (this.usePolyline) {
+      return this.polylineString;
+    }
+    else {
+      return '';
+    }
   }
 
   get OriginPosition(): OriginPositions {
@@ -88,6 +96,21 @@ export class LSystemCalculator {
     return this.recursiveIterations;
   }
 
+  get UsePolyline(): boolean {
+    return this.usePolyline;
+  }
+
+  set UsePolyline(v: boolean) {
+    this.usePolyline = v;
+  }
+
+  get FillPolyline(): boolean {
+    return this.fillPolyline;
+  }
+
+  set FillPolyline(v: boolean) {
+    this.fillPolyline = v;
+  }
 
   clearVariables(): void {
     this.variables = new Array<LSystemVariable>();
@@ -151,6 +174,9 @@ export class LSystemCalculator {
 
   startGeneration(nrOfIterations: number) {
 
+    this.uniqueDrawingID = "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+      (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+    );
     this.nrOfIterationsRequested = nrOfIterations;
     this.lastPosition = new Point(0, 0, 0, '');
     this.angle = this.startingAngle;
@@ -166,6 +192,10 @@ export class LSystemCalculator {
     const startDateTime = new Date();
     this.completeFormula = this.generateOneIteration(nrOfIterations, this.axiom, this.lineLength);
     const endDateTime = new Date();
+
+    if (this.usePolyline) {
+      this.createPolyline();
+    }
 
     this.calculationTime = (endDateTime.getTime() - startDateTime.getTime());
   }
@@ -225,7 +255,7 @@ export class LSystemCalculator {
           const newFormula = this.processedRules.get(char);
 
           if (newFormula !== undefined) {
-            const rewrittenFormula= this.generateOneIteration(nrOfIterations - 1, newFormula, lineLength);
+            const rewrittenFormula = this.generateOneIteration(nrOfIterations - 1, newFormula, lineLength);
 
             returnFormula += (rewrittenFormula === "") ? char : rewrittenFormula;
           }
@@ -341,14 +371,14 @@ export class LSystemCalculator {
     params.fadeStrokeOpacity = this.fadeStrokeOpacity;
     params.strokeColor = this.strokeColor;
     params.nrOfIterationsToDrawAtSelection = this.nrOfIterationsRequested;
+    params.fillPolyline = this.fillPolyline;
+    params.usePolyline = this.usePolyline;
     return params;
   }
 
   initFromParametersObject(params: LSystemJSONParameters): void {
     this.systemName = params.systemName;
-    this.variables = params.variables;
     this.axiom = params.axiom || '';
-    this.rules = params.rules || '';
     this.rotationAngle = params.rotationAngle || 10;
     this.startingAngle = params.startingAngle || 90;
     this.lineLength = params.lineLength || 1;
@@ -358,6 +388,11 @@ export class LSystemCalculator {
     this.strokeColor = params.strokeColor || 'black';
     this.fadeStrokeOpacity = params.fadeStrokeOpacity || 'None';
     this.nrOfIterationsRequested = params.nrOfIterationsToDrawAtSelection;
+    this.fillPolyline = params.fillPolyline;
+    this.usePolyline = params.usePolyline;
+
+    params.variables.forEach(variable => this.addVariableSimple(variable.varname, variable.isDrawingVariable));
+    params.rules.forEach(rule => this.addRule(rule));
   }
 
 }

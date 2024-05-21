@@ -1,3 +1,4 @@
+{{uniqueDrawingID}}
 <svg width="800" height="800" xmlns="http://www.w3.org/2000/svg" #drawing
      (wheel)="handleWheelevent($event)"
      (mousedown)="startDrag($event)"
@@ -11,35 +12,38 @@
             <circle cx="0" cy="0" r="10" stroke="blue" fill="blue" fill-opacity="0.5"></circle>
             <circle [attr.cx]="lsystem?.OriginX" [attr.cy]="lsystem?.OriginY" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
       -->
-            @for (line of lsystem?.lines; track lsystem?.lines) {
-              <line
-                [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
-                [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
-                [attr.y1]="line.y1 + canvas.OriginY - canvas.translation.y"
-                [attr.y2]="line.y2 + canvas.OriginY - canvas.translation.y"
-                [attr.strokeWidth]="line.strokeWidth"
-                [classList]="line.classList.join(' ')"
-                [attr.stroke]="lsystem?.strokeColor"
-                [attr.stroke-opacity]="line.strokeOpacity"
+      @if (!lsystem?.UsePolyline) {
+        @for (line of lsystem?.lines; track lsystem?.lines) {
+          <line
+            [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
+            [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
+            [attr.y1]="line.y1 + canvas.OriginY - canvas.translation.y"
+            [attr.y2]="line.y2 + canvas.OriginY - canvas.translation.y"
+            [attr.strokeWidth]="line.strokeWidth"
+            [classList]="line.classList.join(' ')"
+            [attr.stroke]="lsystem?.strokeColor"
+            [attr.stroke-opacity]="line.strokeOpacity"
 
-              ></line>
-            }
-
-<!--
-      <polyline [attr.points]="lsystem?.PolylineString"
-                [attr.stroke-dasharray]="lsystem?.TotalLineLength"
-                [attr.stroke-dashoffset]="lsystem?.TotalLineLength"
-                class="shape animated"
-                [attr.transform]="'translate(' + canvas.translation.x + ',' + -canvas.translation.y + ')'">
-        <animate attributeName="stroke-dashoffset" #animation
-                 [attr.from]="lsystem?.TotalLineLength"
-                 [attr.to]="0"
-                 begin="0s"
-                 fill="freeze"
-                 restart="always"
-                 dur="5s"/>
-      </polyline>
--->
+          ></line>
+        }
+      }
+        <polyline #polylineElement
+          [attr.points]="lsystem?.PolylineString"
+                  [attr.stroke-dasharray]="lsystem?.TotalLineLength"
+                  [attr.stroke-dashoffset]="lsystem?.TotalLineLength"
+                  class="shape"
+                  [attr.stroke]="lsystem?.strokeColor"
+                  [attr.fill]="lsystem?.FillPolyline ? lsystem?.strokeColor : 'none' "
+                  [attr.transform]="'translate(' + canvas.translation.x + ',' + -canvas.translation.y + ')'">
+<!--          <animate attributeName="stroke-dashoffset" #animation
+                   [attr.from]="lsystem?.TotalLineLength"
+                   [attr.to]="0"
+                   begin="0s"
+                   [attr.id]="lsystem?.uniqueDrawingID"
+                   fill="freeze"
+                   restart="always"
+                   dur="5s"/>-->
+        </polyline>
     </g>
   </g>
 </svg>
