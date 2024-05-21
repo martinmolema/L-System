@@ -63,7 +63,7 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
         animation.setAttribute('begin', '0s');
         animation.setAttribute('fill', 'freeze');
         animation.setAttribute('restart', 'always');
-        animation.setAttribute('dur', '3s');
+        animation.setAttribute('dur', '1.5s');
         animation.id =  "my-animation";
         svgPolylineElement.appendChild(animation);
         animation.beginElementAt(0);
