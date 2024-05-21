@@ -1,6 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://molema.org/math-lsystem",
   "title": "L-system definitions",
   "description": "A list of L-System Definitions",
   "type": "array",
@@ -17,11 +15,15 @@
         "minItems": 1,
         "uniqueItems": true,
         "items": {
-          "varname": {
-            "type": "string"
-          },
-          "isDrawingVariable": {
-            "type": "boolean"
+          "type": "object",
+          "properties": {
+            "varname": {
+              "type": "string"
+            },
+            "isDrawingVariable": {
+              "type": "boolean"
+            }
+
           }
         }
       },
