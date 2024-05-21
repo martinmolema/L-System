@@ -194,14 +194,17 @@ export class LSystemCalculator {
     const endDateTime = new Date();
 
     if (this.usePolyline) {
-      this.createPolyline();
+      this.createPolyline(this.originCoordinates);
     }
 
     this.calculationTime = (endDateTime.getTime() - startDateTime.getTime());
   }
 
-  createPolyline(): string {
-    this.polylineString = this.points.map(p => `${p.xAsString},${p.yAsString}`).join(' ');
+  createPolyline(origin: Point): string {
+    this.polylineString = this.points
+      .map(p => new Point(p.x+origin.x, p.y+origin.y))
+      .map(p => `${p.xAsString},${p.yAsString}`)
+      .join(' ');
 
     let total = 0;
     let lastPoint = new Point(0, 0);
@@ -228,6 +231,16 @@ export class LSystemCalculator {
     const result = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
     <g transform="translate(${canvasOrigin.x} ${canvasOrigin.y}) scale(1,-1)">
     ${linesAsString}
+    </g>
+    </svg>`;
+    return result;
+  }
+
+  createPolylineAsSVGStringComplete(canvasOrigin: Point): string {
+    this.createPolyline(canvasOrigin);
+    const result = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
+    <g transform="translate(${canvasOrigin.x} ${canvasOrigin.y}) scale(1,-1)">
+      <polyline points="${this.polylineString}" stroke="${this.strokeColor}" ${this.fillPolyline ? 'fill="' + this.strokeColor + '"' : ''}></polyline>
     </g>
     </svg>`;
     return result;
