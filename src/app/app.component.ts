@@ -15,12 +15,13 @@ import {
 import {FormErrorDirective} from "./directives/form-error.directive";
 import {LSystemVariable} from "./classes/lsystem-variable";
 import {DrawingCanvas} from "./classes/drawing-canvas";
-import {Observable, Subscription} from "rxjs";
+import { forkJoin, Observable, Subscription} from "rxjs";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {LSystemJSONParameters} from "./classes/lsystem-jsonparameters";
 import {Point} from "./classes/point";
 import {DecimalPipe} from "@angular/common";
-import {OriginPositions} from "./classes/origin-positions";
+import {OriginPositionsEnum} from "./classes/origin-positions-enum";
+import Ajv2020 from "ajv/dist/2020";
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -86,7 +87,7 @@ function checkVariablesAndRules(form: FormGroup): null | ValidationErrors {
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  protected readonly OriginPositions = OriginPositions;
+  protected readonly OriginPositions = OriginPositionsEnum;
   protected readonly Math = Math;
 
   lsystem: LSystemCalculator;
@@ -108,7 +109,7 @@ export class AppComponent {
 
     this.allSystems = new Array<LSystemCalculator>();
     this.canvas = new DrawingCanvas(0, 0, 800, 800);
-    this.lsystem = new LSystemCalculator('x',  OriginPositions.CENTER);
+    this.lsystem = new LSystemCalculator('x',  OriginPositionsEnum.CENTER);
 
     this.formgroup = this.formBuilder.group({});
 
@@ -116,6 +117,8 @@ export class AppComponent {
 
     this.getDataForCurves().subscribe({
       next: (data) => {
+
+
         this.allSystems = data;
         this.lsystem = this.allSystems[this.idxSelectedSystem];
         this.createForm(this.lsystem);
@@ -124,8 +127,8 @@ export class AppComponent {
 
         this.setupSystemAndRedraw();
       },
-      error: (err: HttpErrorResponse) => {
-        alert(err.message);
+      error: (message: string) => {
+        alert(message);
       }
     });
 
@@ -199,6 +202,13 @@ export class AppComponent {
     this.canvas.resetZoom();
   }
 
+  /**
+   * Use the translation that was created by moving the drawing around while dragging the mouse.
+   *
+   * If the {UsePolygone} option is set within the LSystem object, the polyline points are recalculated and a new string of points is created
+   *
+   * The Lsystem {OriginPosition} is set to type OriginPositionsEnum.UseCoordinates.
+   */
   updateOriginFromTranslation(): void {
     if (this.canvas.translation) {
       this.canvas.correctOriginFromTranslation();
@@ -210,7 +220,11 @@ export class AppComponent {
       this.originY?.setValue(newy);
 
       this.lsystem.OriginCoordinates = new Point(newx, newy);
-      this.lsystem.OriginPosition = OriginPositions.UseCoordinates;
+      this.lsystem.OriginPosition = OriginPositionsEnum.UseCoordinates;
+
+      if (this.usePolyline) {
+        this.lsystem.createPolyline(this.lsystem.OriginCoordinates);
+      }
 
     }
   }
@@ -471,21 +485,46 @@ export class AppComponent {
 
   getDataForCurves(): Observable<Array<LSystemCalculator>> {
     return new Observable<Array<LSystemCalculator>>( subscriber => {
-      this.http.get<Array<LSystemJSONParameters>>('./assets/lsystem-definitions.json').subscribe({
-        next: (data) => {
-          console.log(data);
-          const items = new Array<LSystemCalculator>();
-          data.forEach((sys: LSystemJSONParameters) => {
-            const newSystem = new LSystemCalculator(sys.systemName, OriginPositions.CENTER);
-            newSystem.initFromParametersObject(sys);
-            items.push(newSystem);
-          });
-          items.sort((sys1, sys2) => sys1.systemName.localeCompare(sys2.systemName));
-          subscriber.next(items);
+
+      forkJoin([
+        this.http.get<Array<LSystemJSONParameters>>('./assets/lsystem-definitions.json'),
+        this.http.get<Array<LSystemJSONParameters>>('./assets/json-schema-definitions/lsystem-definition-schema.json')
+      ]).subscribe({
+        next: (results) => {
+
+          const schema = results[1];
+          const data = results[0];
+
+          const ajv = new Ajv2020();
+          const validator = ajv.compile(schema);
+          const isJSONValid = validator(data);
+
+
+          if (isJSONValid) {
+            const items = new Array<LSystemCalculator>();
+            data.forEach((sys: LSystemJSONParameters) => {
+              const newSystem = new LSystemCalculator(sys.systemName, OriginPositionsEnum.CENTER);
+              newSystem.initFromParametersObject(sys);
+              items.push(newSystem);
+            });
+            items.sort((sys1, sys2) => sys1.systemName.localeCompare(sys2.systemName));
+            subscriber.next(items);
+
+          }
+          else{
+            const firstError = validator.errors ? validator.errors[0] : undefined;
+            if (firstError) {
+              subscriber.error(`Invalid JSON : ${firstError.message}`);
+            }
+            else {
+              subscriber.error(`Unknown JSON Validation error`);
+            }
+          }
         },
-        error: (err: HttpErrorResponse) => {
+          error: (err: HttpErrorResponse) => {
           subscriber.error(err);
         }
+
       });
     });
   }
@@ -493,7 +532,7 @@ export class AppComponent {
   /*createJSON() {
     this.allSystems = new Array<LSystemCalculator>();
 
-    let oneLsystem = new LSystemCalculator('bushy cactus tree', OriginPositions.CenterBottom);
+    let oneLsystem = new LSystemCalculator('bushy cactus tree', OriginPositionsEnum.CenterBottom);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addVariableSimple('Y');
@@ -504,7 +543,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 25.7;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('squares', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('squares', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addRule('F=FF+F-F+F+FF');
     oneLsystem.setAxiom('F+F+F+F');
@@ -512,7 +551,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 90;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('Fractal tree', OriginPositions.CenterBottom);
+    oneLsystem = new LSystemCalculator('Fractal tree', OriginPositionsEnum.CenterBottom);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addRule('X= >[-FX]+FX');
@@ -522,7 +561,7 @@ export class AppComponent {
     oneLsystem.lineLengthMultiplier = 0.5;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('plant left oriented', OriginPositions.BottomRight);
+    oneLsystem = new LSystemCalculator('plant left oriented', OriginPositionsEnum.BottomRight);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addRule('X=F-[[X]+X]+F[+FX]-X');
@@ -533,7 +572,7 @@ export class AppComponent {
     oneLsystem.startGeneration(5);
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('square sierpinski', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('square sierpinski', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addRule('X=XF-F+F-XF+F+XF-F+F-X');
@@ -542,7 +581,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 90;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('??', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('??', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addRule('F=F+F-F-FF+F+F-F');
     oneLsystem.setAxiom('F+F+F+F');
@@ -551,7 +590,7 @@ export class AppComponent {
     oneLsystem.startGeneration(5);
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('triangles', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('triangles', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addRule('F=F-F+F');
     oneLsystem.setAxiom('F+F+F');
@@ -559,7 +598,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 120;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('Peano Curve', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('Peano Curve', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addVariableSimple('Y');
     oneLsystem.addVariableSimple('F', true);
@@ -570,7 +609,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 90;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('Sierpinski Arrowhead', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('Sierpinski Arrowhead', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableObject(new LSystemVariable('F', true));
     oneLsystem.addVariableObject(new LSystemVariable('X', false));
     oneLsystem.addVariableObject(new LSystemVariable('Y', false));
@@ -582,7 +621,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 60;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('Hilbert curve', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('Hilbert curve', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addVariableSimple('Y');
@@ -593,7 +632,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 90;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('Quadratic Snowflake variant B', OriginPositions.CENTER);
+    oneLsystem = new LSystemCalculator('Quadratic Snowflake variant B', OriginPositionsEnum.CENTER);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addRule('F=F+F-F-F+F');
     oneLsystem.setAxiom('FF+FF+FF+FF');
@@ -601,7 +640,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 90;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('Quadratic Gosper', OriginPositions.BottomLeft);
+    oneLsystem = new LSystemCalculator('Quadratic Gosper', OriginPositionsEnum.BottomLeft);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('X');
     oneLsystem.addVariableSimple('Y');
@@ -612,7 +651,7 @@ export class AppComponent {
     oneLsystem.rotationAngle = 90;
     this.allSystems.push(oneLsystem);
 
-    oneLsystem = new LSystemCalculator('L-system leaf', OriginPositions.CenterBottom);
+    oneLsystem = new LSystemCalculator('L-system leaf', OriginPositionsEnum.CenterBottom);
     oneLsystem.addVariableSimple('F', true);
     oneLsystem.addVariableSimple('x');
     oneLsystem.addVariableSimple('y');
@@ -646,39 +685,39 @@ export class AppComponent {
     switch (shortname) {
       case 'TL':
         this.canvas.setOriginTopLeft(1, 1);
-        this.lsystem.OriginPosition = OriginPositions.TopLeft;
+        this.lsystem.OriginPosition = OriginPositionsEnum.TopLeft;
         break;
       case 'TC':
         this.canvas.setOriginCenterTop(1);
-        this.lsystem.OriginPosition = OriginPositions.CenterTop;
+        this.lsystem.OriginPosition = OriginPositionsEnum.CenterTop;
         break;
       case 'TR':
         this.canvas.setOriginTopRight(1, 1);
-        this.lsystem.OriginPosition = OriginPositions.TopRight;
+        this.lsystem.OriginPosition = OriginPositionsEnum.TopRight;
         break;
       case 'C':
         this.canvas.setOrigin(0, 0);
-        this.lsystem.OriginPosition = OriginPositions.CENTER;
+        this.lsystem.OriginPosition = OriginPositionsEnum.CENTER;
         break;
       case 'LC':
         this.canvas.setOriginCenterLeft(1);
-        this.lsystem.OriginPosition = OriginPositions.CenterLeft;
+        this.lsystem.OriginPosition = OriginPositionsEnum.CenterLeft;
         break;
       case 'RC':
         this.canvas.setOriginCenterRight(1);
-        this.lsystem.OriginPosition = OriginPositions.CenterRight;
+        this.lsystem.OriginPosition = OriginPositionsEnum.CenterRight;
         break;
       case 'BL':
         this.canvas.setOriginBottomLeft(1,1);
-        this.lsystem.OriginPosition = OriginPositions.BottomLeft;
+        this.lsystem.OriginPosition = OriginPositionsEnum.BottomLeft;
         break;
       case 'BC':
         this.canvas.setOriginCenterBottom(0);
-        this.lsystem.OriginPosition = OriginPositions.CenterBottom;
+        this.lsystem.OriginPosition = OriginPositionsEnum.CenterBottom;
         break;
       case 'BR':
         this.canvas.setOriginBottomRight(1,1);
-        this.lsystem.OriginPosition = OriginPositions.BottomRight;
+        this.lsystem.OriginPosition = OriginPositionsEnum.BottomRight;
         break;
     }
     const newX = this.canvas.OriginX;
@@ -690,36 +729,39 @@ export class AppComponent {
 
   }
 
-  setOriginFromPosition(shortname: OriginPositions) {
+  setOriginFromPosition(positionType: OriginPositionsEnum) {
     this.canvas.resetTranslation();
 
-    switch (shortname) {
-      case OriginPositions.TopLeft:
+    switch (positionType) {
+      case OriginPositionsEnum.TopLeft:
         this.canvas.setOriginTopLeft(1, 1);
         break;
-      case OriginPositions.CenterTop:
+      case OriginPositionsEnum.CenterTop:
         this.canvas.setOriginCenterTop(1);
         break;
-      case OriginPositions.TopRight:
+      case OriginPositionsEnum.TopRight:
         this.canvas.setOriginTopRight(1, 1);
         break;
-      case OriginPositions.CENTER:
+      case OriginPositionsEnum.CENTER:
         this.canvas.setOrigin(0, 0);
         break;
-      case OriginPositions.CenterLeft:
+      case OriginPositionsEnum.CenterLeft:
         this.canvas.setOriginCenterLeft(1);
         break;
-      case OriginPositions.CenterRight:
+      case OriginPositionsEnum.CenterRight:
         this.canvas.setOriginCenterRight(1);
         break;
-      case OriginPositions.BottomLeft:
+      case OriginPositionsEnum.BottomLeft:
         this.canvas.setOriginBottomLeft(1,1);
         break;
-      case OriginPositions.CenterBottom:
+      case OriginPositionsEnum.CenterBottom:
         this.canvas.setOriginCenterBottom(0);
         break;
-      case OriginPositions.BottomRight:
+      case OriginPositionsEnum.BottomRight:
         this.canvas.setOriginBottomRight(1,1);
+        break;
+      case OriginPositionsEnum.UseCoordinates:
+        this.canvas.setOrigin(this.lsystem.OriginCoordinates.x, this.lsystem.OriginCoordinates.y);
         break;
     }
     const newX = this.canvas.OriginX;
