@@ -1,4 +1,4 @@
-export enum OriginPositions {
+export enum OriginPositionsEnum {
   UseCoordinates,
   CENTER,
   TopLeft,
