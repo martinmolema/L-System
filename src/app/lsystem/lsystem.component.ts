@@ -39,17 +39,8 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes['uniqueDrawingID'] || changes['lsystem']) {
-      /**
-       * <animate attributeName="stroke-dashoffset" #animation
-       *                    [attr.from]="lsystem?.TotalLineLength"
-       *                    [attr.to]="0"
-       *                    begin="0s"
-       *                    fill="freeze"
-       *                    restart="always"
-       *                    dur="5s"/>
-       */
+      // remove the current <animate>-element and replace with new so we are sure the animation is restarted
       const svgPolylineElement = this.polylineElement?.nativeElement;
       if (svgPolylineElement) {
         while (svgPolylineElement.lastChild) {
@@ -62,7 +53,6 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
         animation.setAttribute('to', '0');
         animation.setAttribute('begin', '0s');
         animation.setAttribute('fill', 'freeze');
-        animation.setAttribute('restart', 'always');
         animation.setAttribute('dur', '1.5s');
         animation.id =  "my-animation";
         svgPolylineElement.appendChild(animation);
