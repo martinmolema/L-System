@@ -190,6 +190,7 @@ The website has the following functions available:
 * Parsing formulas for variables
 * Copy system's definition to clipboard
 * Copy drawing (SVG) to the clipboard
+* Choose to draw an (animated) polyline instead of seperate `<line>`-elements
 
 
 # Sources for L-systems
