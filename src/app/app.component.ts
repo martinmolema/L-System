@@ -349,12 +349,17 @@ export class AppComponent {
   }
 
   copySVGToClipboard(): void {
-    const svg = this.lsystem.createLinesAsSVGStringComplete(new Point(400,400));
+    let svg = '';
+    if (this.lsystem.UsePolyline){
+      svg = this.lsystem.createPolylineAsSVGStringComplete(new Point(400,400));
+    }
+    else {
+      svg = this.lsystem.createLinesAsSVGStringComplete(new Point(400, 400));
+    }
     const type = "text/plain";
-    const blob = new Blob([svg], { type });
+    const blob = new Blob([svg], {type});
     const data = [new ClipboardItem({[type]: blob})];
     navigator.clipboard.write(data);
-
   }
   copyResultFormulaToClipboard(): void {
     const svg = this.lsystem.completeFormula;
