@@ -54,6 +54,10 @@ main {
       margin-left:5px;
     }
 
+    input+label {
+      width:fit-content;
+    }
+
     table.origins {
       td {
         font-size: 14pt;
