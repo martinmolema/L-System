@@ -3,7 +3,7 @@ import {Point} from "./point";
 import {SVGLine} from "./svgline";
 import {LSystemVariable} from "./lsystem-variable";
 import {LSystemJSONParameters} from "./lsystem-jsonparameters";
-import {OriginPositions} from "./origin-positions";
+import {OriginPositionsEnum} from "./origin-positions-enum";
 
 export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
 export type StrokeOpacitySettings = 'None' | 'Normal' | 'Reverse';
@@ -15,7 +15,7 @@ export class LSystemCalculator {
   private variables: Array<LSystemVariable> = new Array<LSystemVariable>();
   private drawingVariables: Array<string> = new Array<string>();
   private axiom = '';
-  private originPosition: OriginPositions;
+  private originPosition: OriginPositionsEnum;
   private originCoordinates: Point;
   private points: Array<Point>;
   private polylineString: string = '';
@@ -42,7 +42,7 @@ export class LSystemCalculator {
   private processedRules: Map<string, string> = new Map<string, string>();
   public nrOfIterationsRequested: number = 0;
 
-  constructor(systemName: string, origin: OriginPositions | Point) {
+  constructor(systemName: string, origin: OriginPositionsEnum | Point) {
     this.systemName = systemName;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
@@ -50,7 +50,7 @@ export class LSystemCalculator {
 
     if (origin instanceof Point) {
       this.originCoordinates = origin.clone();
-      this.originPosition = OriginPositions.UseCoordinates;
+      this.originPosition = OriginPositionsEnum.UseCoordinates;
     } else {
       this.originCoordinates = new Point(0, 0);
       this.originPosition = origin;
@@ -71,11 +71,11 @@ export class LSystemCalculator {
     }
   }
 
-  get OriginPosition(): OriginPositions {
+  get OriginPosition(): OriginPositionsEnum {
     return this.originPosition;
   }
 
-  set OriginPosition(shortname: OriginPositions) {
+  set OriginPosition(shortname: OriginPositionsEnum) {
     this.originPosition = shortname;
   }
 
@@ -201,6 +201,8 @@ export class LSystemCalculator {
   }
 
   createPolyline(origin: Point): string {
+    console.log(`createPolyline:: @(${origin.x},${origin.y})`)
+
     this.polylineString = this.points
       .map(p => new Point(p.x+origin.x, p.y+origin.y))
       .map(p => `${p.xAsString},${p.yAsString}`)
@@ -396,8 +398,13 @@ export class LSystemCalculator {
     this.startingAngle = params.startingAngle || 90;
     this.lineLength = params.lineLength || 1;
     this.lineLengthMultiplier = params.lineLengthMultiplier;
-    this.originPosition = params.originPosition || OriginPositions.CENTER;
-    this.originCoordinates = params.originCoordinates || new Point(0, 0);
+    this.originPosition = params.originPosition;
+    if (params.originPosition === OriginPositionsEnum.UseCoordinates && params.originCoordinates){
+      this.originCoordinates = new Point(params.originCoordinates.x, params.originCoordinates.y);
+    }
+    else {
+      this.originCoordinates = new Point(0,0);
+    }
     this.strokeColor = params.strokeColor || 'black';
     this.fadeStrokeOpacity = params.fadeStrokeOpacity || 'None';
     this.nrOfIterationsRequested = params.nrOfIterationsToDrawAtSelection;
