@@ -620,5 +620,97 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": true,
     "fillPolyline": false
+  },
+  {
+    "systemName": "Koch curve B",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "F-F-F-F",
+    "rules": [
+      "F=FF-F-F-F-FF"
+    ],
+    "rotationAngle": 90,
+    "startingAngle": 0,
+    "lineLength": 1,
+    "lineLengthMultiplier": 1,
+    "originPosition": 0,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": -164.5,
+      "y": 114
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "#000000",
+    "nrOfIterationsToDrawAtSelection": 6,
+    "fillPolyline": false,
+    "usePolyline": false
+  },
+  {
+    "systemName": "Christmas Tree",
+    "variables": [
+      {
+        "varname": "X",
+        "isDrawingVariable": false
+      },
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "X",
+    "rules": [
+      "X=F[+X][-X]FX",
+      "F=FF"
+    ],
+    "rotationAngle": 35,
+    "startingAngle": 90,
+    "lineLength": 3,
+    "lineLengthMultiplier": 1,
+    "originPosition": 9,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": -400
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "red",
+    "nrOfIterationsToDrawAtSelection": 7,
+    "fillPolyline": false,
+    "usePolyline": false
+  },
+  {
+    "systemName": "Diamonds",
+    "variables": [
+      {
+        "varname": "F",
+        "isDrawingVariable": true
+      }
+    ],
+    "axiom": "F",
+    "rules": [
+      "F=FF++F++F+F++F-F"
+    ],
+    "rotationAngle": 60,
+    "startingAngle": 90,
+    "lineLength": 5,
+    "lineLengthMultiplier": 1,
+    "originPosition": 9,
+    "originCoordinates": {
+      "iterationNr": -1,
+      "letter": "",
+      "x": 0,
+      "y": -400
+    },
+    "fadeStrokeOpacity": "None",
+    "strokeColor": "#16ca34",
+    "nrOfIterationsToDrawAtSelection": 5,
+    "fillPolyline": false,
+    "usePolyline": false
   }
 ]

@@ -12,7 +12,7 @@ remove these comments to show the center of the carthesian coordinate system
     <g id="canvas" [attr.transform]="'scale(' + canvas.zoomFactor +','+ canvas.zoomFactor + ')'">
 <!--
             <circle cx="0" cy="0" r="10" stroke="blue" fill="blue" fill-opacity="0.5"></circle>
-            <circle [attr.cx]="lsystem?.OriginCoordinates?.x" [attr.cy]="lsystem?.OriginCoordinates?.y" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
+            <circle [attr.cx]="LSystemComponentScalableVectorGraphicsRenderer?.OriginCoordinates?.x" [attr.cy]="LSystemComponentScalableVectorGraphicsRenderer?.OriginCoordinates?.y" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
 -->
       @if (!lsystem?.UsePolyline) {
         @for (line of lsystem?.lines; track lsystem?.lines) {

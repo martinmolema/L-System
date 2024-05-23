@@ -9,8 +9,9 @@ export class SVGLine {
   stroke: string;
   classList: Array<string>;
   strokeOpacity: number;
+  iterationNr: number;
 
-  constructor(x1: number, y1: number, x2: number, y2: number, className = '', strokeColor: string = 'black', strokeWidth: number = 1, strokeOpacity: number = 1) {
+  constructor(x1: number, y1: number, x2: number, y2: number, iterationNr:number,  className = '', strokeColor: string = 'black', strokeWidth: number = 1, strokeOpacity: number = 1) {
     this.x1 = x1;
     this.x2 = x2;
     this.y1 = y1;
@@ -18,6 +19,7 @@ export class SVGLine {
     this.stroke = strokeColor;
     this.strokeWidth = strokeWidth;
     this.strokeOpacity = strokeOpacity;
+    this.iterationNr = iterationNr;
 
     this.classList = new Array<string>();
     if (className !== '') {

@@ -197,6 +197,18 @@ export class LSystemCalculator {
       this.createPolyline(this.originCoordinates);
     }
 
+/*
+    console.log(JSON.stringify(this.lines.map((line: SVGLine) => {
+      const x:any = {};
+      x.x1 =line.x1.toFixed(1);
+      x.x2 =line.x2.toFixed(1);
+      x.y1 =line.y1.toFixed(1);
+      x.y2 =line.y2.toFixed(1);
+      x.iterationNr = line.iterationNr;
+      return x;
+    })));
+*/
+
     this.calculationTime = (endDateTime.getTime() - startDateTime.getTime());
   }
 
@@ -348,7 +360,7 @@ export class LSystemCalculator {
         break;
     }
 
-    const line = new SVGLine(point1.x, point1.y, newx, newy, 'shape', this.strokeColor, 1, opacityValue);
+    const line = new SVGLine(point1.x, point1.y, newx, newy, iterationNr,'shape', this.strokeColor, 1, opacityValue);
     // line.setAttribute("stroke-opacity", (iterationNr / nrOfIterationsRequested).toString());
 
     if (this.fadeStrokeOpacity !== "None") {

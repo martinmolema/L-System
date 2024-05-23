@@ -8,23 +8,23 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {Point} from "../classes/point";
-import {LSystemCalculator} from "../classes/lsystem-calculator";
-import {DrawingCanvas} from "../classes/drawing-canvas";
+import {Point} from "../../classes/point";
+import {LSystemCalculator} from "../../classes/lsystem-calculator";
+import {CarthesianCoordinates} from "../../classes/carthesian-coordinates";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 @Component({
-  selector: 'app-lsystem',
+  selector: 'LSystemComponentScalableVectorGraphicsRenderer',
   standalone: true,
   imports: [],
-  templateUrl: './lsystem.component.html',
-  styleUrl: './lsystem.component.css'
+  templateUrl: './l-system-component-scalable-vector-graphics-renderer.component.html',
+  styleUrl: './l-system-component-scalable-vector-graphics-renderer.component.css'
 })
-export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
+export class LSystemComponentScalableVectorGraphicsRenderer implements OnChanges, OnInit, AfterViewInit {
 
   @Input() lsystem: LSystemCalculator | undefined = undefined;
-  @Input() canvas: DrawingCanvas;
+  @Input() canvas: CarthesianCoordinates;
   @ViewChild("drawing") drawingElement: ElementRef | undefined;
   @ViewChild("polylineElement") polylineElement: ElementRef | undefined;
   @Input() uniqueDrawingID: string = '';
@@ -35,7 +35,7 @@ export class LSystemComponent implements OnChanges, OnInit, AfterViewInit {
   CTM: any;
 
   constructor() {
-    this.canvas = new DrawingCanvas(0, 0, 0, 0);
+    this.canvas = new CarthesianCoordinates(0, 0, 0, 0);
   }
 
   ngOnChanges(changes: SimpleChanges): void {

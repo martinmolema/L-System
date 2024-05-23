@@ -1,6 +1,6 @@
 import {Point} from "./point";
 
-export class DrawingCanvas {
+export class CarthesianCoordinates {
   private originX = 0;
   private originY = 0;
   private svgWidth = 0;

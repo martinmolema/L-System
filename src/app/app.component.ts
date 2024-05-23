@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {LSystemComponent} from "./lsystem/lsystem.component";
+import {LSystemComponentScalableVectorGraphicsRenderer} from "./components/LSystemComponentScalableVectorGraphicsRenderer/l-system-component-scalable-vector-graphics-renderer.component";
 import {LSystemCalculator, SpecialChars} from "./classes/lsystem-calculator";
 import {
   AbstractControl,
@@ -14,7 +14,7 @@ import {
 } from "@angular/forms";
 import {FormErrorDirective} from "./directives/form-error.directive";
 import {LSystemVariable} from "./classes/lsystem-variable";
-import {DrawingCanvas} from "./classes/drawing-canvas";
+import {CarthesianCoordinates} from "./classes/carthesian-coordinates";
 import { forkJoin, Observable, Subscription} from "rxjs";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {LSystemJSONParameters} from "./classes/lsystem-jsonparameters";
@@ -22,6 +22,7 @@ import {Point} from "./classes/point";
 import {DecimalPipe} from "@angular/common";
 import {OriginPositionsEnum} from "./classes/origin-positions-enum";
 import Ajv2020 from "ajv/dist/2020";
+import {ThreeJsRendererComponent} from "./components/three-js-renderer/three-js-renderer.component";
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -82,7 +83,7 @@ function checkVariablesAndRules(form: FormGroup): null | ValidationErrors {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, LSystemComponent, ReactiveFormsModule, FormErrorDirective, FormsModule, DecimalPipe],
+  imports: [RouterOutlet, LSystemComponentScalableVectorGraphicsRenderer, ReactiveFormsModule, FormErrorDirective, FormsModule, DecimalPipe, ThreeJsRendererComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -95,7 +96,7 @@ export class AppComponent {
   autoUpdateDrawing: boolean = true;
   valueChangeSubscribers: Array<Subscription>;
 
-  canvas: DrawingCanvas;
+  canvas: CarthesianCoordinates;
   formgroup: FormGroup;
 
   idxSelectedSystem: number = 8;
@@ -108,7 +109,7 @@ export class AppComponent {
 
 
     this.allSystems = new Array<LSystemCalculator>();
-    this.canvas = new DrawingCanvas(0, 0, 800, 800);
+    this.canvas = new CarthesianCoordinates(0, 0, 800, 800);
     this.lsystem = new LSystemCalculator('x',  OriginPositionsEnum.CENTER);
 
     this.formgroup = this.formBuilder.group({});
@@ -669,7 +670,7 @@ export class AppComponent {
     oneLsystem.lineLengthMultiplier = 0.5;
     this.allSystems.push(oneLsystem);
 
-    const json_list = this.allSystems.map(lsystem => lsystem.createParameterObject());
+    const json_list = this.allSystems.map(LSystemComponentScalableVectorGraphicsRenderer => LSystemComponentScalableVectorGraphicsRenderer.createParameterObject());
 
     const json = JSON.stringify(json_list);
     console.log(json);

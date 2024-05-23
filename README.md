@@ -208,10 +208,12 @@ The website has the following functions available:
 * [Wikipedia on the canopy (or Tree) fractal](https://en.wikipedia.org/wiki/Fractal_canopy)
 * [Wikipedia on the Koch snowflake](https://en.wikipedia.org/wiki/Koch_snowflake)
 * [Wikipedia on the Dragon curve](https://en.wikipedia.org/wiki/Dragon_curve)
+* [Houdini Kitchen](https://www.houdinikitchen.net/2019/12/21/how-to-create-l-systems/)
 
 # Other references
 
 * [Mozilla Development Network - SVG: Scalable Vector Graphics](https://developer.mozilla.org/en-US/docs/Web/SVG)
+* [The Algorithmic Beauty of Plants](http://algorithmicbotany.org/papers/abop/abop.pdf )
 
 # Thanks to
 

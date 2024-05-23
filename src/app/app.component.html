@@ -253,7 +253,8 @@
 
   <article id="drawingarea">
     <section>
-      <app-lsystem [lsystem]="lsystem" [canvas]="canvas" [uniqueDrawingID]="lsystem.uniqueDrawingID"></app-lsystem>
+      <!--<LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [canvas]="canvas" [uniqueDrawingID]="lsystem.uniqueDrawingID"></LSystemComponentScalableVectorGraphicsRenderer>-->
+      <Three-js-renderer [uniqueDrawingID]="lsystem.uniqueDrawingID" [lsystem]="lsystem"></Three-js-renderer>
     </section>
     <section class="formula">
       <div>{{ lsystem.completeFormula }}</div>

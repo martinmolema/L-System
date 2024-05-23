@@ -1,1 +1,1 @@
-ng build --deploy-url='/math-lsystem/'
+ng build --deploy-url='/math-LSystemComponentScalableVectorGraphicsRenderer/'
