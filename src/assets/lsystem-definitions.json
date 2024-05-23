@@ -1,6 +1,6 @@
 [
   {
-    "systemName": "bushy cactus tree",
+    "systemName": "Bushy cactus tree",
     "variables": [
       {
         "varname": "F",
@@ -24,15 +24,15 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
       "y": 0
     },
-    "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "fadeStrokeOpacity": "Reverse",
+    "strokeColor": "green",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false
@@ -84,9 +84,9 @@
     ],
     "rotationAngle": 40,
     "startingAngle": 90,
-    "lineLength": 200,
+    "lineLength": 40,
     "lineLengthMultiplier": 0.7,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
@@ -100,7 +100,7 @@
     "fillPolyline": false
   },
   {
-    "systemName": "plant left oriented",
+    "systemName": "Plant - left oriented",
     "variables": [
       {
         "varname": "F",
@@ -120,7 +120,7 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
@@ -128,7 +128,7 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "green",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false
@@ -406,7 +406,7 @@
     "fillPolyline": false
   },
   {
-    "systemName": "L-system leaf",
+    "systemName": "Sticks",
     "variables": [
       {
         "varname": "F",
@@ -439,9 +439,9 @@
     ],
     "rotationAngle": 30,
     "startingAngle": 90,
-    "lineLength": 10,
+    "lineLength": 6,
     "lineLengthMultiplier": 0.5,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
@@ -449,8 +449,8 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
-    "nrOfIterationsToDrawAtSelection": 3,
+    "strokeColor": "bluef",
+    "nrOfIterationsToDrawAtSelection": 7,
     "usePolyline": false,
     "fillPolyline": false
   },
@@ -479,7 +479,7 @@
     "startingAngle": 0,
     "lineLength": 75,
     "lineLengthMultiplier": 0.5,
-    "originPosition": 0,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
@@ -566,22 +566,22 @@
       "Y=YZ",
       "Z=[-FFF][+FFF]F"
     ],
-    "rotationAngle": 20,
+    "rotationAngle": 10,
     "startingAngle": 90,
-    "lineLength": 10,
+    "lineLength": 24,
     "lineLengthMultiplier": 0.5,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": -400
+      "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
-    "nrOfIterationsToDrawAtSelection": 3,
-    "usePolyline": false,
-    "fillPolyline": false
+    "strokeColor": "#36bf38",
+    "nrOfIterationsToDrawAtSelection": 6,
+    "fillPolyline": false,
+    "usePolyline": false
   },
   {
     "systemName": "Dragon",
@@ -608,18 +608,18 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "originPosition": 1,
+    "originPosition": 0,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": 0
+      "y": 48
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
-    "nrOfIterationsToDrawAtSelection": 3,
-    "usePolyline": true,
-    "fillPolyline": false
+    "strokeColor": "#f31212",
+    "nrOfIterationsToDrawAtSelection": 9,
+    "fillPolyline": false,
+    "usePolyline": false
   },
   {
     "systemName": "Koch curve B",
@@ -635,9 +635,9 @@
     ],
     "rotationAngle": 90,
     "startingAngle": 0,
-    "lineLength": 1,
+    "lineLength": 7,
     "lineLengthMultiplier": 1,
-    "originPosition": 0,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
@@ -646,7 +646,7 @@
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "#000000",
-    "nrOfIterationsToDrawAtSelection": 6,
+    "nrOfIterationsToDrawAtSelection": 3,
     "fillPolyline": false,
     "usePolyline": false
   },
@@ -671,12 +671,12 @@
     "startingAngle": 90,
     "lineLength": 3,
     "lineLengthMultiplier": 1,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": -400
+      "y": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "red",
@@ -700,12 +700,12 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "originPosition": 9,
+    "originPosition": 1,
     "originCoordinates": {
       "iterationNr": -1,
       "letter": "",
       "x": 0,
-      "y": -400
+      "y": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "#16ca34",

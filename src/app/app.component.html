@@ -125,14 +125,14 @@
               </p>
               <p>
                 <label title="Drag to change translation">Translation</label>
-                ({{ canvas.translation.xAsString }} , {{ canvas.translation.yAsString }})
+                ({{ coordinates.translation.xAsString }} , {{ coordinates.translation.yAsString }})
                 &nbsp;
                 =>
                 &nbsp;
                 (
-                {{ Math.floor((canvas.translation ? canvas.translation.x : 0) + canvas.OriginX) }}
+                {{ Math.floor((coordinates.translation ? coordinates.translation.x : 0) + coordinates.OriginX) }}
                 ,
-                {{ Math.floor((canvas.translation ? canvas.translation.y : 0) + canvas.OriginY) }}
+                {{ Math.floor((coordinates.translation ? coordinates.translation.y : 0) + coordinates.OriginY) }}
                 )
 
               </p>
@@ -192,7 +192,7 @@
 
                       </div>-->
               <P>
-                <label>Zoomfactor</label> <span>{{ canvas.zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
+                <label>Zoomfactor</label> <span>{{ coordinates.zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
                 <button (click)="resetZoom()">Reset</button>
               </P>
             </div>
@@ -253,8 +253,8 @@
 
   <article id="drawingarea">
     <section>
-      <!--<LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [canvas]="canvas" [uniqueDrawingID]="lsystem.uniqueDrawingID"></LSystemComponentScalableVectorGraphicsRenderer>-->
-      <Three-js-renderer [uniqueDrawingID]="lsystem.uniqueDrawingID" [lsystem]="lsystem"></Three-js-renderer>
+      <!--<LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [coordinates]="coordinates" [uniqueDrawingID]="lsystem.uniqueDrawingID"></LSystemComponentScalableVectorGraphicsRenderer>-->
+      <Three-js-renderer [uniqueDrawingID]="lsystem.uniqueDrawingID" [lsystem]="lsystem" [coordinateSystem]="coordinates"></Three-js-renderer>
     </section>
     <section class="formula">
       <div>{{ lsystem.completeFormula }}</div>

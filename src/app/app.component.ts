@@ -96,10 +96,10 @@ export class AppComponent {
   autoUpdateDrawing: boolean = true;
   valueChangeSubscribers: Array<Subscription>;
 
-  canvas: CarthesianCoordinates;
+  coordinates: CarthesianCoordinates;
   formgroup: FormGroup;
 
-  idxSelectedSystem: number = 8;
+  idxSelectedSystem: number = 5;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -109,7 +109,7 @@ export class AppComponent {
 
 
     this.allSystems = new Array<LSystemCalculator>();
-    this.canvas = new CarthesianCoordinates(0, 0, 800, 800);
+    this.coordinates = new CarthesianCoordinates(0, 0, 800, 800);
     this.lsystem = new LSystemCalculator('x',  OriginPositionsEnum.CENTER);
 
     this.formgroup = this.formBuilder.group({});
@@ -200,7 +200,7 @@ export class AppComponent {
 
   }
   resetZoom(): void {
-    this.canvas.resetZoom();
+    this.coordinates.resetZoom();
   }
 
   /**
@@ -211,11 +211,11 @@ export class AppComponent {
    * The Lsystem {OriginPosition} is set to type OriginPositionsEnum.UseCoordinates.
    */
   updateOriginFromTranslation(): void {
-    if (this.canvas.translation) {
-      this.canvas.correctOriginFromTranslation();
+    if (this.coordinates.translation) {
+      this.coordinates.correctOriginFromTranslation();
 
-      const newx = this.canvas.OriginX;
-      const newy = this.canvas.OriginY;
+      const newx = this.coordinates.OriginX;
+      const newy = this.coordinates.OriginY;
 
       this.originX?.setValue(newx);
       this.originY?.setValue(newy);
@@ -417,7 +417,7 @@ export class AppComponent {
 
   changeLSystemParametersForCalculation() {
 
-    this.canvas.setOrigin(this.originX?.value, this.originY?.value);
+    this.coordinates.setOrigin(this.originX?.value, this.originY?.value);
     this.lsystem.lineLength = this.lineLength?.value;
     this.lsystem.setAxiom(this.axiom?.value);
     this.lsystem.startingAngle = this.startAngle?.value;
@@ -433,7 +433,7 @@ export class AppComponent {
   }
 
   changeLSystemSimpleParameters(): void {
-    this.canvas.setOrigin(this.originX?.value, this.originY?.value);
+    this.coordinates.setOrigin(this.originX?.value, this.originY?.value);
     this.lsystem.FillPolyline = this.fillPolyline?.value;
     this.lsystem.strokeColor = this.strokeColor?.value;
   }
@@ -680,49 +680,49 @@ export class AppComponent {
   }*/
 
   setOriginFromForm(shortname: string) {
-    this.canvas.resetTranslation();
+    this.coordinates.resetTranslation();
     this.resetZoom();
 
     switch (shortname) {
       case 'TL':
-        this.canvas.setOriginTopLeft(1, 1);
+        this.coordinates.setOriginTopLeft(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.TopLeft;
         break;
       case 'TC':
-        this.canvas.setOriginCenterTop(1);
+        this.coordinates.setOriginCenterTop(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterTop;
         break;
       case 'TR':
-        this.canvas.setOriginTopRight(1, 1);
+        this.coordinates.setOriginTopRight(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.TopRight;
         break;
       case 'C':
-        this.canvas.setOrigin(0, 0);
+        this.coordinates.setOrigin(0, 0);
         this.lsystem.OriginPosition = OriginPositionsEnum.CENTER;
         break;
       case 'LC':
-        this.canvas.setOriginCenterLeft(1);
+        this.coordinates.setOriginCenterLeft(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterLeft;
         break;
       case 'RC':
-        this.canvas.setOriginCenterRight(1);
+        this.coordinates.setOriginCenterRight(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterRight;
         break;
       case 'BL':
-        this.canvas.setOriginBottomLeft(1,1);
+        this.coordinates.setOriginBottomLeft(1,1);
         this.lsystem.OriginPosition = OriginPositionsEnum.BottomLeft;
         break;
       case 'BC':
-        this.canvas.setOriginCenterBottom(0);
+        this.coordinates.setOriginCenterBottom(0);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterBottom;
         break;
       case 'BR':
-        this.canvas.setOriginBottomRight(1,1);
+        this.coordinates.setOriginBottomRight(1,1);
         this.lsystem.OriginPosition = OriginPositionsEnum.BottomRight;
         break;
     }
-    const newX = this.canvas.OriginX;
-    const newY = this.canvas.OriginY;
+    const newX = this.coordinates.OriginX;
+    const newY = this.coordinates.OriginY;
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
 
@@ -731,42 +731,42 @@ export class AppComponent {
   }
 
   setOriginFromPosition(positionType: OriginPositionsEnum) {
-    this.canvas.resetTranslation();
+    this.coordinates.resetTranslation();
 
     switch (positionType) {
       case OriginPositionsEnum.TopLeft:
-        this.canvas.setOriginTopLeft(1, 1);
+        this.coordinates.setOriginTopLeft(1, 1);
         break;
       case OriginPositionsEnum.CenterTop:
-        this.canvas.setOriginCenterTop(1);
+        this.coordinates.setOriginCenterTop(1);
         break;
       case OriginPositionsEnum.TopRight:
-        this.canvas.setOriginTopRight(1, 1);
+        this.coordinates.setOriginTopRight(1, 1);
         break;
       case OriginPositionsEnum.CENTER:
-        this.canvas.setOrigin(0, 0);
+        this.coordinates.setOrigin(0, 0);
         break;
       case OriginPositionsEnum.CenterLeft:
-        this.canvas.setOriginCenterLeft(1);
+        this.coordinates.setOriginCenterLeft(1);
         break;
       case OriginPositionsEnum.CenterRight:
-        this.canvas.setOriginCenterRight(1);
+        this.coordinates.setOriginCenterRight(1);
         break;
       case OriginPositionsEnum.BottomLeft:
-        this.canvas.setOriginBottomLeft(1,1);
+        this.coordinates.setOriginBottomLeft(1,1);
         break;
       case OriginPositionsEnum.CenterBottom:
-        this.canvas.setOriginCenterBottom(0);
+        this.coordinates.setOriginCenterBottom(0);
         break;
       case OriginPositionsEnum.BottomRight:
-        this.canvas.setOriginBottomRight(1,1);
+        this.coordinates.setOriginBottomRight(1,1);
         break;
       case OriginPositionsEnum.UseCoordinates:
-        this.canvas.setOrigin(this.lsystem.OriginCoordinates.x, this.lsystem.OriginCoordinates.y);
+        this.coordinates.setOrigin(this.lsystem.OriginCoordinates.x, this.lsystem.OriginCoordinates.y);
         break;
     }
-    const newX = this.canvas.OriginX;
-    const newY = this.canvas.OriginY;
+    const newX = this.coordinates.OriginX;
+    const newY = this.coordinates.OriginY;
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
 
