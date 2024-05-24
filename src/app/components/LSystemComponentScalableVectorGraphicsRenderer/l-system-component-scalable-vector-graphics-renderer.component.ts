@@ -8,9 +8,9 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {Point} from "../../classes/point";
+import {PointExt} from "../../classes/pointExt";
 import {LSystemCalculator} from "../../classes/lsystem-calculator";
-import {CarthesianCoordinates} from "../../classes/carthesian-coordinates";
+import {CarthesianCoordinates2d} from "../../classes/carthesian-coordinates2d";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -24,18 +24,18 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 export class LSystemComponentScalableVectorGraphicsRenderer implements OnChanges, OnInit, AfterViewInit {
 
   @Input() lsystem: LSystemCalculator | undefined = undefined;
-  @Input() canvas: CarthesianCoordinates;
+  @Input() coordinateSystem: CarthesianCoordinates2d;
   @ViewChild("drawing") drawingElement: ElementRef | undefined;
   @ViewChild("polylineElement") polylineElement: ElementRef | undefined;
   @Input() uniqueDrawingID: string = '';
 
-  startPoint = new Point(0, 0);
-  translationStartValue = new Point(0, 0);
+  startPoint = new PointExt(0, 0);
+  translationStartValue = new PointExt(0, 0);
   isDragging = false;
   CTM: any;
 
   constructor() {
-    this.canvas = new CarthesianCoordinates(0, 0, 0, 0);
+    this.coordinateSystem = new CarthesianCoordinates2d(0, 0, 0, 0);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -72,12 +72,12 @@ export class LSystemComponentScalableVectorGraphicsRenderer implements OnChanges
 
   handleWheelevent(event: WheelEvent): void {
     if (event.deltaY < 0) {
-      this.canvas.zoomFactor += 0.1;
+      this.coordinateSystem.zoomFactor += 0.1;
     } else {
-      this.canvas.zoomFactor -= 0.1;
+      this.coordinateSystem.zoomFactor -= 0.1;
     }
-    this.canvas.zoomFactor = Math.min(5, this.canvas.zoomFactor);
-    this.canvas.zoomFactor = Math.max(0.1, this.canvas.zoomFactor);
+    this.coordinateSystem.zoomFactor = Math.min(5, this.coordinateSystem.zoomFactor);
+    this.coordinateSystem.zoomFactor = Math.max(0.1, this.coordinateSystem.zoomFactor);
   }
 
   startDrag(event: MouseEvent): void {
@@ -85,8 +85,8 @@ export class LSystemComponentScalableVectorGraphicsRenderer implements OnChanges
     const startX = (event.clientX - this.CTM.e) / this.CTM.a;
     const startY = (event.clientY - this.CTM.f) / this.CTM.d;
 
-    this.startPoint = new Point(startX, startY);
-    this.translationStartValue = new Point(this.canvas.translation.x, this.canvas.translation.y);
+    this.startPoint = new PointExt(startX, startY);
+    this.translationStartValue = new PointExt(this.coordinateSystem.translation.x, this.coordinateSystem.translation.y);
 
   }
 
@@ -102,10 +102,10 @@ export class LSystemComponentScalableVectorGraphicsRenderer implements OnChanges
       const newX = Math.floor((event.clientX - this.CTM.e) / this.CTM.a);
       const newY = Math.floor((event.clientY - this.CTM.f) / this.CTM.d);
 
-      let diffX = (newX - this.startPoint.x) * (1/this.canvas.zoomFactor);
-      let diffY = (newY - this.startPoint.y)  * (1/this.canvas.zoomFactor);
+      let diffX = (newX - this.startPoint.x) * (1/this.coordinateSystem.zoomFactor);
+      let diffY = (newY - this.startPoint.y)  * (1/this.coordinateSystem.zoomFactor);
 
-      this.canvas.translation.setXY(this.translationStartValue.x + diffX, this.translationStartValue.y + diffY);
+      this.coordinateSystem.translation.setXY(this.translationStartValue.x + diffX, this.translationStartValue.y + diffY);
     }
 
   }

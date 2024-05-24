@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ThreeJSRenderService} from "../../services/three-jsrender.service";
 import {LSystemCalculator} from "../../classes/lsystem-calculator";
-import {CarthesianCoordinates} from "../../classes/carthesian-coordinates";
 
 @Component({
   selector: 'Three-js-renderer',
@@ -16,7 +15,6 @@ export class ThreeJsRendererComponent implements OnInit, AfterViewInit, OnChange
 
   @Input() lsystem: LSystemCalculator | undefined = undefined;
   @Input() uniqueDrawingID: string = '';
-  @Input() coordinateSystem: CarthesianCoordinates | undefined = undefined;
 
   constructor(private engServ: ThreeJSRenderService) { }
 
@@ -25,14 +23,14 @@ export class ThreeJsRendererComponent implements OnInit, AfterViewInit, OnChange
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.lsystem && this.coordinateSystem) {
-      this.engServ.createShapes(this.lsystem, this.coordinateSystem);
+    if (this.lsystem) {
+      this.engServ.createShapes(this.lsystem);
       this.engServ.animate();
     }
   }
 
   ngAfterViewInit(): void {
-    console.log(this.rendererCanvas);
+    console.log(`ngAfterViewInit`);
     if (this.rendererCanvas) {
       this.engServ.createScene(this.rendererCanvas);
 

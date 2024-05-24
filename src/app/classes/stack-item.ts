@@ -1,17 +1,17 @@
-import {Point} from "./point";
+import {PointExt} from "./pointExt";
 
 export class StackItem {
   angle: number;
-  position: Point;
+  position: PointExt;
 
   /**
    *
    * @param angle {number} in degrees
-   * @param position {Point}
+   * @param position {PointExt}
    */
-  constructor(angle: number, position: Point) {
+  constructor(angle: number, position: PointExt) {
     this.angle = angle;
-    this.position = new Point(position.x, position.y);
+    this.position = new PointExt(position.x, position.y);
   }
 }
 

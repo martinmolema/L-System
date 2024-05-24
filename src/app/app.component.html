@@ -33,6 +33,17 @@
             }
           </select>
         </p>
+        <p>
+          <label>Renderer:</label>
+          <label>
+            <input type="radio" name="rendererType" value="2d" id="rdoRenderer2d" (click)="setRenderer('2d')">
+            2d
+          </label>
+          <label>
+            <input type="radio" name="rendererType" value="threejs" id="rdoRenderer3d" (click)="setRenderer('threejs')">
+            3d ThreeJS
+          </label>
+        </p>
 
         <form [formGroup]="formgroup">
           <div class="column">
@@ -113,88 +124,110 @@
 
                 </p>
               }
-              <p>
-                <label for="inputOriginX">Origin drawing</label>
-                <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
-                <span class="prefix">x:</span>
-                <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
-                <span class="prefix">y:</span>
-                <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
-                <span>&nbsp;</span>
+              @if (renderer === 'threejs') {
+                <p>
+                  <label for="inputOriginX3d">Origin drawing</label>
+                  <input name="originX3d" id="inputOriginX3d" formControlName="originX3d" type="number" min="-400"
+                         max="400">
+                  <span class="prefix">x:</span>
+                  <input name="originY3d" id="inputOriginY3d" formControlName="originY3d" type="number" min="-400"
+                         max="400">
+                  <span class="prefix">y:</span>
+                  <input name="originY3d" id="inputOriginZ3d" formControlName="originZ3d" type="number" min="-400"
+                         max="400">
+                  <span class="prefix">z:</span>
+                </p>
+                <p>
+                  ( {{ originX3d?.value }} , {{ originY3d?.value }} , {{ originZ3d?.value }} )
+                </p>
 
-              </p>
-              <p>
-                <label title="Drag to change translation">Translation</label>
-                ({{ coordinates.translation.xAsString }} , {{ coordinates.translation.yAsString }})
-                &nbsp;
-                =>
-                &nbsp;
-                (
-                {{ Math.floor((coordinates.translation ? coordinates.translation.x : 0) + coordinates.OriginX) }}
-                ,
-                {{ Math.floor((coordinates.translation ? coordinates.translation.y : 0) + coordinates.OriginY) }}
-                )
+              }
+              @if (renderer === '2d') {
+                <p>
+                  <label for="inputOriginX">Origin drawing</label>
+                  <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
+                  <span class="prefix">x:</span>
+                  <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
+                  <span class="prefix">y:</span>
+                  <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
+                  <span>&nbsp;</span>
 
-              </p>
-              <button (click)="updateOriginFromTranslation()" title="Use values from translation to correct origin">
-                Correct with translation
-              </button>
-              <div class="origin-navigator">
-                <table class="origins" title="Click to select preselected positions">
-                  <tbody>
-                  <tr>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.TopLeft"
-                        (click)="setOriginFromForm('TL')">&#8598;
-                    </td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterTop"
-                        (click)="setOriginFromForm('TC')">&uarr;
-                    </td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.TopRight"
-                        (click)="setOriginFromForm('TR')">&#8599;
-                    </td>
-                  </tr>
-                  <tr>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterLeft"
-                        (click)="setOriginFromForm('LC')">&larr;
-                    </td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CENTER"
-                        (click)="setOriginFromForm('C')">&#x25cf;
-                    </td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterRight"
-                        (click)="setOriginFromForm('RC')">&rarr;
-                    </td>
-                  </tr>
-                  <tr>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomLeft"
-                        (click)="setOriginFromForm('BL')">&#8601;
-                    </td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterBottom"
-                        (click)="setOriginFromForm('BC')">&darr;
-                    </td>
-                    <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomRight"
-                        (click)="setOriginFromForm('BR')">&#8600;
-                    </td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!--        <p>
-                        <label for="inputRules">Rules</label>
-                        <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4" [cols]="50"></textarea>
-                      <div class="errors">
-                        <p FormError [control]="rules" name="Rules"></p>
-                        @if (rules && rules.hasError('incorrectRule') && rules.errors !== null) {
-                          <p class="hasError">Incorrect rule: {{ rules.errors['incorrectRule'] }}</p>
-                        }
-                        @if (rules && rules.hasError('MissingParts') && rules.errors !== null && rules.errors !== undefined) {
-                          <p class="hasError">Missing parts left or right of equal sign ('='): {{ rules.errors['MissingParts'] }}</p>
-                        }
+                </p>
+                <p>
+                  <label title="Drag to change translation">Translation</label>
+                  ({{ coordinateSystem2d.translation.xAsString }} , {{ coordinateSystem2d.translation.yAsString }})
+                  &nbsp;
+                  =>
+                  &nbsp;
+                  (
+                  {{ Math.floor((coordinateSystem2d.translation ? coordinateSystem2d.translation.x : 0) + coordinateSystem2d.OriginX) }}
+                  ,
+                  {{ Math.floor((coordinateSystem2d.translation ? coordinateSystem2d.translation.y : 0) + coordinateSystem2d.OriginY) }}
+                  )
 
-                      </div>-->
-              <P>
-                <label>Zoomfactor</label> <span>{{ coordinates.zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
-                <button (click)="resetZoom()">Reset</button>
-              </P>
+                </p>
+                <button (click)="updateOriginFromTranslation()" title="Use values from translation to correct origin">
+                  Correct with translation
+                </button>
+                <div class="origin-navigator">
+                  <table class="origins" title="Click to select preselected positions">
+                    <tbody>
+                    <tr>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.TopLeft"
+                          (click)="setOriginFromForm('TL')">&#8598;
+                      </td>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterTop"
+                          (click)="setOriginFromForm('TC')">&uarr;
+                      </td>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.TopRight"
+                          (click)="setOriginFromForm('TR')">&#8599;
+                      </td>
+                    </tr>
+                    <tr>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterLeft"
+                          (click)="setOriginFromForm('LC')">&larr;
+                      </td>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.CENTER"
+                          (click)="setOriginFromForm('C')">&#x25cf;
+                      </td>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterRight"
+                          (click)="setOriginFromForm('RC')">&rarr;
+                      </td>
+                    </tr>
+                    <tr>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomLeft"
+                          (click)="setOriginFromForm('BL')">&#8601;
+                      </td>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.CenterBottom"
+                          (click)="setOriginFromForm('BC')">&darr;
+                      </td>
+                      <td [class.selected]="lsystem.OriginPosition === OriginPositions.BottomRight"
+                          (click)="setOriginFromForm('BR')">&#8600;
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+                <!--        <p>
+                          <label for="inputRules">Rules</label>
+                          <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4" [cols]="50"></textarea>
+                        <div class="errors">
+                          <p FormError [control]="rules" name="Rules"></p>
+                          @if (rules && rules.hasError('incorrectRule') && rules.errors !== null) {
+                            <p class="hasError">Incorrect rule: {{ rules.errors['incorrectRule'] }}</p>
+                          }
+                          @if (rules && rules.hasError('MissingParts') && rules.errors !== null && rules.errors !== undefined) {
+                            <p class="hasError">Missing parts left or right of equal sign ('='): {{ rules.errors['MissingParts'] }}</p>
+                          }
+
+                        </div>-->
+                <P>
+                  <label>Zoomfactor</label>
+                  <span>{{ coordinateSystem2d.zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
+                  <button (click)="resetZoom()">Reset</button>
+                </P>
+              }
             </div>
           </div>
           <div>
@@ -253,8 +286,15 @@
 
   <article id="drawingarea">
     <section>
-      <!--<LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [coordinates]="coordinates" [uniqueDrawingID]="lsystem.uniqueDrawingID"></LSystemComponentScalableVectorGraphicsRenderer>-->
-      <Three-js-renderer [uniqueDrawingID]="lsystem.uniqueDrawingID" [lsystem]="lsystem" [coordinateSystem]="coordinates"></Three-js-renderer>
+      @switch (renderer) {
+        @case ('2d') {
+          <LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [coordinateSystem]="coordinateSystem2d"
+                                                          [uniqueDrawingID]="lsystem.uniqueDrawingID"></LSystemComponentScalableVectorGraphicsRenderer>
+        }
+        @case ('threejs') {
+          <Three-js-renderer [uniqueDrawingID]="lsystem.uniqueDrawingID" [lsystem]="lsystem"></Three-js-renderer>
+        }
+      }
     </section>
     <section class="formula">
       <div>{{ lsystem.completeFormula }}</div>

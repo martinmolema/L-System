@@ -1,9 +1,11 @@
 import {StackItem} from "./stack-item";
-import {Point} from "./point";
+import {PointExt} from "./pointExt";
 import {SVGLine} from "./svgline";
 import {LSystemVariable} from "./lsystem-variable";
 import {LSystemJSONParameters} from "./lsystem-jsonparameters";
 import {OriginPositionsEnum} from "./origin-positions-enum";
+import {Point} from "./point";
+import {Point3d} from "./point3d";
 
 export const SpecialChars = ['+', '-', '[', ']', '>', '<'];
 export type StrokeOpacitySettings = 'None' | 'Normal' | 'Reverse';
@@ -15,9 +17,10 @@ export class LSystemCalculator {
   private variables: Array<LSystemVariable> = new Array<LSystemVariable>();
   private drawingVariables: Array<string> = new Array<string>();
   private axiom = '';
-  private originPosition: OriginPositionsEnum;
-  private originCoordinates: Point;
-  private points: Array<Point>;
+  private originPosition2d: OriginPositionsEnum;
+  private originCoordinates2d: Point;
+  private originCoordinates3d: Point3d;
+  private points: Array<PointExt>;
   private polylineString: string = '';
   private totalLineLength: number = 0;
   public fadeStrokeOpacity: StrokeOpacitySettings;
@@ -30,7 +33,7 @@ export class LSystemCalculator {
 
   private angle = 0;
   private stack: Array<StackItem>;
-  private lastPosition: Point | undefined = undefined;
+  private lastPosition: PointExt | undefined = undefined;
   public lines: Array<SVGLine>;
 
   public completeFormula = '';
@@ -42,18 +45,23 @@ export class LSystemCalculator {
   private processedRules: Map<string, string> = new Map<string, string>();
   public nrOfIterationsRequested: number = 0;
 
-  constructor(systemName: string, origin: OriginPositionsEnum | Point) {
+  constructor(systemName: string, origin: OriginPositionsEnum | Point | Point3d) {
     this.systemName = systemName;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
-    this.points = new Array<Point>();
+    this.points = new Array<PointExt>();
+
+    this.originCoordinates2d = new Point(0, 0);
+    this.originCoordinates3d = new Point3d(0, 0 ,0);
+    this.originPosition2d = OriginPositionsEnum.UseCoordinates;
 
     if (origin instanceof Point) {
-      this.originCoordinates = origin.clone();
-      this.originPosition = OriginPositionsEnum.UseCoordinates;
+      this.originCoordinates2d = origin.clone();
+      this.originPosition2d = OriginPositionsEnum.UseCoordinates;
+    } else if (origin instanceof Point3d) {
+      this.originCoordinates3d = origin.clone();
     } else {
-      this.originCoordinates = new Point(0, 0);
-      this.originPosition = origin;
+      this.originPosition2d = origin;
     }
     this.fadeStrokeOpacity = "None";
   }
@@ -65,28 +73,36 @@ export class LSystemCalculator {
   get PolylineString(): string {
     if (this.usePolyline) {
       return this.polylineString;
-    }
-    else {
+    } else {
       return '';
     }
   }
 
   get OriginPosition(): OriginPositionsEnum {
-    return this.originPosition;
+    return this.originPosition2d;
   }
 
   set OriginPosition(shortname: OriginPositionsEnum) {
-    this.originPosition = shortname;
+    this.originPosition2d = shortname;
   }
 
-  get OriginCoordinates(): Point {
-    return this.originCoordinates;
+  get OriginCoordinates2d(): Point {return this.originCoordinates2d;}
+  set OriginCoordinates2d(p: Point) {
+    this.originCoordinates2d.x = p.x;
+    this.originCoordinates2d.y = p.y;
   }
 
-  set OriginCoordinates(p: Point) {
-    this.originCoordinates.x = p.x;
-    this.originCoordinates.y = p.y;
+
+  get OriginCoordinates3d(): Point3d {return this.originCoordinates3d;}
+  set OriginCoordinates3d(p: Point3d) {
+    this.originCoordinates3d.x = p.x;
+    this.originCoordinates3d.y = p.y;
+    this.originCoordinates3d.z = p.z;
   }
+
+
+
+
 
   get CalculationTime(): number {
     return this.calculationTime;
@@ -178,11 +194,11 @@ export class LSystemCalculator {
       (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
     );
     this.nrOfIterationsRequested = nrOfIterations;
-    this.lastPosition = new Point(0, 0, 0, '');
+    this.lastPosition = new PointExt(0, 0, 0, '');
     this.angle = this.startingAngle;
     this.stack = new Array<StackItem>();
     this.lines = new Array<SVGLine>();
-    this.points = new Array<Point>();
+    this.points = new Array<PointExt>();
     this.clearCalculatedFormula();
 
     this.recursiveIterations = 0;
@@ -194,20 +210,20 @@ export class LSystemCalculator {
     const endDateTime = new Date();
 
     if (this.usePolyline) {
-      this.createPolyline(this.originCoordinates);
+      this.createPolyline(this.originCoordinates2d);
     }
 
-/*
-    console.log(JSON.stringify(this.lines.map((line: SVGLine) => {
-      const x:any = {};
-      x.x1 =line.x1.toFixed(1);
-      x.x2 =line.x2.toFixed(1);
-      x.y1 =line.y1.toFixed(1);
-      x.y2 =line.y2.toFixed(1);
-      x.iterationNr = line.iterationNr;
-      return x;
-    })));
-*/
+    /*
+        console.log(JSON.stringify(this.lines.map((line: SVGLine) => {
+          const x:any = {};
+          x.x1 =line.x1.toFixed(1);
+          x.x2 =line.x2.toFixed(1);
+          x.y1 =line.y1.toFixed(1);
+          x.y2 =line.y2.toFixed(1);
+          x.iterationNr = line.iterationNr;
+          return x;
+        })));
+    */
 
     this.calculationTime = (endDateTime.getTime() - startDateTime.getTime());
   }
@@ -216,12 +232,12 @@ export class LSystemCalculator {
     console.log(`createPolyline:: @(${origin.x},${origin.y})`)
 
     this.polylineString = this.points
-      .map(p => new Point(p.x+origin.x, p.y+origin.y))
+      .map(p => new PointExt(p.x + origin.x, p.y + origin.y))
       .map(p => `${p.xAsString},${p.yAsString}`)
       .join(' ');
 
     let total = 0;
-    let lastPoint = new Point(0, 0);
+    let lastPoint = new PointExt(0, 0);
     this.points.forEach(point => {
       if (lastPoint) {
         const diffX = point.x - lastPoint.x;
@@ -241,7 +257,7 @@ export class LSystemCalculator {
   }
 
   createLinesAsSVGStringComplete(canvasOrigin: Point): string {
-    const linesAsString = this.createLinesAsStringArray(this.OriginCoordinates).join('\n');
+    const linesAsString = this.createLinesAsStringArray(this.OriginCoordinates2d).join('\n');
     const result = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
     <g transform="translate(${canvasOrigin.x} ${canvasOrigin.y}) scale(1,-1)">
     ${linesAsString}
@@ -340,7 +356,7 @@ export class LSystemCalculator {
     return length;
   }
 
-  addLineToCurve(point1: Point | undefined, length: number, iterationNr: number, letter: string): undefined | Point {
+  addLineToCurve(point1: PointExt | undefined, length: number, iterationNr: number, letter: string): undefined | PointExt {
     if (point1 === undefined) {
       return;
     }
@@ -360,7 +376,7 @@ export class LSystemCalculator {
         break;
     }
 
-    const line = new SVGLine(point1.x, point1.y, newx, newy, iterationNr,'shape', this.strokeColor, 1, opacityValue);
+    const line = new SVGLine(point1.x, point1.y, newx, newy, iterationNr, 'shape', this.strokeColor, 1, opacityValue);
     // line.setAttribute("stroke-opacity", (iterationNr / nrOfIterationsRequested).toString());
 
     if (this.fadeStrokeOpacity !== "None") {
@@ -375,7 +391,7 @@ export class LSystemCalculator {
     this.lines.push(line);
     this.points.push(point1);
 
-    return new Point(newx, newy, iterationNr, letter);
+    return new PointExt(newx, newy, iterationNr, letter);
 
   }
 
@@ -393,8 +409,9 @@ export class LSystemCalculator {
     params.startingAngle = this.startingAngle;
     params.lineLength = this.lineLength;
     params.lineLengthMultiplier = this.lineLengthMultiplier;
-    params.originPosition = this.originPosition;
-    params.originCoordinates = this.originCoordinates;
+    params.originPosition = this.originPosition2d;
+    params.originCoordinates2d = this.originCoordinates2d;
+    params.originCoordinates3d = this.originCoordinates3d;
     params.fadeStrokeOpacity = this.fadeStrokeOpacity;
     params.strokeColor = this.strokeColor;
     params.nrOfIterationsToDrawAtSelection = this.nrOfIterationsRequested;
@@ -410,13 +427,21 @@ export class LSystemCalculator {
     this.startingAngle = params.startingAngle || 90;
     this.lineLength = params.lineLength || 1;
     this.lineLengthMultiplier = params.lineLengthMultiplier;
-    this.originPosition = params.originPosition;
-    if (params.originPosition === OriginPositionsEnum.UseCoordinates && params.originCoordinates){
-      this.originCoordinates = new Point(params.originCoordinates.x, params.originCoordinates.y);
+    this.originPosition2d = params.originPosition;
+    if (params.originPosition === OriginPositionsEnum.UseCoordinates && params.originCoordinates2d) {
+      this.originCoordinates2d = new Point(params.originCoordinates2d.x, params.originCoordinates2d.y);
+    } else {
+      this.originCoordinates2d = new Point(0, 0);
     }
-    else {
-      this.originCoordinates = new Point(0,0);
+
+    if (params.originCoordinates3d) {
+      this.originCoordinates3d = new Point3d(
+        params.originCoordinates3d.x,
+        params.originCoordinates3d.y,
+        params.originCoordinates3d.z
+      )
     }
+
     this.strokeColor = params.strokeColor || 'black';
     this.fadeStrokeOpacity = params.fadeStrokeOpacity || 'None';
     this.nrOfIterationsRequested = params.nrOfIterationsToDrawAtSelection;

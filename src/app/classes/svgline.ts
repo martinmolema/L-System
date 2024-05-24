@@ -1,3 +1,4 @@
+import {PointExt} from "./pointExt";
 import {Point} from "./point";
 
 export class SVGLine {

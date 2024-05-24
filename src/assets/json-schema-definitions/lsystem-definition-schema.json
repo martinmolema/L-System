@@ -96,7 +96,7 @@
         "default": 1,
         "description": "The type of origin e.g. Center, TopLeft, etc. This is an numeric enum!"
       },
-      "originCoordinates": {
+      "originCoordinates2d": {
         "type": "object",
         "description": "If the originPosition is value zero (0), then a set of coordinates must be specified, relative to the canvas' origin (0,0). Notice that the Y-axis positive value go from bottom to top!",
         "properties": {
@@ -108,7 +108,27 @@
             "type": "number",
             "default": 0
           }
-        }
+        },
+        "required": ["x","y"]
+      },
+      "originCoordinates3d": {
+        "type": "object",
+        "description": "For the 3d renderer the coordinates are different (x,y,z)",
+        "properties": {
+          "x": {
+            "type": "number",
+            "default": 0
+          },
+          "y": {
+            "type": "number",
+            "default": 0
+          },
+          "z": {
+            "type": "number",
+            "default": 0
+          }
+        },
+        "required": ["x","y","z"]
       }
 
     },

@@ -1,12 +1,12 @@
-import {Point} from "./point";
+import {PointExt} from "./pointExt";
 
-export class CarthesianCoordinates {
+export class CarthesianCoordinates2d {
   private originX = 0;
   private originY = 0;
   private svgWidth = 0;
   private svgHeight = 0;
 
-  public translation: Point;
+  public translation: PointExt;
   public zoomFactor:number;
 
   constructor(originX: number, originY: number, svgWidth: number, svgHeight: number) {
@@ -14,7 +14,7 @@ export class CarthesianCoordinates {
     this.originY = originY;
     this.svgWidth = svgWidth;
     this.svgHeight = svgHeight;
-    this.translation = new Point(0, 0);
+    this.translation = new PointExt(0, 0);
     this.zoomFactor = 1;
   }
 

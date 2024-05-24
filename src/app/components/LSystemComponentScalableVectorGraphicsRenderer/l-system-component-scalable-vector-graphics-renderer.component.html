@@ -9,18 +9,18 @@
 remove these comments to show the center of the carthesian coordinate system
     <circle cx="0" cy="0" r="10" stroke="red" fill="red" fill-opacity="0.5"></circle>
 -->
-    <g id="canvas" [attr.transform]="'scale(' + canvas.zoomFactor +','+ canvas.zoomFactor + ')'">
+    <g id="canvas" [attr.transform]="'scale(' + coordinateSystem.zoomFactor +','+ coordinateSystem.zoomFactor + ')'">
 <!--
             <circle cx="0" cy="0" r="10" stroke="blue" fill="blue" fill-opacity="0.5"></circle>
-            <circle [attr.cx]="LSystemComponentScalableVectorGraphicsRenderer?.OriginCoordinates?.x" [attr.cy]="LSystemComponentScalableVectorGraphicsRenderer?.OriginCoordinates?.y" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
+            <circle [attr.cx]="LSystemComponentScalableVectorGraphicsRenderer?.OriginCoordinates2d?.x" [attr.cy]="LSystemComponentScalableVectorGraphicsRenderer?.OriginCoordinates2d?.y" r="10" stroke="green" fill="green" fill-opacity="0.5"></circle>
 -->
       @if (!lsystem?.UsePolyline) {
         @for (line of lsystem?.lines; track lsystem?.lines) {
           <line
-            [attr.x1]="line.x1 + canvas.OriginX + canvas.translation.x"
-            [attr.x2]="line.x2 + canvas.OriginX + canvas.translation.x"
-            [attr.y1]="line.y1 + canvas.OriginY - canvas.translation.y"
-            [attr.y2]="line.y2 + canvas.OriginY - canvas.translation.y"
+            [attr.x1]="line.x1 + coordinateSystem.OriginX + coordinateSystem.translation.x"
+            [attr.x2]="line.x2 + coordinateSystem.OriginX + coordinateSystem.translation.x"
+            [attr.y1]="line.y1 + coordinateSystem.OriginY - coordinateSystem.translation.y"
+            [attr.y2]="line.y2 + coordinateSystem.OriginY - coordinateSystem.translation.y"
             [attr.stroke-width]="line.strokeWidth"
             [classList]="line.classList.join(' ')"
             [attr.stroke]="lsystem?.strokeColor"
@@ -31,12 +31,12 @@ remove these comments to show the center of the carthesian coordinate system
       }
         <polyline #polylineElement
           [attr.points]="lsystem?.PolylineString"
-                  [attr.stroke-dasharray]="(lsystem  ? lsystem.TotalLineLength : 0) * (canvas ? canvas.zoomFactor : 0)"
-                  [attr.stroke-dashoffset]="(lsystem  ? lsystem.TotalLineLength : 0) * (canvas ? canvas.zoomFactor : 0)"
+                  [attr.stroke-dasharray]="(lsystem  ? lsystem.TotalLineLength : 0) * (coordinateSystem ? coordinateSystem.zoomFactor : 0)"
+                  [attr.stroke-dashoffset]="(lsystem  ? lsystem.TotalLineLength : 0) * (coordinateSystem ? coordinateSystem.zoomFactor : 0)"
                   class="shape"
                   [attr.stroke]="lsystem?.strokeColor"
                   [attr.fill]="lsystem?.FillPolyline ? lsystem?.strokeColor : 'none' "
-                  [attr.transform]="'translate(' + canvas.translation.x + ',' + -canvas.translation.y + ')'">
+                  [attr.transform]="'translate(' + coordinateSystem.translation.x + ',' + -coordinateSystem.translation.y + ')'">
         </polyline>
     </g>
   </g>

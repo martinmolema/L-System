@@ -1,7 +1,9 @@
 import {LSystemVariable} from "./lsystem-variable";
 import {StrokeOpacitySettings} from "./lsystem-calculator";
-import {Point} from "./point";
+import {PointExt} from "./pointExt";
 import {OriginPositionsEnum} from "./origin-positions-enum";
+import {Point} from "./point";
+import {Point3d} from "./point3d";
 
 export class LSystemJSONParameters {
   systemName: string;
@@ -13,7 +15,8 @@ export class LSystemJSONParameters {
   lineLength: number;
   lineLengthMultiplier: number;
   originPosition: OriginPositionsEnum;
-  originCoordinates: Point;
+  originCoordinates2d: Point;
+  originCoordinates3d: Point3d;
   fadeStrokeOpacity: StrokeOpacitySettings;
   strokeColor: string;
   nrOfIterationsToDrawAtSelection: number;
@@ -30,7 +33,8 @@ export class LSystemJSONParameters {
     this.lineLength = 0;
     this.lineLengthMultiplier = 0;
     this.originPosition = OriginPositionsEnum.CENTER;
-    this.originCoordinates = new Point(0,0);
+    this.originCoordinates2d = new Point(0,0);
+    this.originCoordinates3d = new Point3d(0,0,0);
     this.fadeStrokeOpacity = 'None';
     this.strokeColor = 'black';
     this.nrOfIterationsToDrawAtSelection = 3;

@@ -2,17 +2,16 @@ import {ElementRef, Injectable, NgZone} from '@angular/core';
 import * as THREE from 'three';
 
 import {
-  AmbientLight,
-  BufferGeometry, CatmullRomCurve3, DirectionalLightHelper, Group,
+  BufferGeometry, CatmullRomCurve3, Group,
   Line,
-  LineBasicMaterial, Mesh, MeshLambertMaterial, PointLightHelper, SphereGeometry, TubeGeometry,
+  LineBasicMaterial, Mesh, MeshLambertMaterial, TubeGeometry,
   Vector3,
 } from 'three';
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {SVGLine} from "../classes/svgline";
 import {LSystemCalculator} from "../classes/lsystem-calculator";
-import {CarthesianCoordinates} from "../classes/carthesian-coordinates";
-import {Reflector} from "three/examples/jsm/objects/Reflector";
+import {CarthesianCoordinates2d} from "../classes/carthesian-coordinates2d";
+import {OrbitControls} from "../treejs-copies/OrbitControls";
+import {Reflector} from "../treejs-copies/Reflector";
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +38,7 @@ export class ThreeJSRenderService {
   }
 
   public createScene(canvas: ElementRef<HTMLCanvasElement>): void {
-    // The first step is to get the reference of the coordinates element from our HTML document
+    // The first step is to get the reference of the coordinateSystem2d element from our HTML document
     this.canvas = canvas.nativeElement;
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
@@ -105,8 +104,8 @@ export class ThreeJSRenderService {
     this.light1.shadow.camera.bottom = -shadowCameraFrustrumSize;
 
     const light2 = new THREE.AmbientLight(0xffffff, 3);
-    light2.position.set(0,0,0);
-    light2.lookAt(0,1,0);
+    light2.position.set(0, 0, 0);
+    light2.lookAt(0, 1, 0);
 
     if (this.scene) {
       this.scene.add(this.light1);
@@ -117,7 +116,7 @@ export class ThreeJSRenderService {
 
   }
 
-  createShapes(lsystem: LSystemCalculator, coordinateSystem: CarthesianCoordinates): void {
+  createShapes(lsystem: LSystemCalculator): void {
 
     if (this.scene && this.renderer && lsystem.lines) {
 
@@ -127,8 +126,8 @@ export class ThreeJSRenderService {
       this.createFloorPlane(false, true, false);
 
       lsystem.lines.forEach((line: SVGLine) => {
-        const newPoint1 = new THREE.Vector3(line.x1 + lsystem.OriginCoordinates.x, line.y1 + lsystem.OriginCoordinates.y, 0);
-        const newPoint2 = new THREE.Vector3(line.x2 + lsystem.OriginCoordinates.x, line.y2 + lsystem.OriginCoordinates.y, 0);
+        const newPoint1 = new THREE.Vector3(line.x1 + lsystem.OriginCoordinates3d.x, line.y1 + lsystem.OriginCoordinates3d.y, lsystem.OriginCoordinates3d.z);
+        const newPoint2 = new THREE.Vector3(line.x2 + lsystem.OriginCoordinates3d.x, line.y2 + lsystem.OriginCoordinates3d.y, lsystem.OriginCoordinates3d.z);
         /*
 
                 const geometry = new THREE.BoxGeometry(4,4,4).setFromPoints([newPoint1, newPoint2]);
@@ -203,36 +202,36 @@ export class ThreeJSRenderService {
 
       //Create a plane that receives shadows (but does not cast them)
       const planeHeight = 10;
-      let planeGeometry = new THREE.BoxGeometry(1000, 1000, planeHeight, 1, 1,1);
+      let planeGeometry = new THREE.BoxGeometry(1000, 1000, planeHeight, 1, 1, 1);
       let planeMaterial = new THREE.MeshStandardMaterial({color: 'whitesmoke'})
       let plane = new THREE.Mesh(planeGeometry, planeMaterial);
       plane.receiveShadow = true;
       planeGeometry.rotateX(-Math.PI / 2);
-      plane.position.set(0,-planeHeight / 2,0);
+      plane.position.set(0, -planeHeight / 2, 0);
       this.scene?.add(plane);
-/*
+      /*
 
-      //Create a plane that receives shadows (but does not cast them)
-      planeGeometry = new THREE.BoxGeometry(3000, 3000, planeHeight, 1, 1,1);
-      planeMaterial = new THREE.MeshStandardMaterial({color: 'lightblue'})
-      plane = new THREE.Mesh(planeGeometry, planeMaterial);
-      plane.receiveShadow = true;
-      planeGeometry.rotateX(Math.PI / 2);
-      plane.position.set(0,1000,0);
-      this.scene?.add(plane);
-*/
+            //Create a plane that receives shadows (but does not cast them)
+            planeGeometry = new THREE.BoxGeometry(3000, 3000, planeHeight, 1, 1,1);
+            planeMaterial = new THREE.MeshStandardMaterial({color: 'lightblue'})
+            plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.receiveShadow = true;
+            planeGeometry.rotateX(Math.PI / 2);
+            plane.position.set(0,1000,0);
+            this.scene?.add(plane);
+      */
 
     }
     if (addMirror) {
-      let geometry = new THREE.CircleGeometry( 40, 64 );
-      const groundMirror = new Reflector( geometry, {
+      let geometry = new THREE.CircleGeometry(40, 64);
+      const groundMirror = new Reflector(geometry, {
         clipBias: 0.003,
         textureWidth: window.innerWidth * window.devicePixelRatio,
         textureHeight: window.innerHeight * window.devicePixelRatio,
         color: 'white',
-      } );
+      });
       groundMirror.position.y = 0.5;
-      groundMirror.rotateX( - Math.PI / 2 );
+      groundMirror.rotateX(-Math.PI / 2);
 
       this.scene?.add(groundMirror);
 

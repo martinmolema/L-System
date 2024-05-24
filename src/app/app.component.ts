@@ -1,6 +1,8 @@
-import {Component} from '@angular/core';
+import { Component} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {LSystemComponentScalableVectorGraphicsRenderer} from "./components/LSystemComponentScalableVectorGraphicsRenderer/l-system-component-scalable-vector-graphics-renderer.component";
+import {
+  LSystemComponentScalableVectorGraphicsRenderer
+} from "./components/LSystemComponentScalableVectorGraphicsRenderer/l-system-component-scalable-vector-graphics-renderer.component";
 import {LSystemCalculator, SpecialChars} from "./classes/lsystem-calculator";
 import {
   AbstractControl,
@@ -14,15 +16,18 @@ import {
 } from "@angular/forms";
 import {FormErrorDirective} from "./directives/form-error.directive";
 import {LSystemVariable} from "./classes/lsystem-variable";
-import {CarthesianCoordinates} from "./classes/carthesian-coordinates";
-import { forkJoin, Observable, Subscription} from "rxjs";
+import {CarthesianCoordinates2d} from "./classes/carthesian-coordinates2d";
+import {forkJoin, Observable, Subscription} from "rxjs";
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {LSystemJSONParameters} from "./classes/lsystem-jsonparameters";
-import {Point} from "./classes/point";
 import {DecimalPipe} from "@angular/common";
 import {OriginPositionsEnum} from "./classes/origin-positions-enum";
-import Ajv2020 from "ajv/dist/2020";
+import {Ajv2020} from "ajv/dist/2020";
 import {ThreeJsRendererComponent} from "./components/three-js-renderer/three-js-renderer.component";
+import {Point} from "./classes/point";
+
+type RendererTypes = '2d' | 'threejs';
+
 
 function checkRules(ruleControl: AbstractControl): ValidationErrors | null {
   if (ruleControl.value === null) {
@@ -96,7 +101,9 @@ export class AppComponent {
   autoUpdateDrawing: boolean = true;
   valueChangeSubscribers: Array<Subscription>;
 
-  coordinates: CarthesianCoordinates;
+  renderer: RendererTypes = '2d';
+
+  coordinateSystem2d: CarthesianCoordinates2d;
   formgroup: FormGroup;
 
   idxSelectedSystem: number = 5;
@@ -109,8 +116,8 @@ export class AppComponent {
 
 
     this.allSystems = new Array<LSystemCalculator>();
-    this.coordinates = new CarthesianCoordinates(0, 0, 800, 800);
-    this.lsystem = new LSystemCalculator('x',  OriginPositionsEnum.CENTER);
+    this.coordinateSystem2d = new CarthesianCoordinates2d(0, 0, 800, 800);
+    this.lsystem = new LSystemCalculator('x', OriginPositionsEnum.CENTER);
 
     this.formgroup = this.formBuilder.group({});
 
@@ -133,8 +140,13 @@ export class AppComponent {
       }
     });
 
+
   }
 
+  setRenderer(value: RendererTypes): void {
+    this.renderer = value
+    this.redraw(this.nrOfIterations?.value);
+  }
 
   /**
    * Creates a new form based on a given LSystemCalculator
@@ -151,12 +163,15 @@ export class AppComponent {
         lineLength: [lsystem.lineLength, [Validators.required, Validators.min(0), Validators.max(800)]],
         originX: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
         originY: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
-        lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required, Validators.min(0.01),Validators.max(20)]],
+        originX3d: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
+        originY3d: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
+        originZ3d: [0, [Validators.required, Validators.min(-400), Validators.max(400)]],
+        lengthMultiplier: [lsystem.lineLengthMultiplier, [Validators.required, Validators.min(0.01), Validators.max(20)]],
         axiom: [lsystem.Axiom, [Validators.required, Validators.minLength(1)]],
         fadeStrokeOpacity: [lsystem.fadeStrokeOpacity],
         usePolyline: [lsystem.UsePolyline],
         fillPolyline: [lsystem.FillPolyline],
-        strokeColor:[lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
+        strokeColor: [lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
         listOfVariables: this.formBuilder.array([]),
         listOfRules: this.formBuilder.array([]),
       },
@@ -190,7 +205,7 @@ export class AppComponent {
     this.setupSystemAndRedraw();
   }
 
-  setupSystemAndRedraw(){
+  setupSystemAndRedraw() {
     this.updateFormFromLSystem(this.lsystem);
 
     this.setOriginFromPosition(this.lsystem.OriginPosition);
@@ -199,8 +214,9 @@ export class AppComponent {
     this.redraw(this.lsystem.nrOfIterationsRequested);
 
   }
+
   resetZoom(): void {
-    this.coordinates.resetZoom();
+    this.coordinateSystem2d.resetZoom();
   }
 
   /**
@@ -211,20 +227,20 @@ export class AppComponent {
    * The Lsystem {OriginPosition} is set to type OriginPositionsEnum.UseCoordinates.
    */
   updateOriginFromTranslation(): void {
-    if (this.coordinates.translation) {
-      this.coordinates.correctOriginFromTranslation();
+    if (this.coordinateSystem2d.translation) {
+      this.coordinateSystem2d.correctOriginFromTranslation();
 
-      const newx = this.coordinates.OriginX;
-      const newy = this.coordinates.OriginY;
+      const newx = this.coordinateSystem2d.OriginX;
+      const newy = this.coordinateSystem2d.OriginY;
 
       this.originX?.setValue(newx);
       this.originY?.setValue(newy);
 
-      this.lsystem.OriginCoordinates = new Point(newx, newy);
+      this.lsystem.OriginCoordinates2d = new Point(newx, newy);
       this.lsystem.OriginPosition = OriginPositionsEnum.UseCoordinates;
 
       if (this.usePolyline) {
-        this.lsystem.createPolyline(this.lsystem.OriginCoordinates);
+        this.lsystem.createPolyline(this.lsystem.OriginCoordinates2d);
       }
 
     }
@@ -308,7 +324,10 @@ export class AppComponent {
       this.startAngle,
       this.lengthMultiplier,
       this.fadeStrokeOpacity,
-      this.usePolyline
+      this.usePolyline,
+      this.originX3d,
+      this.originY3d,
+      this.originZ3d,
     ].forEach((field: AbstractControl | null) => {
       if (field !== null) {
         this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
@@ -345,7 +364,7 @@ export class AppComponent {
     ].forEach((field: AbstractControl | null) => {
       if (field !== null) {
         this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
-           this.changeLSystemSimpleParameters();
+          this.changeLSystemSimpleParameters();
         }));
       }
     });
@@ -355,20 +374,19 @@ export class AppComponent {
     this.changeParametersAndRedraw();
   }
 
-  copyJSONToClipboard():void {
+  copyJSONToClipboard(): void {
     const json = JSON.stringify(this.lsystem.createParameterObject());
     const type = "text/plain";
-    const blob = new Blob([json], { type });
+    const blob = new Blob([json], {type});
     const data = [new ClipboardItem({[type]: blob})];
     navigator.clipboard.write(data);
   }
 
   copySVGToClipboard(): void {
     let svg = '';
-    if (this.lsystem.UsePolyline){
-      svg = this.lsystem.createPolylineAsSVGStringComplete(new Point(400,400));
-    }
-    else {
+    if (this.lsystem.UsePolyline) {
+      svg = this.lsystem.createPolylineAsSVGStringComplete(new Point(400, 400));
+    } else {
       svg = this.lsystem.createLinesAsSVGStringComplete(new Point(400, 400));
     }
     const type = "text/plain";
@@ -376,10 +394,11 @@ export class AppComponent {
     const data = [new ClipboardItem({[type]: blob})];
     navigator.clipboard.write(data);
   }
+
   copyResultFormulaToClipboard(): void {
     const svg = this.lsystem.completeFormula;
     const type = "text/plain";
-    const blob = new Blob([svg], { type });
+    const blob = new Blob([svg], {type});
     const data = [new ClipboardItem({[type]: blob})];
     navigator.clipboard.write(data);
 
@@ -396,7 +415,7 @@ export class AppComponent {
   processFormVariables(): void {
     this.lsystem.clearVariables();
     this.variables?.controls.map(c => c as FormGroup).forEach((variable: FormGroup) => {
-      const name =variable.get('variableName')?.value;
+      const name = variable.get('variableName')?.value;
       const isDrawing = variable.get('isDrawing')?.value;
 
       this.lsystem.addVariableSimple(name, isDrawing);
@@ -417,7 +436,13 @@ export class AppComponent {
 
   changeLSystemParametersForCalculation() {
 
-    this.coordinates.setOrigin(this.originX?.value, this.originY?.value);
+    this.coordinateSystem2d.setOrigin(this.originX?.value, this.originY?.value);
+
+    this.lsystem.OriginCoordinates3d.setXYZ(
+      this.originX3d?.value,
+      this.originY3d?.value,
+      this.originZ3d?.value,
+    );
     this.lsystem.lineLength = this.lineLength?.value;
     this.lsystem.setAxiom(this.axiom?.value);
     this.lsystem.startingAngle = this.startAngle?.value;
@@ -433,7 +458,7 @@ export class AppComponent {
   }
 
   changeLSystemSimpleParameters(): void {
-    this.coordinates.setOrigin(this.originX?.value, this.originY?.value);
+    this.coordinateSystem2d.setOrigin(this.originX?.value, this.originY?.value);
     this.lsystem.FillPolyline = this.fillPolyline?.value;
     this.lsystem.strokeColor = this.strokeColor?.value;
   }
@@ -442,11 +467,20 @@ export class AppComponent {
     this.lsystem.startGeneration(nrOfIterations)
   }
 
-  get autoUpdate(): AbstractControl | null {    return this.formgroup.get('autoUpdate');  }
-  get nrOfIterations(): AbstractControl | null {    return this.formgroup.get('nrOfIterations');  }
-  get lineLength(): AbstractControl | null {    return this.formgroup.get('lineLength');  }
-  get originX(): AbstractControl | null {    return this.formgroup.get('originX');  }
-  get originY(): AbstractControl | null {    return this.formgroup.get('originY');  }
+  get autoUpdate(): AbstractControl | null {
+    return this.formgroup.get('autoUpdate');
+  }
+
+  get nrOfIterations(): AbstractControl | null {return this.formgroup.get('nrOfIterations');}
+  get lineLength(): AbstractControl | null {return this.formgroup.get('lineLength');}
+
+  get originX(): AbstractControl | null {return this.formgroup.get('originX'); }
+  get originY(): AbstractControl | null {return this.formgroup.get('originY');}
+
+  get originX3d(): AbstractControl | null {return this.formgroup.get('originX3d'); }
+  get originY3d(): AbstractControl | null {return this.formgroup.get('originY3d');}
+  get originZ3d(): AbstractControl | null {return this.formgroup.get('originZ3d');}
+
   get axiom(): AbstractControl | null {return this.formgroup.get('axiom');}
   get rotationAngle(): AbstractControl | null {return this.formgroup.get('rotationAngle');}
   get startAngle(): AbstractControl | null {return this.formgroup.get('startAngle');}
@@ -456,8 +490,7 @@ export class AppComponent {
   get usePolyline(): AbstractControl | null {return this.formgroup.get('usePolyline');}
   get fillPolyline(): AbstractControl | null {return this.formgroup.get('fillPolyline');}
 
-  get variables(): FormArray | undefined {
-    const items = this.formgroup.get('listOfVariables');
+  get variables(): FormArray | undefined {const items = this.formgroup.get('listOfVariables');
     return (items as FormArray);
   }
 
@@ -485,7 +518,7 @@ export class AppComponent {
   }
 
   getDataForCurves(): Observable<Array<LSystemCalculator>> {
-    return new Observable<Array<LSystemCalculator>>( subscriber => {
+    return new Observable<Array<LSystemCalculator>>(subscriber => {
 
       forkJoin([
         this.http.get<Array<LSystemJSONParameters>>('./assets/lsystem-definitions.json'),
@@ -511,18 +544,16 @@ export class AppComponent {
             items.sort((sys1, sys2) => sys1.systemName.localeCompare(sys2.systemName));
             subscriber.next(items);
 
-          }
-          else{
+          } else {
             const firstError = validator.errors ? validator.errors[0] : undefined;
             if (firstError) {
               subscriber.error(`Invalid JSON : ${firstError.message}`);
-            }
-            else {
+            } else {
               subscriber.error(`Unknown JSON Validation error`);
             }
           }
         },
-          error: (err: HttpErrorResponse) => {
+        error: (err: HttpErrorResponse) => {
           subscriber.error(err);
         }
 
@@ -680,102 +711,102 @@ export class AppComponent {
   }*/
 
   setOriginFromForm(shortname: string) {
-    this.coordinates.resetTranslation();
+    this.coordinateSystem2d.resetTranslation();
     this.resetZoom();
 
     switch (shortname) {
       case 'TL':
-        this.coordinates.setOriginTopLeft(1, 1);
+        this.coordinateSystem2d.setOriginTopLeft(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.TopLeft;
         break;
       case 'TC':
-        this.coordinates.setOriginCenterTop(1);
+        this.coordinateSystem2d.setOriginCenterTop(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterTop;
         break;
       case 'TR':
-        this.coordinates.setOriginTopRight(1, 1);
+        this.coordinateSystem2d.setOriginTopRight(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.TopRight;
         break;
       case 'C':
-        this.coordinates.setOrigin(0, 0);
+        this.coordinateSystem2d.setOrigin(0, 0);
         this.lsystem.OriginPosition = OriginPositionsEnum.CENTER;
         break;
       case 'LC':
-        this.coordinates.setOriginCenterLeft(1);
+        this.coordinateSystem2d.setOriginCenterLeft(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterLeft;
         break;
       case 'RC':
-        this.coordinates.setOriginCenterRight(1);
+        this.coordinateSystem2d.setOriginCenterRight(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterRight;
         break;
       case 'BL':
-        this.coordinates.setOriginBottomLeft(1,1);
+        this.coordinateSystem2d.setOriginBottomLeft(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.BottomLeft;
         break;
       case 'BC':
-        this.coordinates.setOriginCenterBottom(0);
+        this.coordinateSystem2d.setOriginCenterBottom(0);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterBottom;
         break;
       case 'BR':
-        this.coordinates.setOriginBottomRight(1,1);
+        this.coordinateSystem2d.setOriginBottomRight(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.BottomRight;
         break;
     }
-    const newX = this.coordinates.OriginX;
-    const newY = this.coordinates.OriginY;
+    const newX = this.coordinateSystem2d.OriginX;
+    const newY = this.coordinateSystem2d.OriginY;
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
 
-    this.lsystem.OriginCoordinates = new Point(newX, newY);
+    this.lsystem.OriginCoordinates2d = new Point(newX, newY);
 
   }
 
   setOriginFromPosition(positionType: OriginPositionsEnum) {
-    this.coordinates.resetTranslation();
+    this.coordinateSystem2d.resetTranslation();
 
     switch (positionType) {
       case OriginPositionsEnum.TopLeft:
-        this.coordinates.setOriginTopLeft(1, 1);
+        this.coordinateSystem2d.setOriginTopLeft(1, 1);
         break;
       case OriginPositionsEnum.CenterTop:
-        this.coordinates.setOriginCenterTop(1);
+        this.coordinateSystem2d.setOriginCenterTop(1);
         break;
       case OriginPositionsEnum.TopRight:
-        this.coordinates.setOriginTopRight(1, 1);
+        this.coordinateSystem2d.setOriginTopRight(1, 1);
         break;
       case OriginPositionsEnum.CENTER:
-        this.coordinates.setOrigin(0, 0);
+        this.coordinateSystem2d.setOrigin(0, 0);
         break;
       case OriginPositionsEnum.CenterLeft:
-        this.coordinates.setOriginCenterLeft(1);
+        this.coordinateSystem2d.setOriginCenterLeft(1);
         break;
       case OriginPositionsEnum.CenterRight:
-        this.coordinates.setOriginCenterRight(1);
+        this.coordinateSystem2d.setOriginCenterRight(1);
         break;
       case OriginPositionsEnum.BottomLeft:
-        this.coordinates.setOriginBottomLeft(1,1);
+        this.coordinateSystem2d.setOriginBottomLeft(1, 1);
         break;
       case OriginPositionsEnum.CenterBottom:
-        this.coordinates.setOriginCenterBottom(0);
+        this.coordinateSystem2d.setOriginCenterBottom(0);
         break;
       case OriginPositionsEnum.BottomRight:
-        this.coordinates.setOriginBottomRight(1,1);
+        this.coordinateSystem2d.setOriginBottomRight(1, 1);
         break;
       case OriginPositionsEnum.UseCoordinates:
-        this.coordinates.setOrigin(this.lsystem.OriginCoordinates.x, this.lsystem.OriginCoordinates.y);
+        this.coordinateSystem2d.setOrigin(this.lsystem.OriginCoordinates2d.x, this.lsystem.OriginCoordinates2d.y);
         break;
     }
-    const newX = this.coordinates.OriginX;
-    const newY = this.coordinates.OriginY;
+    const newX = this.coordinateSystem2d.OriginX;
+    const newY = this.coordinateSystem2d.OriginY;
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
 
-    this.lsystem.OriginCoordinates = new Point(newX, newY);
+    this.lsystem.OriginCoordinates2d = new Point(newX, newY);
   }
 
 
   decreaseIteration(): void {
-    if (this.nrOfIterations !== null && this.nrOfIterations.value > 1)  {
+    if (this.nrOfIterations !== null && this.nrOfIterations.value > 1) {
       this.nrOfIterations.setValue(this.nrOfIterations.value - 1);
     }
   }
@@ -787,40 +818,42 @@ export class AppComponent {
   }
 
   changeLineLength(amount: number): void {
-    if (this.lineLength!== null) {
+    if (this.lineLength !== null) {
       let newValue = this.lineLength.value + amount;
 
       newValue = Math.max(0, Math.min(500, newValue));
       this.lineLength.setValue(newValue);
     }
   }
+
   changeRotationAngle(amount: number): void {
-    if (this.rotationAngle!== null) {
+    if (this.rotationAngle !== null) {
       let newValue = this.rotationAngle.value + amount;
 
       newValue = Math.max(-180, Math.min(180, newValue));
       this.rotationAngle.setValue(newValue);
     }
   }
+
   changeStartAngle(amount: number): void {
-    if (this.startAngle!== null) {
+    if (this.startAngle !== null) {
       let newValue = this.startAngle.value + amount;
 
       newValue = Math.max(-180, Math.min(180, newValue));
       this.startAngle.setValue(newValue);
     }
   }
+
   changeLineLengthMultiplier(amount: number): void {
-    if (this.lengthMultiplier!== null) {
+    if (this.lengthMultiplier !== null) {
       let newValue = this.lengthMultiplier.value + amount;
 
       newValue = Math.max(0.01, Math.min(30, newValue)) * 10;
 
       if (amount < 0) {
-        newValue = Math.floor(newValue ) / 10;
-      }
-      else {
-        newValue = Math.ceil(newValue ) / 10;
+        newValue = Math.floor(newValue) / 10;
+      } else {
+        newValue = Math.ceil(newValue) / 10;
       }
 
       if (newValue < 0.01) {

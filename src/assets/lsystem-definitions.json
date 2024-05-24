@@ -25,9 +25,7 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
     },
@@ -35,7 +33,12 @@
     "strokeColor": "green",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
   },
   {
     "systemName": "squares",
@@ -54,9 +57,7 @@
     "lineLength": 20,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
     },
@@ -64,7 +65,12 @@
     "strokeColor": "black",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
   },
   {
     "systemName": "Fractal tree",
@@ -87,11 +93,14 @@
     "lineLength": 40,
     "lineLengthMultiplier": 0.7,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "nrOfIterationsToDrawAtSelection": 9,
     "fadeStrokeOpacity": "Normal",
@@ -121,11 +130,14 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "green",
@@ -154,11 +166,14 @@
     "lineLength": 6,
     "lineLengthMultiplier": 1,
     "originPosition": 0,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 199.5,
       "y": -3
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "orange",
@@ -183,11 +198,14 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black",
@@ -212,11 +230,14 @@
     "lineLength": 20,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "nrOfIterationsToDrawAtSelection": 3,
     "fadeStrokeOpacity": "None",
@@ -250,11 +271,14 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black",
@@ -288,11 +312,14 @@
     "lineLength": 10,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black",
@@ -325,11 +352,14 @@
     "lineLength": 10,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "nrOfIterationsToDrawAtSelection": 3,
     "fadeStrokeOpacity": "None",
@@ -355,11 +385,14 @@
     "lineLength": 3,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black",
@@ -393,11 +426,14 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 4,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black",
@@ -442,11 +478,14 @@
     "lineLength": 6,
     "lineLengthMultiplier": 0.5,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "bluef",
@@ -480,11 +519,14 @@
     "lineLength": 75,
     "lineLengthMultiplier": 0.5,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": -301,
       "y": -293
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "nrOfIterationsToDrawAtSelection": 3,
     "fadeStrokeOpacity": "None",
@@ -518,11 +560,14 @@
     "lineLength": 3,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "black",
@@ -571,11 +616,14 @@
     "lineLength": 24,
     "lineLengthMultiplier": 0.5,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "#36bf38",
@@ -609,11 +657,14 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 0,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 48
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "#f31212",
@@ -638,11 +689,14 @@
     "lineLength": 7,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": -164.5,
       "y": 114
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "#000000",
@@ -672,11 +726,14 @@
     "lineLength": 3,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "red",
@@ -701,11 +758,14 @@
     "lineLength": 5,
     "lineLengthMultiplier": 1,
     "originPosition": 1,
-    "originCoordinates": {
-      "iterationNr": -1,
-      "letter": "",
+    "originCoordinates2d": {
       "x": 0,
       "y": 0
+    },
+    "originCoordinates3d": {
+      "x": 0,
+      "y": 0,
+      "z": 0
     },
     "fadeStrokeOpacity": "None",
     "strokeColor": "#16ca34",
