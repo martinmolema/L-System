@@ -47,6 +47,7 @@ export class ThreeJSRenderService {
     });
     // https://threejs.org/docs/index.html?q=pointlight#api/en/lights/shadows/PointLightShadow
     this.renderer.shadowMap.enabled = true;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
     this.renderer.setSize(canvas.nativeElement.width, canvas.nativeElement.height);
@@ -100,14 +101,15 @@ export class ThreeJSRenderService {
     this.light1.shadow.camera.top = shadowCameraFrustrumSize;
     this.light1.shadow.camera.bottom = -shadowCameraFrustrumSize;
 
-    const light2 = new THREE.AmbientLight(0xffffff, 3);
-    light2.position.set(0, 0, 0);
+    const light2 = new THREE.DirectionalLight(0xffffff, 1);
+    light2.position.set(0, 0, -500);
     light2.lookAt(0, 1, 0);
 
     // const helper = new THREE.CameraHelper(this.light1.shadow.camera);
 
     if (this.scene) {
       this.scene.add(this.light1);
+      this.scene.add(light2);
       // this.scene.add(helper);
     }
   }
@@ -136,22 +138,7 @@ export class ThreeJSRenderService {
       lsystem.lines.forEach((line: SVGLine) => {
         const newPoint1 = new THREE.Vector3(line.x1 + lsystem.OriginCoordinates3d.x, line.y1 + lsystem.OriginCoordinates3d.y, lsystem.OriginCoordinates3d.z);
         const newPoint2 = new THREE.Vector3(line.x2 + lsystem.OriginCoordinates3d.x, line.y2 + lsystem.OriginCoordinates3d.y, lsystem.OriginCoordinates3d.z);
-        /*
-
-                const geometry = new THREE.BoxGeometry(4,4,4).setFromPoints([newPoint1, newPoint2]);
-
-                const material = new THREE.MeshPhongMaterial({
-                  color: lsystem.strokeColor,
-                  opacity: line.strokeOpacity,
-                  transparent: true,
-
-                });
-
-                const lineObject = new THREE.Line(geometry, material);
-                lineObject.castShadow = true;
-                lineObject.receiveShadow = false;
-        */
-        const lineObject = this.createShadowCastingLine(newPoint1, newPoint2, 1, lsystem.strokeColor, line.strokeOpacity);
+        const lineObject = this.createShadowCastingLine(newPoint1, newPoint2, line.strokeWidth, lsystem.strokeColor, line.strokeOpacity);
         if (this.scene) {
           this.scene.add(lineObject);
         }
@@ -161,10 +148,10 @@ export class ThreeJSRenderService {
   }// createShapes
 
   createShadowCastingLine(start: Vector3, end: Vector3, radius: number, color: string, opacity: number): Group {
+
     const curve = new CatmullRomCurve3([start, end], false);
     const group = new Group();
 
-    // const geometry = new BufferGeometry().setFromPoints( points );
     const geometry = new TubeGeometry(
       curve,
       1,
@@ -172,11 +159,12 @@ export class ThreeJSRenderService {
       6,
       false
     );
-    const linematerial = new MeshLambertMaterial({
+    const linematerial = new THREE.MeshPhysicalMaterial({
       color: color,
-      reflectivity: 0.5,
+      reflectivity: 1,
       opacity: opacity,
-      transparent: true
+      transparent: true,
+
     });
     const line = new Mesh(geometry, linematerial);
     line.castShadow = true;
@@ -217,33 +205,21 @@ export class ThreeJSRenderService {
       planeGeometry.rotateX(-Math.PI / 2);
       plane.position.set(0, -planeHeight / 2, 0);
       this.scene?.add(plane);
-      /*
-
-            //Create a plane that receives shadows (but does not cast them)
-            planeGeometry = new THREE.BoxGeometry(3000, 3000, planeHeight, 1, 1,1);
-            planeMaterial = new THREE.MeshStandardMaterial({color: 'lightblue'})
-            plane = new THREE.Mesh(planeGeometry, planeMaterial);
-            plane.receiveShadow = true;
-            planeGeometry.rotateX(Math.PI / 2);
-            plane.position.set(0,1000,0);
-            this.scene?.add(plane);
-      */
-
     }
     if (addMirror) {
-      let geometry = new THREE.CircleGeometry(40, 64);
-      const groundMirror = new Reflector(geometry, {
-        clipBias: 0.003,
-        textureWidth: window.innerWidth * window.devicePixelRatio,
-        textureHeight: window.innerHeight * window.devicePixelRatio,
-        color: 'white',
-      });
-      groundMirror.position.y = 0.5;
-      groundMirror.rotateX(-Math.PI / 2);
+            let mirrorGeometry = new THREE.PlaneGeometry(1000, 500,1, 1);
+            const groundMirror = new Reflector(mirrorGeometry, {
+              clipBias: 0.003,
+              textureWidth: window.innerWidth * window.devicePixelRatio,
+              textureHeight: window.innerHeight * window.devicePixelRatio,
+              color: 'whitesmoke',
 
-      this.scene?.add(groundMirror);
+            });
+            groundMirror.position.y = 250;
+            groundMirror.position.z = 500;
+            groundMirror.rotateY(Math.PI);
 
-
+            this.scene?.add(groundMirror);
     }
   }// createFloorPlane
 

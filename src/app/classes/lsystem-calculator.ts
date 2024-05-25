@@ -30,6 +30,7 @@ export class LSystemCalculator {
   private usePolyline: boolean = false;
   private fillPolyline: boolean = false;
   public uniqueDrawingID: string = '';
+  public lineThickness3d: number = 1;
 
   private angle = 0;
   private stack: Array<StackItem>;
@@ -52,7 +53,7 @@ export class LSystemCalculator {
     this.points = new Array<PointExt>();
 
     this.originCoordinates2d = new Point(0, 0);
-    this.originCoordinates3d = new Point3d(0, 0 ,0);
+    this.originCoordinates3d = new Point3d(0, 0, 0);
     this.originPosition2d = OriginPositionsEnum.UseCoordinates;
 
     if (origin instanceof Point) {
@@ -86,14 +87,20 @@ export class LSystemCalculator {
     this.originPosition2d = shortname;
   }
 
-  get OriginCoordinates2d(): Point {return this.originCoordinates2d;}
+  get OriginCoordinates2d(): Point {
+    return this.originCoordinates2d;
+  }
+
   set OriginCoordinates2d(p: Point) {
     this.originCoordinates2d.x = p.x;
     this.originCoordinates2d.y = p.y;
   }
 
 
-  get OriginCoordinates3d(): Point3d {return this.originCoordinates3d;}
+  get OriginCoordinates3d(): Point3d {
+    return this.originCoordinates3d;
+  }
+
   set OriginCoordinates3d(p: Point3d) {
     this.originCoordinates3d.x = p.x;
     this.originCoordinates3d.y = p.y;
@@ -184,7 +191,7 @@ export class LSystemCalculator {
     this.completeFormula = '';
   }
 
-  startGeneration(nrOfIterations: number, origin2d: Point, origin3d:Point3d, zoomFactor: number) {
+  startGeneration(nrOfIterations: number, origin2d: Point, origin3d: Point3d, zoomFactor: number) {
 
     this.uniqueDrawingID = "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
       (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
@@ -370,7 +377,7 @@ export class LSystemCalculator {
         break;
     }
 
-    const line = new SVGLine(point1.x, point1.y, newx, newy, iterationNr, 'shape', this.strokeColor, 1, opacityValue);
+    const line = new SVGLine(point1.x, point1.y, newx, newy, iterationNr, 'shape', this.strokeColor, this.lineThickness3d, opacityValue);
     // line.setAttribute("stroke-opacity", (iterationNr / nrOfIterationsRequested).toString());
 
     if (this.fadeStrokeOpacity !== "None") {
@@ -402,6 +409,7 @@ export class LSystemCalculator {
     params.rotationAngle = this.rotationAngle;
     params.startingAngle = this.startingAngle;
     params.lineLength = this.lineLength;
+    params.lineThickness3d = this.lineThickness3d;
     params.lineLengthMultiplier = this.lineLengthMultiplier;
     params.originPosition = this.originPosition2d;
     params.originCoordinates2d = this.originCoordinates2d;
@@ -421,6 +429,7 @@ export class LSystemCalculator {
     this.startingAngle = params.startingAngle || 90;
     this.lineLength = params.lineLength || 1;
     this.lineLengthMultiplier = params.lineLengthMultiplier;
+    this.lineThickness3d = params.lineThickness3d;
     this.originPosition2d = params.originPosition;
     if (params.originPosition === OriginPositionsEnum.UseCoordinates && params.originCoordinates2d) {
       this.originCoordinates2d = new Point(params.originCoordinates2d.x, params.originCoordinates2d.y);

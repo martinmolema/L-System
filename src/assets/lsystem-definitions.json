@@ -106,7 +106,8 @@
     "fadeStrokeOpacity": "Normal",
     "strokeColor": "green",
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Plant - left oriented",

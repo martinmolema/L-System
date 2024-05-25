@@ -14,6 +14,7 @@ export class LSystemJSONParameters {
   startingAngle: number;
   lineLength: number;
   lineLengthMultiplier: number;
+  lineThickness3d:number;
   originPosition: OriginPositionsEnum;
   originCoordinates2d: Point;
   originCoordinates3d: Point3d;
@@ -40,5 +41,6 @@ export class LSystemJSONParameters {
     this.nrOfIterationsToDrawAtSelection = 3;
     this.fillPolyline = false;
     this.usePolyline = false;
+    this.lineThickness3d = 1;
   }
 }

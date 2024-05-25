@@ -105,6 +105,10 @@
                 <label for="inputStrokeColor">Stroke color:</label>
                 <input id="inputStrokeColor" type="color" formControlName="strokeColor" required>
               </p>
+              <p>
+                <label for="inputLineWidth">Line thickness</label>
+                <input id="inputLineWidth" type="number" min="1" max="20" formControlName="lineThickness3d">
+              </p>
 
               @if (renderer === 'threejs') {
                 <p>

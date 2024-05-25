@@ -102,7 +102,7 @@ export class AppComponent {
   autoUpdateDrawing: boolean = true;
   valueChangeSubscribers: Array<Subscription>;
 
-  renderer: RendererTypes = '2d';
+  renderer: RendererTypes = 'threejs';
 
   formgroup: FormGroup;
 
@@ -176,6 +176,7 @@ export class AppComponent {
         strokeColor: [lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
         listOfVariables: this.formBuilder.array([]),
         listOfRules: this.formBuilder.array([]),
+        lineThickness3d: [lsystem.lineThickness3d, [Validators.required, Validators.min(1), Validators.max(30)]]
       },
       {
         validators: [checkVariablesAndRules]
@@ -319,6 +320,7 @@ export class AppComponent {
       this.originX3d,
       this.originY3d,
       this.originZ3d,
+      this.lineThickness3d
     ].forEach((field: AbstractControl | null) => {
       if (field !== null) {
         this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
@@ -444,6 +446,7 @@ export class AppComponent {
     this.lsystem.lineLengthMultiplier = this.lengthMultiplier?.value;
     this.lsystem.fadeStrokeOpacity = this.fadeStrokeOpacity?.value;
     this.lsystem.UsePolyline = this.usePolyline?.value;
+    this.lsystem.lineThickness3d = this.lineThickness3d?.value;
 
     this.processFormRules();
     this.processFormVariables();
@@ -474,10 +477,12 @@ export class AppComponent {
   get originY3d(): AbstractControl | null {return this.formgroup.get('originY3d');}
   get originZ3d(): AbstractControl | null {return this.formgroup.get('originZ3d');}
 
+  get lineThickness3d(): AbstractControl | null {return this.formgroup.get('lineThickness3d');}
+  get lengthMultiplier(): AbstractControl | null {return this.formgroup.get('lengthMultiplier');}
+
   get axiom(): AbstractControl | null {return this.formgroup.get('axiom');}
   get rotationAngle(): AbstractControl | null {return this.formgroup.get('rotationAngle');}
   get startAngle(): AbstractControl | null {return this.formgroup.get('startAngle');}
-  get lengthMultiplier(): AbstractControl | null {return this.formgroup.get('lengthMultiplier');}
   get fadeStrokeOpacity(): AbstractControl | null {return this.formgroup.get('fadeStrokeOpacity');}
   get strokeColor(): AbstractControl | null {return this.formgroup.get('strokeColor');}
   get usePolyline(): AbstractControl | null {return this.formgroup.get('usePolyline');}
