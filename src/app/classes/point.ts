@@ -10,4 +10,9 @@ export class Point {
   public clone(): Point {
     return new Point(this.x, this.y);
   }
+
+  setXY(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
 }

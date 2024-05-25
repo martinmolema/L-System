@@ -33,12 +33,14 @@
       <p>
         <label>Renderer:</label>
         <label>
-          <input type="radio" name="rendererType" value="2d" id="rdoRenderer2d" (click)="setRenderer()" [(ngModel)]="renderer">
+          <input type="radio" name="rendererType" value="2d" id="rdoRenderer2d" (click)="setRenderer()"
+                 [(ngModel)]="renderer">
           2d
         </label>
         <label>
-          <input type="radio" name="rendererType" value="threejs" id="rdoRenderer3d" (click)="setRenderer()" [(ngModel)]="renderer">
-          3d ThreeJS
+          <input type="radio" name="rendererType" value="threejs" id="rdoRenderer3d" (click)="setRenderer()"
+                 [(ngModel)]="renderer">
+          3d
         </label>
       </p>
       @if (formgroup) {
@@ -100,73 +102,68 @@
             </div>
             <div class="right card">
               <p>
-                <label for="cbxUsePolyline">Animated polyline</label>
-                <input id="cbxUsePolyline" formControlName="usePolyline" type="checkbox">
-                @if (usePolyline?.value === true) {
-                  <label for="cbxFillPolyline">Fill Polyline</label>
-                  <input id="cbxFillPolyline" formControlName="fillPolyline" type="checkbox">
-                }
-              </p>
-              <p>
                 <label for="inputStrokeColor">Stroke color:</label>
                 <input id="inputStrokeColor" type="color" formControlName="strokeColor" required>
               </p>
-              @if (usePolyline?.value === false) {
-                <p>
-                  <label for="inputFadeStrokeOpacity">Use fading lines</label>
-                  <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
-                    <option value="None">None</option>
-                    <option value="Normal">Normal</option>
-                    <option value="Reverse">Reverse</option>
-                  </select>
 
-                </p>
-              }
               @if (renderer === 'threejs') {
                 <p>
                   <label for="inputOriginX3d">Origin drawing</label>
+                  <span class="prefix">x:</span>
                   <input name="originX3d" id="inputOriginX3d" formControlName="originX3d" type="number" min="-400"
                          max="400">
-                  <span class="prefix">x:</span>
+                  <span class="prefix">y:</span>
                   <input name="originY3d" id="inputOriginY3d" formControlName="originY3d" type="number" min="-400"
                          max="400">
-                  <span class="prefix">y:</span>
+                  <span class="prefix">z:</span>
                   <input name="originY3d" id="inputOriginZ3d" formControlName="originZ3d" type="number" min="-400"
                          max="400">
-                  <span class="prefix">z:</span>
                 </p>
                 <p>
                   ( {{ originX3d?.value }} , {{ originY3d?.value }} , {{ originZ3d?.value }} )
+                </p>
+                <p>
+                  <button (click)="reset3dCamera()">Reset camera</button>
                 </p>
 
               }
               @if (renderer === '2d') {
                 <p>
-                  <label for="inputOriginX">Origin drawing</label>
-                  <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400" max="400">
-                  <span class="prefix">x:</span>
-                  <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400" max="400">
-                  <span class="prefix">y:</span>
-                  <span>&nbsp; = ({{ originX?.value }} , {{ originY?.value }})</span>
-                  <span>&nbsp;</span>
-
+                  <label for="cbxUsePolyline">Animated polyline</label>
+                  <input id="cbxUsePolyline" formControlName="usePolyline" type="checkbox">
+                  @if (usePolyline?.value === true) {
+                    <label for="cbxFillPolyline">Fill Polyline</label>
+                    <input id="cbxFillPolyline" formControlName="fillPolyline" type="checkbox">
+                  }
                 </p>
-                <p>
-                  <label title="Drag to change translation">Translation</label>
-                  ({{ coordinateSystem2d.translation.xAsString }} , {{ coordinateSystem2d.translation.yAsString }})
-                  &nbsp;
-                  =>
-                  &nbsp;
-                  (
-                  {{ Math.floor((coordinateSystem2d.translation ? coordinateSystem2d.translation.x : 0) + coordinateSystem2d.OriginX) }}
-                  ,
-                  {{ Math.floor((coordinateSystem2d.translation ? coordinateSystem2d.translation.y : 0) + coordinateSystem2d.OriginY) }}
-                  )
+                @if (usePolyline?.value === false) {
+                  <p>
+                    <label for="inputFadeStrokeOpacity">Use fading lines</label>
+                    <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
+                      <option value="None">None</option>
+                      <option value="Normal">Normal</option>
+                      <option value="Reverse">Reverse</option>
+                    </select>
 
-                </p>
-                <button (click)="updateOriginFromTranslation()" title="Use values from translation to correct origin">
-                  Correct with translation
-                </button>
+                  </p>
+                }
+                <div class="flex row vcenter">
+                  <div>
+                    <label for="inputOriginX" class="inline-block w-10em font-small">Origin drawing</label>
+                  </div>
+                  <div>
+                    <span class="prefix font-small">x:</span>
+                    <input name="originX" id="inputOriginX" formControlName="originX" type="number" min="-400"
+                           max="400">
+                    <br>
+                    <span class="prefix font-small">y:</span>
+                    <input name="originY" id="inputOriginY" formControlName="originY" type="number" min="-400"
+                           max="400">
+                  </div>
+                  <div>
+                    <span>&nbsp; = ({{ originX?.value.toFixed(1) }} , {{ originY?.value.toFixed(1) }})</span>
+                  </div>
+                </div>
                 <div class="origin-navigator">
                   <table class="origins" title="Click to select preselected positions">
                     <tbody>
@@ -207,22 +204,10 @@
                   </table>
 
                 </div>
-                <!--        <p>
-                          <label for="inputRules">Rules</label>
-                          <textarea name="lrules" id="inputRules" formControlName="rules" [rows]="4" [cols]="50"></textarea>
-                        <div class="errors">
-                          <p FormError [control]="rules" name="Rules"></p>
-                          @if (rules && rules.hasError('incorrectRule') && rules.errors !== null) {
-                            <p class="hasError">Incorrect rule: {{ rules.errors['incorrectRule'] }}</p>
-                          }
-                          @if (rules && rules.hasError('MissingParts') && rules.errors !== null && rules.errors !== undefined) {
-                            <p class="hasError">Missing parts left or right of equal sign ('='): {{ rules.errors['MissingParts'] }}</p>
-                          }
 
-                        </div>-->
                 <P>
                   <label>Zoomfactor</label>
-                  <span>{{ coordinateSystem2d.zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
+                  <span>{{ zoomFactor.toFixed(1) }}</span><span>&nbsp;</span>
                   <button (click)="resetZoom()">Reset</button>
                 </P>
               }
@@ -286,7 +271,9 @@
     <section>
       @switch (renderer) {
         @case ('2d') {
-          <LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [coordinateSystem]="coordinateSystem2d"
+          <LSystemComponentScalableVectorGraphicsRenderer [lsystem]="lsystem" [(origin)]="lsystem.OriginCoordinates2d"
+                                                          [(zoomFactor)]="zoomFactor"
+                                                          (originChange)="updateOriginFromDrag($event)"
                                                           [uniqueDrawingID]="lsystem.uniqueDrawingID"></LSystemComponentScalableVectorGraphicsRenderer>
         }
         @case ('threejs') {

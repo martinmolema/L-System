@@ -105,11 +105,6 @@ main {
       margin-left: -2rem;
     }
 
-    .prefix {
-      left: -4.5rem;
-      position: relative;
-    }
-
     input[type=number] {
       text-align: right;
       width:5em;
@@ -171,3 +166,11 @@ main {
     }
   }
 }
+
+.flex { display: flex;}
+.flex.row {flex-direction: row;}
+.flex.vcenter {align-items: center}
+
+.inline-block {display: inline-block}
+.w-10em {width: 10em}
+.font-small { font-size: small}

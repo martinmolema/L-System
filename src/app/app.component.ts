@@ -25,6 +25,7 @@ import {OriginPositionsEnum} from "./classes/origin-positions-enum";
 import {Ajv2020} from "ajv/dist/2020";
 import {ThreeJsRendererComponent} from "./components/three-js-renderer/three-js-renderer.component";
 import {Point} from "./classes/point";
+import {ThreeJSRenderService} from "./services/three-jsrender.service";
 
 type RendererTypes = '2d' | 'threejs';
 
@@ -103,20 +104,22 @@ export class AppComponent {
 
   renderer: RendererTypes = '2d';
 
-  coordinateSystem2d: CarthesianCoordinates2d;
   formgroup: FormGroup;
 
+  preventUpdates: boolean = false;
+
   idxSelectedSystem: number = 5;
+  zoomFactor: number = 1;
 
   constructor(
     private formBuilder: FormBuilder,
-    private http: HttpClient
+    private http: HttpClient,
+    private threeJSRenderer: ThreeJSRenderService
   ) {
     this.valueChangeSubscribers = new Array<Subscription>();
 
 
     this.allSystems = new Array<LSystemCalculator>();
-    this.coordinateSystem2d = new CarthesianCoordinates2d(0, 0, 800, 800);
     this.lsystem = new LSystemCalculator('x', OriginPositionsEnum.CENTER);
 
     this.formgroup = this.formBuilder.group({});
@@ -181,6 +184,7 @@ export class AppComponent {
     this.updateRules();
   }
 
+
   clearFormHandlers(): void {
     if (this.valueChangeSubscribers) {
       this.valueChangeSubscribers.forEach(sub => sub.unsubscribe());
@@ -215,35 +219,21 @@ export class AppComponent {
   }
 
   resetZoom(): void {
-    this.coordinateSystem2d.resetZoom();
+    this.zoomFactor = 1;
   }
 
-  /**
-   * Use the translation that was created by moving the drawing around while dragging the mouse.
-   *
-   * If the {UsePolygone} option is set within the LSystem object, the polyline points are recalculated and a new string of points is created
-   *
-   * The Lsystem {OriginPosition} is set to type OriginPositionsEnum.UseCoordinates.
-   */
-  updateOriginFromTranslation(): void {
-    if (this.coordinateSystem2d.translation) {
-      this.coordinateSystem2d.correctOriginFromTranslation();
-
-      const newx = this.coordinateSystem2d.OriginX;
-      const newy = this.coordinateSystem2d.OriginY;
-
-      this.originX?.setValue(newx);
-      this.originY?.setValue(newy);
-
-      this.lsystem.OriginCoordinates2d = new Point(newx, newy);
-      this.lsystem.OriginPosition = OriginPositionsEnum.UseCoordinates;
-
-      if (this.usePolyline) {
-        this.lsystem.createPolyline(this.lsystem.OriginCoordinates2d);
-      }
-
+  updateOriginFromDrag(point: Point): void {
+    this.setOriginInForm(point);
+    if (this.usePolyline) {
+      this.lsystem.createPolyline(this.lsystem.OriginCoordinates2d, this.zoomFactor)
     }
   }
+
+  setOriginInForm(point: Point): void {
+    this.originX?.setValue(point.x,{emitEvent: false});
+    this.originY?.setValue(point.y,{emitEvent: false});
+  }
+
 
   updateRules(): void {
     this.lsystem.Rules.forEach(rule => {
@@ -324,6 +314,8 @@ export class AppComponent {
       this.lengthMultiplier,
       this.fadeStrokeOpacity,
       this.usePolyline,
+      this.originX,
+      this.originY,
       this.originX3d,
       this.originY3d,
       this.originZ3d,
@@ -358,8 +350,6 @@ export class AppComponent {
     [
       this.fillPolyline,
       this.strokeColor,
-      this.originX,
-      this.originY,
     ].forEach((field: AbstractControl | null) => {
       if (field !== null) {
         this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
@@ -434,14 +424,19 @@ export class AppComponent {
   }
 
   changeLSystemParametersForCalculation() {
-
-    this.coordinateSystem2d.setOrigin(this.originX?.value, this.originY?.value);
+    if (this.preventUpdates) { return ; }
 
     this.lsystem.OriginCoordinates3d.setXYZ(
       this.originX3d?.value,
       this.originY3d?.value,
       this.originZ3d?.value,
     );
+
+    this.lsystem.OriginCoordinates2d.setXY(
+      this.originX?.value,
+      this.originY?.value
+    );
+
     this.lsystem.lineLength = this.lineLength?.value;
     this.lsystem.setAxiom(this.axiom?.value);
     this.lsystem.startingAngle = this.startAngle?.value;
@@ -457,13 +452,12 @@ export class AppComponent {
   }
 
   changeLSystemSimpleParameters(): void {
-    this.coordinateSystem2d.setOrigin(this.originX?.value, this.originY?.value);
     this.lsystem.FillPolyline = this.fillPolyline?.value;
     this.lsystem.strokeColor = this.strokeColor?.value;
   }
 
   redraw(nrOfIterations: number): void {
-    this.lsystem.startGeneration(nrOfIterations)
+    this.lsystem.startGeneration(nrOfIterations, this.lsystem.OriginCoordinates2d, this.lsystem.OriginCoordinates3d, this.zoomFactor);
   }
 
   get autoUpdate(): AbstractControl | null {
@@ -709,94 +703,95 @@ export class AppComponent {
 
   }*/
 
-  setOriginFromForm(shortname: string) {
-    this.coordinateSystem2d.resetTranslation();
-    this.resetZoom();
+  createCoordinateForCanvas2d(): CarthesianCoordinates2d {
+    return new CarthesianCoordinates2d(0,0,800,800);
+  }
 
+  setOriginFromForm(shortname: string) {
+    this.resetZoom();
+    const coords = this.createCoordinateForCanvas2d();
     switch (shortname) {
       case 'TL':
-        this.coordinateSystem2d.setOriginTopLeft(1, 1);
+        coords.setOriginTopLeft(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.TopLeft;
         break;
       case 'TC':
-        this.coordinateSystem2d.setOriginCenterTop(1);
+        coords.setOriginCenterTop(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterTop;
         break;
       case 'TR':
-        this.coordinateSystem2d.setOriginTopRight(1, 1);
+        coords.setOriginTopRight(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.TopRight;
         break;
       case 'C':
-        this.coordinateSystem2d.setOrigin(0, 0);
+        coords.setOrigin(0, 0);
         this.lsystem.OriginPosition = OriginPositionsEnum.CENTER;
         break;
       case 'LC':
-        this.coordinateSystem2d.setOriginCenterLeft(1);
+        coords.setOriginCenterLeft(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterLeft;
         break;
       case 'RC':
-        this.coordinateSystem2d.setOriginCenterRight(1);
+        coords.setOriginCenterRight(1);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterRight;
         break;
       case 'BL':
-        this.coordinateSystem2d.setOriginBottomLeft(1, 1);
+        coords.setOriginBottomLeft(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.BottomLeft;
         break;
       case 'BC':
-        this.coordinateSystem2d.setOriginCenterBottom(0);
+        coords.setOriginCenterBottom(0);
         this.lsystem.OriginPosition = OriginPositionsEnum.CenterBottom;
         break;
       case 'BR':
-        this.coordinateSystem2d.setOriginBottomRight(1, 1);
+        coords.setOriginBottomRight(1, 1);
         this.lsystem.OriginPosition = OriginPositionsEnum.BottomRight;
         break;
     }
-    const newX = this.coordinateSystem2d.OriginX;
-    const newY = this.coordinateSystem2d.OriginY;
-    this.originX?.setValue(newX);
-    this.originY?.setValue(newY);
+    const newX = coords.OriginX;
+    const newY = coords.OriginY;
 
+    this.setOriginInForm(new Point(newX, newY));
     this.lsystem.OriginCoordinates2d = new Point(newX, newY);
-
   }
 
   setOriginFromPosition(positionType: OriginPositionsEnum) {
-    this.coordinateSystem2d.resetTranslation();
+    const coords = this.createCoordinateForCanvas2d();
 
     switch (positionType) {
       case OriginPositionsEnum.TopLeft:
-        this.coordinateSystem2d.setOriginTopLeft(1, 1);
+        coords.setOriginTopLeft(1, 1);
         break;
       case OriginPositionsEnum.CenterTop:
-        this.coordinateSystem2d.setOriginCenterTop(1);
+        coords.setOriginCenterTop(1);
         break;
       case OriginPositionsEnum.TopRight:
-        this.coordinateSystem2d.setOriginTopRight(1, 1);
+        coords.setOriginTopRight(1, 1);
         break;
       case OriginPositionsEnum.CENTER:
-        this.coordinateSystem2d.setOrigin(0, 0);
+        coords.setOrigin(0, 0);
         break;
       case OriginPositionsEnum.CenterLeft:
-        this.coordinateSystem2d.setOriginCenterLeft(1);
+        coords.setOriginCenterLeft(1);
         break;
       case OriginPositionsEnum.CenterRight:
-        this.coordinateSystem2d.setOriginCenterRight(1);
+        coords.setOriginCenterRight(1);
         break;
       case OriginPositionsEnum.BottomLeft:
-        this.coordinateSystem2d.setOriginBottomLeft(1, 1);
+        coords.setOriginBottomLeft(1, 1);
         break;
       case OriginPositionsEnum.CenterBottom:
-        this.coordinateSystem2d.setOriginCenterBottom(0);
+        coords.setOriginCenterBottom(0);
         break;
       case OriginPositionsEnum.BottomRight:
-        this.coordinateSystem2d.setOriginBottomRight(1, 1);
+        coords.setOriginBottomRight(1, 1);
         break;
       case OriginPositionsEnum.UseCoordinates:
-        this.coordinateSystem2d.setOrigin(this.lsystem.OriginCoordinates2d.x, this.lsystem.OriginCoordinates2d.y);
+        coords.setOrigin(this.lsystem.OriginCoordinates2d.x, this.lsystem.OriginCoordinates2d.y);
         break;
     }
-    const newX = this.coordinateSystem2d.OriginX;
-    const newY = this.coordinateSystem2d.OriginY;
+    const newX = coords.OriginX;
+    const newY = coords.OriginY;
     this.originX?.setValue(newX);
     this.originY?.setValue(newY);
 
@@ -860,6 +855,10 @@ export class AppComponent {
       }
       this.lengthMultiplier.setValue(newValue);
     }
+  }
+
+  reset3dCamera(): void {
+    this.threeJSRenderer.resetCameraPosition();
   }
 
 }

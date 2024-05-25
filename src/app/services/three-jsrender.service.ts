@@ -104,11 +104,11 @@ export class ThreeJSRenderService {
     light2.position.set(0, 0, 0);
     light2.lookAt(0, 1, 0);
 
-    const helper = new THREE.CameraHelper(this.light1.shadow.camera);
+    // const helper = new THREE.CameraHelper(this.light1.shadow.camera);
 
     if (this.scene) {
       this.scene.add(this.light1);
-      this.scene.add(helper);
+      // this.scene.add(helper);
     }
   }
 

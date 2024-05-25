@@ -100,10 +100,6 @@ export class LSystemCalculator {
     this.originCoordinates3d.z = p.z;
   }
 
-
-
-
-
   get CalculationTime(): number {
     return this.calculationTime;
   }
@@ -188,7 +184,7 @@ export class LSystemCalculator {
     this.completeFormula = '';
   }
 
-  startGeneration(nrOfIterations: number) {
+  startGeneration(nrOfIterations: number, origin2d: Point, origin3d:Point3d, zoomFactor: number) {
 
     this.uniqueDrawingID = "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
       (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
@@ -209,10 +205,6 @@ export class LSystemCalculator {
     this.completeFormula = this.generateOneIteration(nrOfIterations, this.axiom, this.lineLength);
     const endDateTime = new Date();
 
-    if (this.usePolyline) {
-      this.createPolyline(this.originCoordinates2d);
-    }
-
     /*
         console.log(JSON.stringify(this.lines.map((line: SVGLine) => {
           const x:any = {};
@@ -225,12 +217,14 @@ export class LSystemCalculator {
         })));
     */
 
+
+    if (this.usePolyline) {
+      this.createPolyline(origin2d, zoomFactor);
+    }
     this.calculationTime = (endDateTime.getTime() - startDateTime.getTime());
   }
 
-  createPolyline(origin: Point): string {
-    console.log(`createPolyline:: @(${origin.x},${origin.y})`)
-
+  createPolyline(origin: Point, zoomfactor: number): string {
     this.polylineString = this.points
       .map(p => new PointExt(p.x + origin.x, p.y + origin.y))
       .map(p => `${p.xAsString},${p.yAsString}`)
@@ -267,7 +261,7 @@ export class LSystemCalculator {
   }
 
   createPolylineAsSVGStringComplete(canvasOrigin: Point): string {
-    this.createPolyline(canvasOrigin);
+    this.createPolyline(canvasOrigin, 1);
     const result = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800">
     <g transform="translate(${canvasOrigin.x} ${canvasOrigin.y}) scale(1,-1)">
       <polyline points="${this.polylineString}" stroke="${this.strokeColor}" ${this.fillPolyline ? 'fill="' + this.strokeColor + '"' : ''}></polyline>
