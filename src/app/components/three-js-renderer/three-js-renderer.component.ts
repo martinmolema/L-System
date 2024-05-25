@@ -33,6 +33,8 @@ export class ThreeJsRendererComponent implements OnInit, AfterViewInit, OnChange
     console.log(`ngAfterViewInit`);
     if (this.rendererCanvas) {
       this.engServ.createScene(this.rendererCanvas);
+      if (this.lsystem) { this.engServ.createShapes(this.lsystem); }
+
 
     }
   }

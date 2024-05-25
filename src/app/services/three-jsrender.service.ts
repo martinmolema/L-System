@@ -75,9 +75,7 @@ export class ThreeJSRenderService {
       this.camera = new THREE.PerspectiveCamera(
         25, this.canvas.clientWidth / this.canvas.height, 0.1, 12000
       );
-      this.camera.position.set(0, 10, -500);
-      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-      this.camera.updateProjectionMatrix();
+      this.resetCameraPosition();
       if (this.scene) {
         this.scene.add(this.camera);
       }
@@ -88,8 +86,7 @@ export class ThreeJSRenderService {
   setupLights(): void {
     // soft white light
     this.light1 = new THREE.DirectionalLight(0xffffff, 3);
-    this.light1.position.set(50, 250, -200);
-    this.light1.lookAt(new Vector3(0, 200, 200));
+    this.light1.position.set(0, 600, -600);
     this.light1.castShadow = true;
     this.light1.shadow.mapSize.width = 2048;
     this.light1.shadow.mapSize.height = 2048;
@@ -107,8 +104,19 @@ export class ThreeJSRenderService {
     light2.position.set(0, 0, 0);
     light2.lookAt(0, 1, 0);
 
+    const helper = new THREE.CameraHelper(this.light1.shadow.camera);
+
     if (this.scene) {
       this.scene.add(this.light1);
+      this.scene.add(helper);
+    }
+  }
+
+  resetCameraPosition(): void {
+    if (this.camera) {
+      this.camera.position.set(0, 10, -500);
+      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      this.camera.updateProjectionMatrix();
     }
   }
 

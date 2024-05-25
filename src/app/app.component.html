@@ -19,31 +19,29 @@
       <header>
         <h1>Configuration</h1>
       </header>
-
+      <p>
+        <label for="listOfItems">Available items: &nbsp;</label>
+        <select id="listOfItems" (change)="selectSystem($event)" [(ngModel)]="idxSelectedSystem">
+          <option value="-1">[Pick an item]</option>
+          @for (item of allSystems; track allSystems; let idx = $index) {
+            <option [ngValue]="idx">{{ item.systemName }}</option>
+          } @empty {
+            <option>Loading....</option>
+          }
+        </select>
+      </p>
+      <p>
+        <label>Renderer:</label>
+        <label>
+          <input type="radio" name="rendererType" value="2d" id="rdoRenderer2d" (click)="setRenderer()" [(ngModel)]="renderer">
+          2d
+        </label>
+        <label>
+          <input type="radio" name="rendererType" value="threejs" id="rdoRenderer3d" (click)="setRenderer()" [(ngModel)]="renderer">
+          3d ThreeJS
+        </label>
+      </p>
       @if (formgroup) {
-
-        <p>
-          <label for="listOfItems">Available items: &nbsp;</label>
-          <select id="listOfItems" (change)="selectSystem($event)" [(ngModel)]="idxSelectedSystem">
-            <option value="-1">[Pick an item]</option>
-            @for (item of allSystems; track allSystems; let idx = $index) {
-              <option [ngValue]="idx">{{ item.systemName }}</option>
-            } @empty {
-              <option>Loading....</option>
-            }
-          </select>
-        </p>
-        <p>
-          <label>Renderer:</label>
-          <label>
-            <input type="radio" name="rendererType" value="2d" id="rdoRenderer2d" (click)="setRenderer('2d')">
-            2d
-          </label>
-          <label>
-            <input type="radio" name="rendererType" value="threejs" id="rdoRenderer3d" (click)="setRenderer('threejs')">
-            3d ThreeJS
-          </label>
-        </p>
 
         <form [formGroup]="formgroup">
           <div class="column">

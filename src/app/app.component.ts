@@ -143,8 +143,7 @@ export class AppComponent {
 
   }
 
-  setRenderer(value: RendererTypes): void {
-    this.renderer = value
+  setRenderer(): void {
     this.redraw(this.nrOfIterations?.value);
   }
 
