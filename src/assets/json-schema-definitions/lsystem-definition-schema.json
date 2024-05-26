@@ -74,8 +74,9 @@
       },
       "strokeColor": {
         "type": "string",
-        "default": "black",
-        "description": "The color used when to draw lines"
+        "default": "#000000",
+        "description": "The color used when to draw lines",
+        "pattern": "^#[0-9A-Fa-f]{6}$"
       },
       "fadeStrokeOpacity": {
         "enum": [

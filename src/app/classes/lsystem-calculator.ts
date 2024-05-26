@@ -24,7 +24,7 @@ export class LSystemCalculator {
   private polylineString: string = '';
   private totalLineLength: number = 0;
   public fadeStrokeOpacity: StrokeOpacitySettings;
-  public strokeColor: string = 'black';
+  public strokeColor: string = '#000000';
   private calculationTime: number = 0;
   private recursiveIterations: number = 0;
   private usePolyline: boolean = false;

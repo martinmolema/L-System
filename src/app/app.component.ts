@@ -862,6 +862,14 @@ export class AppComponent {
     }
   }
 
+  cangeLineThickness(amount: number): void {
+    if (this.lineThickness3d !== null){
+      let newValue = this.lineThickness3d.value + amount;
+      newValue = Math.max(1,Math.min(32, newValue));
+      this.lineThickness3d.setValue(newValue);
+    }
+  }
+
   reset3dCamera(): void {
     this.threeJSRenderer.resetCameraPosition();
   }

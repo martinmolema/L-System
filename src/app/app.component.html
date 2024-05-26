@@ -108,7 +108,20 @@
               <p>
                 <label for="inputLineWidth">Line thickness</label>
                 <input id="inputLineWidth" type="number" min="1" max="20" formControlName="lineThickness3d">
+                <button class="updown" (click)="cangeLineThickness(-0.5)" title="decrease value">-</button>
+                <button class="updown" (click)="cangeLineThickness(0.5)" title="increase value">+</button>
+
               </p>
+              @if (usePolyline?.value === false || renderer === 'threejs') {
+                <p>
+                  <label for="inputFadeStrokeOpacity">Use fading lines</label>
+                  <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
+                    <option value="None">None</option>
+                    <option value="Normal">Normal</option>
+                    <option value="Reverse">Reverse</option>
+                  </select>
+                </p>
+              }
 
               @if (renderer === 'threejs') {
                 <p>
@@ -131,6 +144,7 @@
                 </p>
 
               }
+
               @if (renderer === '2d') {
                 <p>
                   <label for="cbxUsePolyline">Animated polyline</label>
@@ -140,17 +154,6 @@
                     <input id="cbxFillPolyline" formControlName="fillPolyline" type="checkbox">
                   }
                 </p>
-                @if (usePolyline?.value === false) {
-                  <p>
-                    <label for="inputFadeStrokeOpacity">Use fading lines</label>
-                    <select id="inputFadeStrokeOpacity" formControlName="fadeStrokeOpacity">
-                      <option value="None">None</option>
-                      <option value="Normal">Normal</option>
-                      <option value="Reverse">Reverse</option>
-                    </select>
-
-                  </p>
-                }
                 <div class="flex row vcenter">
                   <div>
                     <label for="inputOriginX" class="inline-block w-10em font-small">Origin drawing</label>

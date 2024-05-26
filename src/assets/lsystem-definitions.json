@@ -30,7 +30,7 @@
       "y": 0
     },
     "fadeStrokeOpacity": "Reverse",
-    "strokeColor": "green",
+    "strokeColor": "#00FF04",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
@@ -38,7 +38,8 @@
       "x": 0,
       "y": 0,
       "z": 0
-    }
+    },
+    "lineThickness3d": 1
   },
   {
     "systemName": "squares",
@@ -62,7 +63,7 @@
       "y": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
@@ -70,7 +71,8 @@
       "x": 0,
       "y": 0,
       "z": 0
-    }
+    },
+    "lineThickness3d": 1
   },
   {
     "systemName": "Fractal tree",
@@ -104,7 +106,7 @@
     },
     "nrOfIterationsToDrawAtSelection": 9,
     "fadeStrokeOpacity": "Normal",
-    "strokeColor": "green",
+    "strokeColor": "#1CA61E",
     "usePolyline": false,
     "fillPolyline": false,
     "lineThickness3d": 1
@@ -141,10 +143,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "green",
+    "strokeColor": "#00FF04",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Square Sierpinski",
@@ -177,7 +180,7 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "orange",
+    "strokeColor": "#FF9500",
     "nrOfIterationsToDrawAtSelection": 5,
     "fillPolyline": true,
     "usePolyline": true
@@ -209,7 +212,7 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false
@@ -242,9 +245,10 @@
     },
     "nrOfIterationsToDrawAtSelection": 3,
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Peano Curve",
@@ -282,10 +286,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Sierpinski Arrowhead",
@@ -323,10 +328,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Hilbert curve",
@@ -364,10 +370,11 @@
     },
     "nrOfIterationsToDrawAtSelection": 3,
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "usePolyline": true,
     "fillPolyline": false,
-    "axiom": "FX"
+    "axiom": "FX",
+    "lineThickness3d": 1
   },
   {
     "systemName": "Quadratic Snowflake variant B",
@@ -396,10 +403,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Quadratic Gosper",
@@ -437,10 +445,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Sticks",
@@ -489,10 +498,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "bluef",
+    "strokeColor": "#0000FF",
     "nrOfIterationsToDrawAtSelection": 7,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Peano Curve - space filling",
@@ -531,9 +541,10 @@
     },
     "nrOfIterationsToDrawAtSelection": 3,
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Quadratic Koch Island (variant B)",
@@ -571,10 +582,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "black",
+    "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Bushy plant (Saupe)",
@@ -630,7 +642,8 @@
     "strokeColor": "#36bf38",
     "nrOfIterationsToDrawAtSelection": 6,
     "fillPolyline": false,
-    "usePolyline": false
+    "usePolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Dragon",
@@ -671,7 +684,8 @@
     "strokeColor": "#f31212",
     "nrOfIterationsToDrawAtSelection": 9,
     "fillPolyline": false,
-    "usePolyline": false
+    "usePolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Koch curve B",
@@ -703,7 +717,8 @@
     "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "fillPolyline": false,
-    "usePolyline": false
+    "usePolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Christmas Tree",
@@ -737,10 +752,11 @@
       "z": 0
     },
     "fadeStrokeOpacity": "None",
-    "strokeColor": "red",
+    "strokeColor": "#FF0000",
     "nrOfIterationsToDrawAtSelection": 7,
     "fillPolyline": false,
-    "usePolyline": false
+    "usePolyline": false,
+    "lineThickness3d": 1
   },
   {
     "systemName": "Diamonds",
@@ -758,7 +774,7 @@
     "startingAngle": 90,
     "lineLength": 5,
     "lineLengthMultiplier": 1,
-    "originPosition": 1,
+    "originPosition": 9,
     "originCoordinates2d": {
       "x": 0,
       "y": 0
@@ -772,6 +788,7 @@
     "strokeColor": "#16ca34",
     "nrOfIterationsToDrawAtSelection": 5,
     "fillPolyline": false,
-    "usePolyline": false
+    "usePolyline": false,
+    "lineThickness3d": 1
   }
 ]
