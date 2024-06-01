@@ -79,6 +79,11 @@
                 <button class="updown" (click)="changeRotationAngle(5)" title="increase value">+</button>
               </p>
               <p>
+                <label for="checkboxRotationAngleRandomizer" title="Maximum change to rotation angle (either add or subtract)">Randomize angle</label>
+                <input id="checkboxRotationAngleRandomizer" type="range" min="0" max="90" step="1" formControlName="rotationAngleRandomizerValue">
+                <span>{{rotationAngleRandomizerValue?.value}}&deg;</span>
+              </p>
+              <p>
                 <label for="inputStartAngle">Start Angle</label>
                 <input name="startAngle" id="inputStartAngle" formControlName="startAngle" type="number"
                        min="-180" max="180" class="angle">

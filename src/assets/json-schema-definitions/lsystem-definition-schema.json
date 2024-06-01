@@ -45,6 +45,13 @@
         "default": 45,
         "description": ""
       },
+      "rotationAngleRandomizerValue": {
+        "type": "number",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 90,
+        "description": "The angle (in degree) between 0 and 90 that will randomly affect the rotation angle; either positive (addition) or negative (subtract)"
+      },
       "nrOfIterationsToDrawAtSelection": {
         "type": "integer",
         "minimum": 1,

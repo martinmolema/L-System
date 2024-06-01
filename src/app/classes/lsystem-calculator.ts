@@ -31,6 +31,7 @@ export class LSystemCalculator {
   private fillPolyline: boolean = false;
   public uniqueDrawingID: string = '';
   public lineThickness3d: number = 1;
+  public rotationAngleRandomizerValue: number = 0;
 
   private angle = 0;
   private stack: Array<StackItem>;
@@ -321,6 +322,12 @@ export class LSystemCalculator {
   processNonRuleCharFromFormula(char: string, length: number, iterationNr: number, letter: string) {
 
     if (SpecialChars.includes(char)) {
+      let angle = this.rotationAngle;
+      if (this.rotationAngleRandomizerValue !== 0) {
+        const randomValue = (Math.random() - 0.5) * this.rotationAngleRandomizerValue;
+        angle += randomValue;
+      }
+
       switch (char) {
         case "[":
           if (this.lastPosition) {
@@ -343,10 +350,10 @@ export class LSystemCalculator {
           length /= this.lineLengthMultiplier;
           break;
         case "+":
-          this.turn(this.rotationAngle);
+          this.turn( angle);
           break;
         case "-":
-          this.turn(-this.rotationAngle);
+          this.turn(-angle);
           break;
       }
     } else {
@@ -419,6 +426,7 @@ export class LSystemCalculator {
     params.nrOfIterationsToDrawAtSelection = this.nrOfIterationsRequested;
     params.fillPolyline = this.fillPolyline;
     params.usePolyline = this.usePolyline;
+    params.rotationAngleRandomizerValue = this.rotationAngleRandomizerValue;
     return params;
   }
 
@@ -450,6 +458,7 @@ export class LSystemCalculator {
     this.nrOfIterationsRequested = params.nrOfIterationsToDrawAtSelection;
     this.fillPolyline = params.fillPolyline;
     this.usePolyline = params.usePolyline;
+    this.rotationAngleRandomizerValue = params.rotationAngleRandomizerValue;
 
     params.variables.forEach(variable => this.addVariableSimple(variable.varname, variable.isDrawingVariable));
     params.rules.forEach(rule => this.addRule(rule));

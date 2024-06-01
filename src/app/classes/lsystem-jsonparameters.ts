@@ -23,6 +23,7 @@ export class LSystemJSONParameters {
   nrOfIterationsToDrawAtSelection: number;
   fillPolyline: boolean;
   usePolyline: boolean;
+  rotationAngleRandomizerValue:number;
 
   constructor(systemName: string) {
     this.systemName = systemName;
@@ -42,5 +43,6 @@ export class LSystemJSONParameters {
     this.fillPolyline = false;
     this.usePolyline = false;
     this.lineThickness3d = 1;
+    this.rotationAngleRandomizerValue = 0;
   }
 }

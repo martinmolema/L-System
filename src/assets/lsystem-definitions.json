@@ -39,7 +39,8 @@
       "y": 0,
       "z": 0
     },
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "squares",
@@ -72,7 +73,8 @@
       "y": 0,
       "z": 0
     },
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Fractal tree",
@@ -147,7 +149,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Square Sierpinski",
@@ -183,7 +186,9 @@
     "strokeColor": "#FF9500",
     "nrOfIterationsToDrawAtSelection": 5,
     "fillPolyline": true,
-    "usePolyline": true
+    "usePolyline": true,
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Simple snowflake",
@@ -215,7 +220,9 @@
     "strokeColor": "#000000",
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
-    "fillPolyline": false
+    "fillPolyline": false,
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "triangles",
@@ -248,7 +255,8 @@
     "strokeColor": "#000000",
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Peano Curve",
@@ -290,7 +298,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Sierpinski Arrowhead",
@@ -332,7 +341,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Hilbert curve",
@@ -374,7 +384,8 @@
     "usePolyline": true,
     "fillPolyline": false,
     "axiom": "FX",
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Quadratic Snowflake variant B",
@@ -407,7 +418,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Quadratic Gosper",
@@ -449,7 +461,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Sticks",
@@ -502,7 +515,8 @@
     "nrOfIterationsToDrawAtSelection": 7,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Peano Curve - space filling",
@@ -544,7 +558,8 @@
     "strokeColor": "#000000",
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Quadratic Koch Island (variant B)",
@@ -586,7 +601,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "usePolyline": false,
     "fillPolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Bushy plant (Saupe)",
@@ -643,7 +659,8 @@
     "nrOfIterationsToDrawAtSelection": 6,
     "fillPolyline": false,
     "usePolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Dragon",
@@ -685,7 +702,8 @@
     "nrOfIterationsToDrawAtSelection": 9,
     "fillPolyline": false,
     "usePolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Koch curve B",
@@ -718,7 +736,8 @@
     "nrOfIterationsToDrawAtSelection": 3,
     "fillPolyline": false,
     "usePolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Christmas Tree",
@@ -756,7 +775,8 @@
     "nrOfIterationsToDrawAtSelection": 7,
     "fillPolyline": false,
     "usePolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   },
   {
     "systemName": "Diamonds",
@@ -789,6 +809,7 @@
     "nrOfIterationsToDrawAtSelection": 5,
     "fillPolyline": false,
     "usePolyline": false,
-    "lineThickness3d": 1
+    "lineThickness3d": 1,
+    "rotationAngleRandomizerValue": 0
   }
 ]

@@ -176,7 +176,8 @@ export class AppComponent {
         strokeColor: [lsystem.strokeColor, [Validators.required, Validators.minLength(3)]],
         listOfVariables: this.formBuilder.array([]),
         listOfRules: this.formBuilder.array([]),
-        lineThickness3d: [lsystem.lineThickness3d, [Validators.required, Validators.min(1), Validators.max(30)]]
+        lineThickness3d: [lsystem.lineThickness3d, [Validators.required, Validators.min(1), Validators.max(30)]],
+        rotationAngleRandomizerValue: [lsystem.rotationAngleRandomizerValue, [Validators.required, Validators.min(0), Validators.max(180)]]
       },
       {
         validators: [checkVariablesAndRules]
@@ -320,7 +321,8 @@ export class AppComponent {
       this.originX3d,
       this.originY3d,
       this.originZ3d,
-      this.lineThickness3d
+      this.lineThickness3d,
+      this.rotationAngleRandomizerValue,
     ].forEach((field: AbstractControl | null) => {
       if (field !== null) {
         this.valueChangeSubscribers.push(field.valueChanges.subscribe(() => {
@@ -447,6 +449,7 @@ export class AppComponent {
     this.lsystem.fadeStrokeOpacity = this.fadeStrokeOpacity?.value;
     this.lsystem.UsePolyline = this.usePolyline?.value;
     this.lsystem.lineThickness3d = this.lineThickness3d?.value;
+    this.lsystem.rotationAngleRandomizerValue = this.rotationAngleRandomizerValue?.value;
 
     this.processFormRules();
     this.processFormVariables();
@@ -487,6 +490,7 @@ export class AppComponent {
   get strokeColor(): AbstractControl | null {return this.formgroup.get('strokeColor');}
   get usePolyline(): AbstractControl | null {return this.formgroup.get('usePolyline');}
   get fillPolyline(): AbstractControl | null {return this.formgroup.get('fillPolyline');}
+  get rotationAngleRandomizerValue(): AbstractControl | null {return this.formgroup.get('rotationAngleRandomizerValue');}
 
   get variables(): FormArray | undefined {const items = this.formgroup.get('listOfVariables');
     return (items as FormArray);
@@ -515,6 +519,14 @@ export class AppComponent {
     this.rules?.removeAt(index);
   }
 
+  /**
+   * Loads the definitions of the curves. Do JSON validation using the AJV JSON Schema Validator (@see https://ajv.js.org/guide/modifying-data.html)
+   *
+   * Uses {@link ../../assets/json-schema-definitions.json} schema for the validation
+   *
+   * If an HTTP-error occurs (e.g. a basic JSON syntax check), the HTTP-error is returned as a string via the subscriber.error()
+   * If validation against the schema fails, the error message as a string is returned via the subscriber.error()
+   */
   getDataForCurves(): Observable<Array<LSystemCalculator>> {
     return new Observable<Array<LSystemCalculator>>(subscriber => {
 
@@ -527,10 +539,12 @@ export class AppComponent {
           const schema = results[1];
           const data = results[0];
 
-          const ajv = new Ajv2020();
+          /**
+           * start validation; if parts of a definition is missing, apply the given default value.
+           */
+          const ajv = new Ajv2020({useDefaults: true});
           const validator = ajv.compile(schema);
           const isJSONValid = validator(data);
-
 
           if (isJSONValid) {
             const items = new Array<LSystemCalculator>();
@@ -552,7 +566,7 @@ export class AppComponent {
           }
         },
         error: (err: HttpErrorResponse) => {
-          subscriber.error(err);
+          subscriber.error(err.message);
         }
 
       });
