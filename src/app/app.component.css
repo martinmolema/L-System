@@ -174,3 +174,15 @@ main {
 .inline-block {display: inline-block}
 .w-10em {width: 10em}
 .font-small { font-size: small}
+
+
+footer {
+  margin-top:2rem;
+  border-top:1px inset black;
+  p {
+    font-size:small;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}

@@ -79,9 +79,11 @@
                 <button class="updown" (click)="changeRotationAngle(5)" title="increase value">+</button>
               </p>
               <p>
-                <label for="checkboxRotationAngleRandomizer" title="Maximum change to rotation angle (either add or subtract)">Randomize angle</label>
-                <input id="checkboxRotationAngleRandomizer" type="range" min="0" max="90" step="1" formControlName="rotationAngleRandomizerValue">
-                <span>{{rotationAngleRandomizerValue?.value}}&deg;</span>
+                <label for="checkboxRotationAngleRandomizer"
+                       title="Maximum change to rotation angle (either add or subtract)">Randomize angle</label>
+                <input id="checkboxRotationAngleRandomizer" type="range" min="0" max="90" step="1"
+                       formControlName="rotationAngleRandomizerValue">
+                <span>{{ rotationAngleRandomizerValue?.value }}&deg;</span>
               </p>
               <p>
                 <label for="inputStartAngle">Start Angle</label>
@@ -305,3 +307,11 @@
     </section>
   </article>
 </main>
+
+<footer>
+  <p>
+    <span>Version: {{ versionInfo.versionTag }}</span>
+    <span>Build Date {{buildInfo.ProjectBuildDate}}</span>
+    <span>Last commit at {{versionInfo.lastCommitTime}} by {{versionInfo.lastCommitAuthor}}</span>
+  </p>
+</footer>

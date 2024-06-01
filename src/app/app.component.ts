@@ -26,6 +26,8 @@ import {Ajv2020} from "ajv/dist/2020";
 import {ThreeJsRendererComponent} from "./components/three-js-renderer/three-js-renderer.component";
 import {Point} from "./classes/point";
 import {ThreeJSRenderService} from "./services/three-jsrender.service";
+import {GitVersionInfo, ProjectBuildInfo} from "../environments/git-version-info";
+
 
 type RendererTypes = '2d' | 'threejs';
 
@@ -102,6 +104,9 @@ export class AppComponent {
   autoUpdateDrawing: boolean = true;
   valueChangeSubscribers: Array<Subscription>;
 
+  public versionInfo = GitVersionInfo;
+  public buildInfo = ProjectBuildInfo;
+
   renderer: RendererTypes = 'threejs';
 
   formgroup: FormGroup;
@@ -117,8 +122,6 @@ export class AppComponent {
     private threeJSRenderer: ThreeJSRenderService
   ) {
     this.valueChangeSubscribers = new Array<Subscription>();
-
-
     this.allSystems = new Array<LSystemCalculator>();
     this.lsystem = new LSystemCalculator('x', OriginPositionsEnum.CENTER);
 

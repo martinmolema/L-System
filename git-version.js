@@ -39,9 +39,19 @@ function lz(num) {
   return (num > 9) ? num.toString() : `0${num.toString()}`;
 }
 
-writeFileSync('src/environments/git-version-info.js', `
-export const GitVersionInfo = ${versionInfoJson};
-export const ProjectBuildInfo = {
+writeFileSync('src/environments/git-version-info.ts', `
+export const GitVersionInfo : {versionTag:string;
+  shortSHA:string;
+  SHA:string;
+  branch:string;
+  lastCommitAuthor:string;
+  lastCommitTime:string;
+  lastCommitNumber:string;
+} = ${versionInfoJson};
+export const ProjectBuildInfo : {
+  ProjectBuildDate: string;
+  ProjectBuildTime: string
+}= {
   ProjectBuildDate : '${currentDate.getFullYear()}-${lz(currentDate.getMonth() + 1)}-${lz(currentDate.getDate())}',
   ProjectBuildTime : '${lz(currentDate.getHours())}:${lz(currentDate.getMinutes())}:${lz(currentDate.getSeconds())}'
 }
